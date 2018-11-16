@@ -7,7 +7,7 @@ from threading import Thread
 
 class Executor(Thread):
     def run(self):
-        p = subprocess.Popen('cd /server/ && wine accServer.exe',
+        p = subprocess.Popen('cd /server/ && WINEDEBUG=-all wine accServer.exe',
                              shell=True,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)

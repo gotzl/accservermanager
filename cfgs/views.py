@@ -47,7 +47,7 @@ def createForm(obj, path):
 
 
 def formForKey(request, *args):
-    path = '/run/media/gotzl/stuff/games/Steam/steamapps/common/Assetto Corsa Competizione/server/cfg/custom.json'
+    path = '/server/cfg/custom.json'
     cfg = json.load(open(path))
 
     args = args[0]
