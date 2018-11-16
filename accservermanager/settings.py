@@ -124,4 +124,5 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/cfgs'
 LOGOUT_REDIRECT_URL = '/cfgs'
 
-ACCSERVER = '/run/media/gotzl/stuff/games/Steam/steamapps/common/Assetto Corsa Competizione/server'
+ACCSERVER = '/server'
+# ACCSERVER = '/run/media/gotzl/stuff/games/Steam/steamapps/common/Assetto Corsa Competizione/server'
