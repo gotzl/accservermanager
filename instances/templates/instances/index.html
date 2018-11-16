@@ -27,6 +27,7 @@ div.container {
 </style>
 
 <div class="container">
+    Running: {{running}}
     <form action="start/" method="POST">{% csrf_token %}
         <button type="submit">Start</button>
     </form>

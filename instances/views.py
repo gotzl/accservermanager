@@ -5,9 +5,12 @@ import subprocess, time
 from multiprocessing import Value
 from threading import Thread
 
+from accservermanager import settings
+
+
 class Executor(Thread):
     def run(self):
-        p = subprocess.Popen('cd /server/ && WINEDEBUG=-all wine accServer.exe',
+        p = subprocess.Popen('cd %s && WINEDEBUG=-all wine accServer.exe'%settings.ACCSERVER,
                              shell=True,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.STDOUT)
@@ -44,6 +47,7 @@ def startstop(request, start=True):
 def index(request):
     template = loader.get_template('instances/index.html')
     context = {
+        'running': executor_inst is not None and executor_inst.is_alive()
     }
     return HttpResponse(template.render(context, request))
 

@@ -50,18 +50,40 @@ input[type=submit]:hover {
 {% endfor %}
 </div>
 
+{% if form is not None %}
+{% load material_form %}
+<div style="background-color: #f2f2f2;">
+    <div class="container">
+        <form action="{{response.path}}"
+              method="post"
+              style="display:table-cell; vertical-align:middle;">
+
+            {% csrf_token %}
+            <!--{{ frm }}-->
+            {% form form=form %}{% endform %}
+            <input type="submit" value="Save">
+        </form>
+    </div>
+</div>
+{% endif%}
+
 {% if forms is not None %}
 {% load material_form %}
 <div style="background-color: #f2f2f2;">
     {% for frm in forms %}
+    {% with response.path|add:'/'|add:forloop.counter0 as action %}
     <div class="container">
-        <form action="/your-name/" method="post" style="display:table-cell; vertical-align:middle;">
+        <form action="{{action}}"
+              method="post"
+              style="display:table-cell; vertical-align:middle;">
+
             {% csrf_token %}
             <!--{{ frm }}-->
             {% form form=frm %}{% endform %}
             <input type="submit" value="Save">
         </form>
     </div>
+    {% endwith %}
     {% endfor %}
 </div>
 {% endif%}

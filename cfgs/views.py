@@ -1,8 +1,11 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django import forms
 from django.utils.safestring import mark_safe
 
 import json
+
+from accservermanager import settings
 
 TRACKS = (
     ('misano', 'Misano'),
@@ -18,6 +21,9 @@ FIELDS = {
     ),
     'sessionType': forms.IntegerField(max_value=None, min_value=0)
 }
+
+
+PATH = '%s/cfg/custom.json'%settings.ACCSERVER
 
 
 def fieldForKey(key):
@@ -47,8 +53,7 @@ def createForm(obj, path):
 
 
 def formForKey(request, *args):
-    path = '/server/cfg/custom.json'
-    cfg = json.load(open(path))
+    cfg = json.load(open(PATH,'r'))
 
     args = args[0]
     if len(args)>0 and args[-1] == '/':
@@ -62,13 +67,27 @@ def formForKey(request, *args):
             obj = obj[arg]
             path = '%s/%s'%(path,arg)
 
-    _forms = None
+
+    if request.method == 'POST':
+        for key,value in request.POST.items():
+            if key=='csrfmiddlewaretoken': continue
+            obj[key] = value
+            json.dump(cfg, open(PATH,'w'))
+
+        return HttpResponseRedirect(request.path)
+
+    _form, _forms = None, None
     if path != '':
-        _forms = createForm(obj, path)
+        _form = createForm(obj, path)
+
+    if isinstance(_form, list):
+        _forms = _form
+        _form = None
 
     emptyList = lambda x: not (isinstance(cfg[x], list) and len(cfg[x])==0)
     context = {
         'keys': sorted(filter(emptyList, cfg.keys())),
-        'forms' : _forms if _forms is None or isinstance(_forms, list) else [_forms],
+        'forms' : _forms,
+        'form' : _form
     }
     return render(request, 'cfgs/index.html', context)
