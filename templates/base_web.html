@@ -1,0 +1,27 @@
+<html>
+    {% include 'material/includes/material_css.html' %}
+    {% include 'material/includes/material_js.html' %}
+
+
+    <body style="background-color: #f2f2f2;">
+
+    {% if user.is_authenticated %}
+    <header>
+        <nav style="background: #c21807;">
+            <a style="font-size:20px; font-weight: bold; padding: 14px 20px; color: black;" href="/instances">Instances</a>
+            <a style="font-size:20px; font-weight: bold; padding: 14px 20px; color: black;" href="/cfgs">Configs</a>
+            <a style="font-size:20px; font-weight: bold; padding: 14px 20px; color: black;" href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+    {% else %}
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a>
+    {% endif %}
+
+
+    </body>
+<html>

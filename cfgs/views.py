@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django import forms
 from django.utils.safestring import mark_safe
 
-import json
+import re, json
 
 from accservermanager import settings
 
@@ -30,6 +30,11 @@ def fieldForKey(key):
     return forms.FloatField()
 
 
+def createLabel(key):
+    key = key[0].upper()+key[1:]
+    return ' '.join(re.findall('[A-Z][^A-Z]*', key))
+
+
 def createForm(obj, path):
     if isinstance(obj, list):
         return [createForm(obj[i],'%s/%i'%(path,i)) for i in range(len(obj))]
@@ -48,7 +53,7 @@ def createForm(obj, path):
             form.fields[key] = fieldForKey(key)
             form.fields[key].initial = value
             form.fields[key].required = True
-
+            form.fields[key].label = createLabel(key)
     return form
 
 
@@ -91,7 +96,7 @@ def formForKey(request, *args):
 
     emptyList = lambda x: not (isinstance(cfg[x], list) and len(cfg[x])==0)
     context = {
-        'keys': sorted(filter(emptyList, cfg.keys())),
+        'keys': [(k, createLabel(k)) for k in sorted(filter(emptyList, cfg.keys()))],
         'forms' : _forms,
         'form' : _form
     }

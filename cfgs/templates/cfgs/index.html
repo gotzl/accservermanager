@@ -2,13 +2,6 @@
 {% block content %}
 
 <style>
-
-div.keys {
-    border-radius: 5px;
-    background-color: #404040;
-    padding: 20px;
-}
-
 div.container {
     border-radius: 5px;
     padding: 20px;
@@ -44,15 +37,17 @@ input[type=submit]:hover {
 }
 </style>
 
-<div class="keys">
-{% for i in keys %}
-    <a style="padding: 10px 14px; margin: 8px 0;" href="/cfgs/{{i}}">{{ i }}</a>
-{% endfor %}
-</div>
+
+
+<nav style="position: fixed!important; width:200px; height: 100%; padding-left:10px;">
+    {% for i,j in keys %}
+    <a style="font-size:16px; font-weight: bold; display:block;" href="/cfgs/{{i}}">{{ j }}</a>
+    {% endfor %}
+</nav>
 
 {% if form is not None %}
 {% load material_form %}
-<div style="background-color: #f2f2f2;">
+<div style="margin-left:210px;">
     <div style="color: black; font-size:18px; font-weight: bold; padding: 14px 20px;">{{request.path}}</div>
     <div class="container">
         <form action=""
@@ -70,7 +65,7 @@ input[type=submit]:hover {
 
 {% if forms is not None %}
 {% load material_form %}
-<div style="background-color: #f2f2f2;">
+<div style="margin-left:210px;">
     {% for frm in forms %}
     <div style="color: black; font-size:18px; font-weight: bold; padding: 14px 20px;">{{request.path}}/{{forloop.counter0}}</div>
     <div class="container">
