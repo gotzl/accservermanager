@@ -71,9 +71,12 @@ def formForKey(request, *args):
     if request.method == 'POST':
         for key,value in request.POST.items():
             if key=='csrfmiddlewaretoken': continue
-            obj[key] = value
-            json.dump(cfg, open(PATH,'w'))
 
+            if isinstance(obj[key], list): continue
+            print(type(obj[key]), type(value))
+            obj[key] = value
+
+        json.dump(cfg, open(PATH,'w'))
         return HttpResponseRedirect(request.path)
 
     _form, _forms = None, None
