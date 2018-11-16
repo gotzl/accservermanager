@@ -124,5 +124,6 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/cfgs'
 LOGOUT_REDIRECT_URL = '/cfgs'
 
+ACCEXEC = 'WINEDEBUG=-all wine accServer.exe'
 ACCSERVER = '/server'
-# ACCSERVER = '/run/media/gotzl/stuff/games/Steam/steamapps/common/Assetto Corsa Competizione/server'
+# ACCSERVER = '/tmp/server'

@@ -9,13 +9,12 @@ from accservermanager import settings
 
 TRACKS = (
     ('misano', 'Misano'),
-    ('paulricard', 'Paul Ricard'),
-    ('nuerburg', 'Nuerburgring GP'),
+    ('paul_ricard', 'Paul Ricard'),
+    ('nurburgring', 'Nuerburgring GP'),
 )
 
 FIELDS = {
     'trackName': forms.ChoiceField(
-        required=True,
         widget=forms.Select,
         choices=TRACKS,
     ),
@@ -33,7 +32,7 @@ def fieldForKey(key):
 
 def createForm(obj, path):
     if isinstance(obj, list):
-        return [createForm(obj[i],'%s/%i/'%(path,i)) for i in range(len(obj))]
+        return [createForm(obj[i],'%s/%i'%(path,i)) for i in range(len(obj))]
 
     if isinstance(obj, int):
         obj = {'value': obj}
@@ -43,11 +42,12 @@ def createForm(obj, path):
         if (isinstance(value,dict)):
             form.fields[key] = forms.CharField(widget=forms.TextInput,
                                                disabled=True,
-                                               label=mark_safe('<a href="/cfgs%s%s">%s</a>'%(path,key,key)))
+                                               label=mark_safe('<a href="/cfgs%s/%s">%s</a>'%(path,key,key)))
 
         else:
             form.fields[key] = fieldForKey(key)
             form.fields[key].initial = value
+            form.fields[key].required = True
 
     return form
 
@@ -67,13 +67,15 @@ def formForKey(request, *args):
             obj = obj[arg]
             path = '%s/%s'%(path,arg)
 
-
     if request.method == 'POST':
-        for key,value in request.POST.items():
-            if key=='csrfmiddlewaretoken': continue
+        for key, value in request.POST.items():
+            if key == 'csrfmiddlewaretoken': continue
 
             if isinstance(obj[key], list): continue
-            print(type(obj[key]), type(value))
+            if isinstance(obj[key], int): value = int(value)
+            elif isinstance(obj[key], float): value = float(value)
+            elif not isinstance(obj[key], str):
+                print('Unknown type',type(obj[key]), type(value))
             obj[key] = value
 
         json.dump(cfg, open(PATH,'w'))

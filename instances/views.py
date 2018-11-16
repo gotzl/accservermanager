@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 
-import subprocess, time
+import subprocess, time, datetime
 from multiprocessing import Value
 from threading import Thread
 
@@ -10,13 +10,17 @@ from accservermanager import settings
 
 class Executor(Thread):
     def run(self):
-        p = subprocess.Popen('cd %s && WINEDEBUG=-all wine accServer.exe'%settings.ACCSERVER,
+        _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        p = subprocess.Popen('cd "%s" && %s'%(settings.ACCSERVER,settings.ACCEXEC),
                              shell=True,
+                             universal_newlines=True,
                              stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
+                             # stdout=open('/dev/null', 'w'),
+                             # stdout=open('%s/log/stdout-%s.log'%(settings.ACCSERVER,_tm),'w'),
+                             stderr=open('%s/log/stderr-%s.log'%(settings.ACCSERVER,_tm),'w'))
         retval = None
         while retval is None:
-            if stop.value == 1: p.terminate()
+            if stop.value == 1: p.kill()
             time.sleep(1)
             retval = p.poll()
 
