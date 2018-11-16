@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+div.keys {
+    border-radius: 5px;
+    background-color: #404040;
+    padding: 20px;
+}
+
+div.container {
+    border-radius: 5px;
+    padding: 20px;
+    max-width: 300px;
+}
+
+/* Style inputs */
+input, select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* Style the submit button */
+input[type=submit] {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Add a background color to the submit button on mouse-over */
+input[type=submit]:hover {
+  background-color: #45a049;
+}
+</style>
+
+<div class="keys">
+{% for i in keys %}
+    <a style="padding: 10px 14px; margin: 8px 0;" href="/cfgs/{{i}}">{{ i }}</a>
+{% endfor %}
+</div>
+
+{% if forms is not None %}
+{% load material_form %}
+<div style="background-color: #f2f2f2;">
+    {% for frm in forms %}
+    <div class="container">
+        <form action="/your-name/" method="post" style="display:table-cell; vertical-align:middle;">
+            {% csrf_token %}
+            <!--{{ frm }}-->
+            {% form form=frm %}{% endform %}
+            <input type="submit" value="Save">
+        </form>
+    </div>
+    {% endfor %}
+</div>
+{% endif%}
+
+{% endblock %}
