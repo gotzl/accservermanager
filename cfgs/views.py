@@ -60,7 +60,7 @@ def formForKey(request, config, *args):
                 print('Unknown type',type(obj[key]), type(value))
             obj[key] = value
 
-        json.dump(cfg, open(PATH,'w'))
+        json.dump(cfg, open(os.path.join(PATH, config+'.json'),'w'))
         return HttpResponseRedirect(request.path)
 
     _form, _forms = None, None
