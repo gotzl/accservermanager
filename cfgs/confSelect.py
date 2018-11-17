@@ -22,4 +22,4 @@ class CfgsForm(forms.Form):
         self.fields['cfgs'] = getCfgsField(selected, attrs={"onChange":'this.form.submit()'})
 
 class CfgCreate(forms.Form):
-    name = forms.CharField(max_length=100, required=True)
+    name = forms.CharField(max_length=100, required=True, widget=forms.TextInput(attrs={"onkeyup":"nospaces(this)"}))

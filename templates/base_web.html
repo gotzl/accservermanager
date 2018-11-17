@@ -2,6 +2,14 @@
     {% include 'material/includes/material_css.html' %}
     {% include 'material/includes/material_js.html' %}
 
+    <script type="text/javascript">
+        function nospaces(t){
+            if(t.value.match(/\s/g)){
+            alert('Spaces are not allowed');
+            t.value=t.value.replace(/\s/g,'');
+        }}
+    </script>
+
 
     <body style="background-color: #f2f2f2;">
 
