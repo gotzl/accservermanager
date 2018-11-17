@@ -9,7 +9,9 @@ from cfgs.confSelect import CfgsForm, getCfgs, CfgCreate
 
 PATH = os.path.join(settings.ACCSERVER,'cfg','custom')
 
+
 def confCreate(request):
+    """ Create a new config based on the backuped origin custom.json """
     if request.method == 'POST':
         _base = os.path.join(PATH,'../','custom.json.bkup')
         _f = os.path.join(PATH, request.POST['name']+'.json')
@@ -18,6 +20,7 @@ def confCreate(request):
 
 
 def confDelete(request):
+    """ Delete a config file """
     if request.method == 'POST':
         _f = os.path.join(PATH, request.POST['cfg']+'.json')
         if os.path.exists(_f):  os.remove(_f)
@@ -25,6 +28,7 @@ def confDelete(request):
 
 
 def confSelect(request):
+    """ Show available configs and form to create a new config """
     if request.method == 'POST':
         print(request.path)
         cfg = os.path.splitext(request.POST['cfgs'])[0]
@@ -38,9 +42,11 @@ def confSelect(request):
 
 
 def formForKey(request, config, *args):
+    """ Read the select config file and display the selected portion of the json object """
     cfg = json.load(open(os.path.join(PATH, config+'.json'),'r'))
     args = args[0]
 
+    # drill down into the json object to the selected part
     obj = cfg
     path = config
     if len(args)>0:
@@ -49,6 +55,7 @@ def formForKey(request, config, *args):
             obj = obj[arg]
             path = '%s/%s'%(path,arg)
 
+    # the form was submitted, update the values in the json obj and dump it to file
     if request.method == 'POST':
         for key, value in request.POST.items():
             if key in ['csrfmiddlewaretoken', 'selectedCfg']: continue
@@ -64,19 +71,25 @@ def formForKey(request, config, *args):
         return HttpResponseRedirect(request.path)
 
     _form, _forms = None, None
+    # create the form only if an element of the config was selected
     if path != config:
         _form = createForm(obj, path)
 
+    # ugly switch to handle list-values (like events)
     if isinstance(_form, list):
         _forms = _form
         _form = None
 
+    # extract first level keys of the json object, they are displayed in the navigation sidebar
+    # only if they are not emptylists
     emptyList = lambda x: not (isinstance(cfg[x], list) and len(cfg[x])==0)
+    keys = sorted(filter(emptyList, cfg.keys()))
+
     context = {
-        'keys': [(k, createLabel(k)) for k in sorted(filter(emptyList, cfg.keys()))],
-        'cfgs' : CfgsForm(config+'.json'),
-        'cfg' : config,
-        'forms' : _forms,
-        'form' : _form
+        'keys': [(k, createLabel(k)) for k in keys],
+        'cfgs': CfgsForm(config+'.json'),
+        'cfg': config,
+        'forms': _forms,
+        'form': _form
     }
     return render(request, 'cfgs/index.html', context)
