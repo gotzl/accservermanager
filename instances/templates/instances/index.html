@@ -27,12 +27,19 @@ div.container {
 </style>
 
 <div class="container">
-    Running: {{running}}
+    {% if not running %}
     <form action="start/" method="POST">{% csrf_token %}
+        {{ form }}
         <button type="submit">Start</button>
     </form>
+    {% else %}
+    Server running<br>
+    Name: '{{serverName}}'<br>
+    Config: {{configName}}<br>
+    PID: {{process.pid}}<br>
     <form action="stop/" method="POST">{% csrf_token %}
         <button type="submit">Stop</button>
     </form>
+    {% endif %}
 </div>
 {% endblock %}

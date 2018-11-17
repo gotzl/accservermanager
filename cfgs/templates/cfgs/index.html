@@ -52,7 +52,7 @@ input[type=submit]:hover {
     <div class="container">
         <form action=""
               method="post"
-              style="display:table-cell; vertical-align:middle;">
+              style="">
 
             {% csrf_token %}
             <!--{{ frm }}-->
@@ -71,7 +71,7 @@ input[type=submit]:hover {
     <div class="container">
         <form action="{{request.path}}/{{forloop.counter0}}"
               method="post"
-              style="display:table-cell; vertical-align:middle;">
+              style="">
 
             {% csrf_token %}
             <!--{{ frm }}-->
@@ -81,6 +81,6 @@ input[type=submit]:hover {
     </div>
     {% endfor %}
 </div>
-{% endif%}
+{% endif %}
 
 {% endblock %}

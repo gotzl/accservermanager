@@ -13,9 +13,9 @@ python manage.py runserver
 ```
 
 ## Dependencies
-Requires django and django-materials, e.g.
+Requires django and django-material, e.g.
 ```bash
-pip install django django-materials
+pip install django django-material
 ```
 
 ## Deployment
