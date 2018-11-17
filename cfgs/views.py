@@ -1,71 +1,50 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django import forms
-from django.utils.safestring import mark_safe
 
-import re, json
+import os, glob, json, ntpath
 
 from accservermanager import settings
+from cfgs.confEdit import createLabel, createForm
 
-TRACKS = (
-    ('misano', 'Misano'),
-    ('paul_ricard', 'Paul Ricard'),
-    ('nurburgring', 'Nuerburgring GP'),
-)
-
-FIELDS = {
-    'trackName': forms.ChoiceField(
-        widget=forms.Select,
-        choices=TRACKS,
-    ),
-    'sessionType': forms.IntegerField(max_value=None, min_value=0)
-}
+PATH = os.path.join(settings.ACCSERVER,'cfg','custom')
 
 
-PATH = '%s/cfg/custom.json'%settings.ACCSERVER
+def getCfgs():
+    return glob.glob('%s/*.json'%(os.path.join(settings.ACCSERVER,'cfg','custom')))
 
 
-def fieldForKey(key):
-    if key in FIELDS: return FIELDS[key]
-    return forms.FloatField()
+class CfgsForm(forms.Form):
+    def __init__(self, selected=None):
+        super().__init__()
+        self.fields['cfgs'] = forms.ChoiceField(
+            widget=forms.Select(attrs={"onChange":'this.form.submit()'}),
+            choices=[('','')]+[(ntpath.basename(i),ntpath.basename(i)) for i in getCfgs()],
+            initial=None if selected is None else selected,
+            label='',
+        )
+        self.fields['cfgs'].empty_label = "Select a config"
 
 
-def createLabel(key):
-    key = key[0].upper()+key[1:]
-    return ' '.join(re.findall('[A-Z][^A-Z]*', key))
+
+def confSelect(request):
+    if request.method == 'POST':
+        cfg = os.path.splitext(request.POST['cfgs'])[0]
+        return HttpResponseRedirect('/cfgs/%s/'%cfg)
+
+    context = {
+        'cfgs' : CfgsForm(),
+        'cfg' : None,
+    }
+    return render(request, 'cfgs/index.html', context)
 
 
-def createForm(obj, path):
-    if isinstance(obj, list):
-        return [createForm(obj[i],'%s/%i'%(path,i)) for i in range(len(obj))]
-
-    if isinstance(obj, int):
-        obj = {'value': obj}
-
-    form = forms.Form()
-    for key, value in sorted(obj.items(),key=lambda x:x[0]):
-        if (isinstance(value,dict)):
-            form.fields[key] = forms.CharField(widget=forms.TextInput,
-                                               disabled=True,
-                                               label=mark_safe('<a href="/cfgs%s/%s">%s</a>'%(path,key,key)))
-
-        else:
-            form.fields[key] = fieldForKey(key)
-            form.fields[key].initial = value
-            form.fields[key].required = True
-            form.fields[key].label = createLabel(key)
-    return form
-
-
-def formForKey(request, *args):
-    cfg = json.load(open(PATH,'r'))
-
+def formForKey(request, config, *args):
+    cfg = json.load(open(os.path.join(PATH, config+'.json'),'r'))
     args = args[0]
-    if len(args)>0 and args[-1] == '/':
-        args = args[:-1]
 
     obj = cfg
-    path = ''
+    path = config
     if len(args)>0:
         for arg in args.split('/'):
             if isinstance(obj, list): arg = int(arg)
@@ -74,7 +53,7 @@ def formForKey(request, *args):
 
     if request.method == 'POST':
         for key, value in request.POST.items():
-            if key == 'csrfmiddlewaretoken': continue
+            if key in ['csrfmiddlewaretoken', 'selectedCfg']: continue
 
             if isinstance(obj[key], list): continue
             if isinstance(obj[key], int): value = int(value)
@@ -87,7 +66,7 @@ def formForKey(request, *args):
         return HttpResponseRedirect(request.path)
 
     _form, _forms = None, None
-    if path != '':
+    if path != config:
         _form = createForm(obj, path)
 
     if isinstance(_form, list):
@@ -97,6 +76,8 @@ def formForKey(request, *args):
     emptyList = lambda x: not (isinstance(cfg[x], list) and len(cfg[x])==0)
     context = {
         'keys': [(k, createLabel(k)) for k in sorted(filter(emptyList, cfg.keys()))],
+        'cfgs' : CfgsForm(config+'.json'),
+        'cfg' : config,
         'forms' : _forms,
         'form' : _form
     }

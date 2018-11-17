@@ -24,3 +24,18 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
 ]
+
+
+def on_startup():
+    import os, shutil
+    from accservermanager import settings
+    directory = os.path.join(settings.ACCSERVER,'cfg','custom')
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        cfg = os.path.join(settings.ACCSERVER,'cfg','custom.json'), \
+              os.path.join(directory,'custom.json')
+        shutil.copy(cfg[0], cfg[0]+'.bkup')
+        os.rename(cfg[0], cfg[1])
+        os.symlink(cfg[1], cfg[0])
+
+on_startup()

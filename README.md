@@ -1,5 +1,5 @@
 Small web project to manage Assetto Corsa Competizione servers, build on Django.
-Currently quit limited and ugly, just viewing/editing one config and starting/stopping one instance.
+Currently quite limited and ugly, just viewing/editing one config and starting/stopping one instance.
 
 
 ## Development
@@ -33,3 +33,4 @@ python3 manage.py migrate
 python3 manage.py createsuperuser
 ```
 
+When logged in you can add more users with djangos admin pages (...:8000/admin).
