@@ -2,6 +2,17 @@
 {% block content %}
 
 <style>
+/* Style inputs */
+input, select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
 /* Style the buttons */
 button {
   width: 100%;
@@ -28,15 +39,16 @@ div.container {
 
 <div class="container">
     {% if not running %}
+    {% load material_form %}
     <form action="start/" method="POST">{% csrf_token %}
-        {{ form }}
+        {% form form=form %}{% endform %}
         <button type="submit">Start</button>
     </form>
     {% else %}
     Server running<br>
-    Name: '{{serverName}}'<br>
-    Config: {{configName}}<br>
-    PID: {{process.pid}}<br>
+        &nbsp;Name: {{executor.serverName}}<br>
+        &nbsp;Config: {{executor.config}}<br>
+        &nbsp;PID: {{executor.p.pid}}<br>
     <form action="stop/" method="POST">{% csrf_token %}
         <button type="submit">Stop</button>
     </form>

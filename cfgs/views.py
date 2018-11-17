@@ -1,30 +1,13 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from django import forms
 
-import os, glob, json, ntpath
+import os, json
 
 from accservermanager import settings
 from cfgs.confEdit import createLabel, createForm
+from cfgs.confSelect import CfgsForm
 
 PATH = os.path.join(settings.ACCSERVER,'cfg','custom')
-
-
-def getCfgs():
-    return glob.glob('%s/*.json'%(os.path.join(settings.ACCSERVER,'cfg','custom')))
-
-
-class CfgsForm(forms.Form):
-    def __init__(self, selected=None):
-        super().__init__()
-        self.fields['cfgs'] = forms.ChoiceField(
-            widget=forms.Select(attrs={"onChange":'this.form.submit()'}),
-            choices=[('','')]+[(ntpath.basename(i),ntpath.basename(i)) for i in getCfgs()],
-            initial=None if selected is None else selected,
-            label='',
-        )
-        self.fields['cfgs'].empty_label = "Select a config"
-
 
 
 def confSelect(request):

@@ -6,18 +6,25 @@ import subprocess, time, datetime
 from multiprocessing import Value
 from threading import Thread
 
-import json
+import os, json
 
 from accservermanager import settings
-
+from cfgs.confSelect import getCfgsField
 
 class Executor(Thread):
-    def __init__(self, serverName):
+    def __init__(self, serverName, config):
         super().__init__()
         self.p = None
-        self.severName = serverName
+        self.serverName = serverName
+        self.config = config
 
     def run(self):
+        cfg_dir = os.path.join(settings.ACCSERVER,'cfg')
+        cfg = os.path.join(cfg_dir, 'custom', self.config)
+        cfg_sym = os.path.join(cfg_dir, 'custom.json')
+        if os.path.exists(cfg_sym): os.remove(cfg_sym)
+        os.symlink(cfg, cfg_sym)
+
         _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
         self.p = subprocess.Popen('cd "%s" && %s'%(settings.ACCSERVER,settings.ACCEXEC),
                              shell=True,
@@ -49,7 +56,7 @@ def startstop(request, start=True):
                 json.dump(cfg, open(PATH,'w'))
 
                 stop.value = 0
-                executor_inst = Executor(cfg['serverName'])
+                executor_inst = Executor(cfg['serverName'], request.POST['cfg'])
                 executor_inst.start()
 
         else:
@@ -61,7 +68,16 @@ def startstop(request, start=True):
 
 
 class InstanceForm(forms.Form):
-    serverName = forms.CharField(label='Server name', required=True, max_length=100)
+    def __init__(self, data):
+        super().__init__()
+        self.fields['serverName'] = forms.CharField(
+            label='Server name',
+            initial = data['serverName'],
+            required=True,
+            max_length=100)
+        self.fields['cfg'] = getCfgsField()
+        self.fields['cfg'].required = True
+        self.fields['cfg'].label = 'Config'
 
 
 PATH = '%s/cfg/configuration.json'%settings.ACCSERVER
@@ -71,11 +87,9 @@ def index(request):
 
     template = loader.get_template('instances/index.html')
     context = {
-        'configName' : 'default',
-        'serverName' : executor_inst.severName if executor_inst is not None else None,
-        'process': executor_inst.p if executor_inst is not None else None,
+        'form': InstanceForm({'serverName':cfg['serverName']}),
         'running': executor_inst is not None and executor_inst.is_alive(),
-        'form': InstanceForm({'serverName':cfg['serverName']})
+        'executor': executor_inst,
     }
     return HttpResponse(template.render(context, request))
 
