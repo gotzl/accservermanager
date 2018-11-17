@@ -52,7 +52,8 @@ def startstop(request, start=True):
         if start:
             if executor_inst is None or not executor_inst.is_alive():
                 cfg = json.load(open(PATH,'r'))
-                cfg['serverName'] = request.POST['serverName']
+                for key in ['serverName','udpPort','tcpPort']:
+                    cfg[key] = request.POST[key]
                 json.dump(cfg, open(PATH,'w'))
 
                 stop.value = 0
@@ -75,6 +76,16 @@ class InstanceForm(forms.Form):
             initial = data['serverName'],
             required=True,
             max_length=100)
+        self.fields['udpPort'] = forms.IntegerField(
+            initial = data['udpPort'],
+            max_value=None,
+            min_value=1000,
+            required = True)
+        self.fields['tcpPort'] = forms.IntegerField(
+            initial = data['tcpPort'],
+            max_value=None,
+            min_value=1000,
+            required = True)
         self.fields['cfg'] = getCfgsField()
         self.fields['cfg'].required = True
         self.fields['cfg'].label = 'Config'
@@ -87,7 +98,7 @@ def index(request):
 
     template = loader.get_template('instances/index.html')
     context = {
-        'form': InstanceForm({'serverName':cfg['serverName']}),
+        'form': InstanceForm(cfg),
         'running': executor_inst is not None and executor_inst.is_alive(),
         'executor': executor_inst,
     }

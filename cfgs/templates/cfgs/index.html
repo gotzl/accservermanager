@@ -2,10 +2,16 @@
 {% block content %}
 
 <style>
-div.container {
-    border-radius: 5px;
-    padding: 20px;
-    max-width: 300px;
+.card {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    padding: 2px 16px;
+}
+
+/* Add some padding inside the card container */
+.container {
+    padding: 20px 16px;
 }
 
 /* Style inputs */
@@ -37,14 +43,16 @@ input[type=submit]:hover {
 }
 </style>
 
-<header>
-    <form action="/cfgs/"
-          method="post">{% csrf_token %}
-        {{ cfgs }}
-    </form>
-</header>
+<div class="container">
 
-{% if cfg is not None %}
+    <header>
+        <form action="/cfgs/"
+              method="post">{% csrf_token %}
+            {{ cfgs }}
+        </form>
+    </header>
+
+    {% if cfg is not None %}
     <nav style="position: fixed!important; width:200px; height: 100%; padding-left:10px;">
         {% for i,j in keys %}
         <a style="font-size:16px; font-weight: bold; display:block;" href="/cfgs/{{cfg}}/{{i}}">{{ j }}</a>
@@ -54,8 +62,8 @@ input[type=submit]:hover {
     {% if form is not None %}
     {% load material_form %}
     <div style="margin-left:210px;">
-        <div style="color: black; font-size:18px; font-weight: bold; padding: 14px 20px;">{{request.path}}</div>
-        <div class="container">
+        <div class="card">
+        <h6 style="font-weight:bold">{{request.path}}</h6>
             <form action=""
                   method="post">
 
@@ -72,8 +80,8 @@ input[type=submit]:hover {
     {% load material_form %}
     <div style="margin-left:210px;">
         {% for frm in forms %}
-        <div style="color: black; font-size:18px; font-weight: bold; padding: 14px 20px;">{{request.path}}/{{forloop.counter0}}</div>
-        <div class="container">
+        <div class="card">
+            <h6 style="font-weight:bold">{{request.path}}/{{forloop.counter0}}</h6>
             <form action="{{request.path}}/{{forloop.counter0}}"
                   method="post"
                   style="">
@@ -87,6 +95,8 @@ input[type=submit]:hover {
         {% endfor %}
     </div>
     {% endif %}
-{% endif %}
+    {% endif %}
+
+</div>
 
 {% endblock %}

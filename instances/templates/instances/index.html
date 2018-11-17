@@ -30,28 +30,43 @@ button:hover {
   background-color: #45a049;
 }
 
-div.container {
-    border-radius: 5px;
-    padding: 20px;
-    max-width: 300px;
+<!--div.container {-->
+    <!--border-radius: 5px;-->
+    <!--padding: 20px;-->
+    <!--max-width: 300px;-->
+<!--}-->
+
+.card {
+    /* Add shadows to create the "card" effect */
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    padding: 2px 16px;
+}
+
+/* Add some padding inside the card container */
+.container {
+    padding: 20px 16px;
 }
 </style>
 
 <div class="container">
-    {% if not running %}
-    {% load material_form %}
-    <form action="start/" method="POST">{% csrf_token %}
-        {% form form=form %}{% endform %}
-        <button type="submit">Start</button>
-    </form>
-    {% else %}
-    Server running<br>
-        &nbsp;Name: {{executor.serverName}}<br>
-        &nbsp;Config: {{executor.config}}<br>
-        &nbsp;PID: {{executor.p.pid}}<br>
-    <form action="stop/" method="POST">{% csrf_token %}
-        <button type="submit">Stop</button>
-    </form>
-    {% endif %}
+    <div class="card">
+        {% if not running %}
+        {% load material_form %}
+        <h6 style="font-weight:bold">Instance config</h6>
+        <form action="start/" method="POST">{% csrf_token %}
+            {% form form=form %}{% endform %}
+            <button type="submit">Start</button>
+        </form>
+        {% else %}
+        <h6 style="font-weight:bold">Server is running</h6><br>
+            &nbsp;Name: {{executor.serverName}}<br>
+            &nbsp;Config: {{executor.config}}<br>
+            &nbsp;PID: {{executor.p.pid}}<br>
+        <form action="stop/" method="POST">{% csrf_token %}
+            <button type="submit">Stop</button>
+        </form>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

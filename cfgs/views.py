@@ -1,25 +1,40 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-import os, json
+import os, json, shutil
 
 from accservermanager import settings
 from cfgs.confEdit import createLabel, createForm
-from cfgs.confSelect import CfgsForm
+from cfgs.confSelect import CfgsForm, getCfgs, CfgCreate
 
 PATH = os.path.join(settings.ACCSERVER,'cfg','custom')
+
+def confCreate(request):
+    if request.method == 'POST':
+        _base = os.path.join(PATH,'../','custom.json.bkup')
+        _f = os.path.join(PATH, request.POST['name']+'.json')
+        if not os.path.exists(_f):  shutil.copy(_base, _f)
+        return HttpResponseRedirect('..')
+
+
+def confDelete(request):
+    if request.method == 'POST':
+        _f = os.path.join(PATH, request.POST['cfg']+'.json')
+        if os.path.exists(_f):  os.remove(_f)
+        return HttpResponseRedirect('..')
 
 
 def confSelect(request):
     if request.method == 'POST':
+        print(request.path)
         cfg = os.path.splitext(request.POST['cfgs'])[0]
         return HttpResponseRedirect('/cfgs/%s/'%cfg)
 
     context = {
-        'cfgs' : CfgsForm(),
-        'cfg' : None,
+        'form' : CfgCreate(),
+        'cfgs' : [os.path.splitext(i)[0] for i in getCfgs()],
     }
-    return render(request, 'cfgs/index.html', context)
+    return render(request, 'cfgs/confSelect.html', context)
 
 
 def formForKey(request, config, *args):
