@@ -2,6 +2,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django import forms
 
+from random_word import RandomWords
+r = RandomWords()
+
 import subprocess, time, datetime
 from multiprocessing import Value
 from threading import Thread
@@ -17,12 +20,13 @@ class Executor(Thread):
     """
     Thread for running the server process
     """
-    def __init__(self, instanceDir, serverName, config):
+    def __init__(self, instanceDir, serverCfg, config):
         super().__init__()
+        for key in serverCfg: setattr(self,key,serverCfg[key])
         self.p = None
         self.instanceDir = instanceDir
-        self.serverName = serverName
         self.config = config
+        self.stop = Value('i', 0)
 
     def run(self):
         # fire up the server, store stderr to the log/ dir
@@ -38,7 +42,7 @@ class Executor(Thread):
         # wait for the stop signal or for the server to die on its own
         retval = None
         while retval is None:
-            if stop.value == 1: self.p.kill()
+            if self.stop.value == 1: self.p.kill()
             time.sleep(1)
             retval = self.p.poll()
 
@@ -46,21 +50,39 @@ class Executor(Thread):
         print("Retval:",retval)
 
 
-# globals for the server process and communication
-# the stop signal
-stop = Value('i', 0)
-# the server process execution thread
-executor_inst = None
+# the server process execution threads
+executors = {}
 
 
-def startstop(request, start=True):
+def stderr(name):
+    return
+
+
+def stdout(name):
+    return
+
+
+def start(request):
+    return startstop(request, request.POST['instanceName'])
+
+
+def startstop(request, name, start=True):
     """ handle start/stop request from client """
     if request.method == 'POST':
-        global executor_inst
+        global executors
         if start:
-            if executor_inst is None or not executor_inst.is_alive():
+            if name not in executors:
                 # create instance environment
-                inst_dir = os.path.join(settings.INSTANCES, request.POST['instanceName'])
+                inst_dir = os.path.join(settings.INSTANCES, name)
+
+                # return if dir already exist or ports are already in use or ports are equal
+                if os.path.isdir(inst_dir) or \
+                        request.POST['udpPort'] == request.POST['tcpPort'] or \
+                        len(list(filter(lambda x: request.POST['udpPort'] in [x.udpPort, x.tcpPort] or
+                                                  request.POST['tcpPort'] in [x.udpPort, x.tcpPort],
+                                        executors.values()))) > 0:
+                    return HttpResponseRedirect("../")
+
                 shutil.copytree(settings.ACCSERVER, inst_dir)
                 # the target config
                 cfg = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
@@ -68,19 +90,18 @@ def startstop(request, start=True):
                 shutil.copy(cfg, os.path.join(inst_dir, 'custom.json'))
 
                 # update the configuration.json
-                cfg = json.load(open(os.path.join(settings.ACCSERVER,'cfg','configuration.json'), 'r'))
+                cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
                 for key in ['serverName','udpPort','tcpPort']:
                     cfg[key] = request.POST[key]
                 json.dump(cfg, open(os.path.join(inst_dir, 'cfg', 'configuration.json'), 'w'))
 
-                stop.value = 0
-                executor_inst = Executor(inst_dir, cfg['serverName'], request.POST['cfg'])
-                executor_inst.start()
+                executors[name] = Executor(inst_dir, cfg, request.POST['cfg'])
+                executors[name].start()
 
         else:
-            if executor_inst is not None:
-                stop.value = 1
-                executor_inst = None
+            if name in executors:
+                executors[name].stop.value = 1
+                executors.pop(name)
 
     return HttpResponseRedirect("../")
 
@@ -91,7 +112,7 @@ class InstanceForm(forms.Form):
     """
     def __init__(self, data):
         super().__init__()
-        self.fields['instanceName'] = forms.CharField(max_length=100)
+        self.fields['instanceName'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={"onkeyup":"nospaces(this)"}))
         self.fields['serverName'] = forms.CharField(max_length=100)
         self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
         self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
@@ -106,13 +127,12 @@ class InstanceForm(forms.Form):
 
 def index(request):
     cfg = json.load(open(os.path.join(settings.ACCSERVER,'cfg','configuration.json'), 'r'))
-    cfg['instanceName'] = 'test'
+    cfg['instanceName'] = r.get_random_word(hasDictionaryDef="true",minLength=5, maxLength=10)
 
     template = loader.get_template('instances/index.html')
     context = {
         'form': InstanceForm(cfg),
-        'running': executor_inst is not None and executor_inst.is_alive(),
-        'executor': executor_inst,
+        'executors': executors,
     }
     return HttpResponse(template.render(context, request))
 

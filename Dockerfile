@@ -12,16 +12,16 @@ RUN dpkg --add-architecture i386 && \
     apt-get clean  && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install django django-material
+RUN pip3 install django django-material random-word
 
-ADD server /server
 ADD . /accservermanager
 WORKDIR /accservermanager
 
 RUN useradd -ms /bin/bash someuser
-RUN chown -R someuser:someuser /accservermanager /server
+RUN chown -R someuser:someuser /accservermanager
 USER someuser
 
 EXPOSE 9231 9232 8000
+VOLUME /server
 
 CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]

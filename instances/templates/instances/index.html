@@ -34,7 +34,6 @@ button:hover {
 
 <div class="container">
     <div class="card">
-        {% if not running %}
         {% load material_form %}
         <h6 style="font-weight:bold">Instance config</h6>
         <form name="instance_form" action="start/" method="POST"
@@ -42,15 +41,30 @@ button:hover {
             {% form form=form %}{% endform %}
             <button type="submit">Start</button>
         </form>
-        {% else %}
-        <h6 style="font-weight:bold">Server is running</h6><br>
-            &nbsp;Name: {{executor.serverName}}<br>
-            &nbsp;Config: {{executor.config}}<br>
-            &nbsp;PID: {{executor.p.pid}}<br>
-        <form action="stop/" method="POST">{% csrf_token %}
-            <button type="submit">Stop</button>
-        </form>
-        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h6 style="font-weight:bold">Running instances</h6><br>
+        <table>
+            <tr><td>Instance Name</td><td>Server Name</td><td>Config</td><td>UDP</td><td>TCP</td><td>PID</td><td></td></tr>
+            {% for name,executor in executors.items %}
+            <tr>
+                <td style="">{{name}}</td>
+                <td style="">{{executor.serverName}}</td>
+                <td style="">{{executor.config}}</td>
+                <td style="">{{executor.udpPort}}</td>
+                <td style="">{{executor.tcpPort}}</td>
+                <td style="">{{executor.p.pid}}</td>
+                <td>
+                    <form style="margin: 0" action="/instances/{{name}}/stop" method="post">{% csrf_token %}
+                        <input type="submit" value="Stop" class="btn red">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 </div>
 {% endblock %}
