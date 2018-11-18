@@ -14,17 +14,6 @@
     padding: 20px 16px;
 }
 
-/* Style inputs */
-input, select {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
 /* Style the submit button */
 input[type=submit] {
   width: 100%;
@@ -64,8 +53,7 @@ input[type=submit]:hover {
     <div style="margin-left:210px;">
         <div class="card">
         <h6 style="font-weight:bold">{{request.path}}</h6>
-            <form action=""
-                  method="post">
+            <form action="" method="post">
 
                 {% csrf_token %}
                 <!--{{ frm }}-->
@@ -80,20 +68,61 @@ input[type=submit]:hover {
     {% load material_form %}
     <div style="margin-left:210px;">
         {% for frm in forms %}
-        <div class="card">
+        <div id="form{{forloop.counter0}}" class="card" style="display:none">
             <h6 style="font-weight:bold">{{request.path}}/{{forloop.counter0}}</h6>
-            <form action="{{request.path}}/{{forloop.counter0}}"
-                  method="post"
-                  style="">
+            <form action="" method="post">
 
                 {% csrf_token %}
                 <!--{{ frm }}-->
                 {% form form=frm %}{% endform %}
                 <input type="submit" value="Save">
+                <input type="hidden" name="_id" value="{{forloop.counter0}}">
             </form>
         </div>
         {% endfor %}
+
+        <input id="prevbutton" type="button" value="Previous" class="btn blue" />
+        <input id="nextbutton" type="button" value="Next" class="btn blue" />
+        <input id="removebutton" type="button" class="btn red" value="Remove" />
+        <input id="addbutton" type="button" value="Add" class="btn green" />
+
     </div>
+
+    <script>
+        var form_id = 0
+
+        function handleButtons(new_form_id) {
+            form_id = new_form_id
+            $("div[id^='form']").hide();
+            $("#form"+new_form_id).show();
+
+            if (new_form_id>0) $("#prevbutton").show();
+            else $("#prevbutton").hide();
+
+            if ($('#form1').length) $("#removebutton").show();
+            else $("#removebutton").hide();
+
+            if ($('#form'+(new_form_id+1)).length) {
+                $("#nextbutton").show();
+                $("#addbutton").hide();
+            } else {
+                $("#nextbutton").hide();
+                $("#addbutton").show();
+            }
+        }
+
+        $("#prevbutton").click(function (){handleButtons(form_id-1)})
+        $("#nextbutton").click(function (){handleButtons(form_id+1)})
+        $("#addbutton").click(function() {
+            window.location = '{{request.path}}'+'/add';
+        })
+        $("#removebutton").click(function() {
+            window.location = '{{request.path}}'+'/remove/'+form_id;
+        })
+
+        handleButtons(form_id)
+    </script>
+
     {% endif %}
     {% endif %}
 

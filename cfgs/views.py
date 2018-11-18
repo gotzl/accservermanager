@@ -46,7 +46,21 @@ def formForKey(request, config, *args):
     path = config
     if len(args)>0:
         for arg in args.split('/'):
-            if isinstance(obj, list): arg = int(arg)
+            if isinstance(obj, list):
+                # handle add/remove requests for list objects
+                if arg in ['add','remove']:
+                    # copy the last object and add to the list
+                    if arg=='add': obj.append(obj[-1])
+                    # remove selected element
+                    elif arg=='remove':
+                        obj.remove(obj[int(args.split('/')[-1])])
+
+                    json.dump(cfg, open(os.path.join(PATH, config+'.json'),'w'))
+                    return HttpResponseRedirect('/cfgs/'+path)
+
+                # select specific element of the list object
+                arg = int(arg)
+
             obj = obj[arg]
             path = '%s/%s'%(path,arg)
 
@@ -56,8 +70,9 @@ def formForKey(request, config, *args):
             return HttpResponseRedirect('/cfgs/%s/%s'%(request.POST['cfgs'],args))
 
         # the form was submitted, update the values in the json obj and dump it to file
+        if isinstance(obj, list): obj = obj[int(request.POST['_id'])]
         for key, value in request.POST.items():
-            if key in ['csrfmiddlewaretoken', 'selectedCfg']: continue
+            if key in ['csrfmiddlewaretoken', '_id']: continue
 
             if isinstance(obj[key], list): continue
             if isinstance(obj[key], int): value = int(value)

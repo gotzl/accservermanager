@@ -2,17 +2,6 @@
 {% block content %}
 
 <style>
-/* Style inputs */
-input, select {
-  width: 100%;
-  padding: 12px 20px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
 /* Style the buttons */
 button {
   width: 100%;
@@ -29,12 +18,6 @@ button {
 button:hover {
   background-color: #45a049;
 }
-
-<!--div.container {-->
-    <!--border-radius: 5px;-->
-    <!--padding: 20px;-->
-    <!--max-width: 300px;-->
-<!--}-->
 
 .card {
     /* Add shadows to create the "card" effect */
@@ -54,7 +37,8 @@ button:hover {
         {% if not running %}
         {% load material_form %}
         <h6 style="font-weight:bold">Instance config</h6>
-        <form name="instance_form" action="start/" method="POST" onsubmit="return (document.forms['instance_form']['cfg'].value.length>0)">{% csrf_token %}
+        <form name="instance_form" action="start/" method="POST"
+              onsubmit="return (document.forms['instance_form']['cfg'].value.length>0)">{% csrf_token %}
             {% form form=form %}{% endform %}
             <button type="submit">Start</button>
         </form>
