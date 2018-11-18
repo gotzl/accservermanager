@@ -60,6 +60,10 @@ def formForKey(request, config, *args):
 
                 # select specific element of the list object
                 arg = int(arg)
+                # if the element is not in the list, redirect to the current path
+                # (happens eg when jumping to another config which doesn't have the same
+                # number of events)
+                if arg>=len(obj): return HttpResponseRedirect('/cfgs/'+path)
 
             obj = obj[arg]
             path = '%s/%s'%(path,arg)

@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'material',
+    'material.frontend',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -121,6 +122,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
 LOGIN_REDIRECT_URL = '/cfgs'
 LOGOUT_REDIRECT_URL = '/cfgs'
 
