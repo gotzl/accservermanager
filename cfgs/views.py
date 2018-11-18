@@ -29,10 +29,6 @@ def confDelete(request):
 
 def confSelect(request):
     """ Show available configs and form to create a new config """
-    if request.method == 'POST':
-        print(request.path)
-        return HttpResponseRedirect('/cfgs/%s/'%request.POST['cfgs'])
-
     context = {
         'form' : CfgCreate(),
         'cfgs' : getCfgs(),
@@ -54,8 +50,12 @@ def formForKey(request, config, *args):
             obj = obj[arg]
             path = '%s/%s'%(path,arg)
 
-    # the form was submitted, update the values in the json obj and dump it to file
     if request.method == 'POST':
+        # another config was selected
+        if 'cfgs' in request.POST.keys():
+            return HttpResponseRedirect('/cfgs/%s/%s'%(request.POST['cfgs'],args))
+
+        # the form was submitted, update the values in the json obj and dump it to file
         for key, value in request.POST.items():
             if key in ['csrfmiddlewaretoken', 'selectedCfg']: continue
 
