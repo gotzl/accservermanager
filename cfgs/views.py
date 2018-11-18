@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -8,6 +9,7 @@ from cfgs.confEdit import createLabel, createForm
 from cfgs.confSelect import CfgsForm, getCfgs, CfgCreate
 
 
+@login_required
 def confCreate(request):
     """ Create a new config based on the backuped origin custom.json """
     if request.method == 'POST':
@@ -17,6 +19,7 @@ def confCreate(request):
         return HttpResponseRedirect('..')
 
 
+@login_required
 def confDelete(request):
     """ Delete a config file """
     if request.method == 'POST':

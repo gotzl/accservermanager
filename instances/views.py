@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django import forms
@@ -62,6 +63,7 @@ class Executor(Thread):
 executors = {}
 
 
+@login_required
 def stderr(request, name):
     text = ''
     if name in executors:
@@ -69,6 +71,7 @@ def stderr(request, name):
     return HttpResponse(text)
 
 
+@login_required
 def stdout(request, name):
     text = ''
     if name in executors:
@@ -77,6 +80,7 @@ def stdout(request, name):
     return HttpResponse(text)
 
 
+@login_required
 def delete(request, name):
     if name in executors:
         shutil.rmtree(executors[name].instanceDir)
@@ -85,10 +89,12 @@ def delete(request, name):
     return HttpResponseRedirect("../../")
 
 
+@login_required
 def start(request):
     return startstop(request, request.POST['instanceName'])
 
 
+@login_required
 def startstop(request, name, start=True):
     """ handle start/stop request from client """
     if request.method == 'POST':
@@ -109,8 +115,8 @@ def startstop(request, name, start=True):
                 shutil.copytree(settings.ACCSERVER, inst_dir)
                 # the target config
                 cfg = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
-                # copy it to the config read by the accServer.exe (i.e. 'custom.json' in its dir)
-                shutil.copy(cfg, os.path.join(inst_dir, 'custom.json'))
+                # copy it to the config read by the accServer.exe
+                shutil.copy(cfg, os.path.join(inst_dir, 'cfg', 'custom.json'))
 
                 # update the configuration.json
                 cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
