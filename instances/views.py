@@ -9,7 +9,7 @@ import subprocess, time, datetime
 from multiprocessing import Value
 from threading import Thread
 
-import os, shutil, json
+import os, shutil, json, resource
 
 from accservermanager import settings
 from cfgs.confEdit import createLabel
@@ -24,42 +24,65 @@ class Executor(Thread):
         super().__init__()
         for key in serverCfg: setattr(self,key,serverCfg[key])
         self.p = None
+        self.stderr = None
+        self.retval = None
         self.instanceDir = instanceDir
         self.config = config
         self.stop = Value('i', 0)
 
+
+
     def run(self):
         # fire up the server, store stderr to the log/ dir
         _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
-        self.p = subprocess.Popen('cd "%s" && %s'%(self.instanceDir, settings.ACCEXEC),
-                             shell=True,
-                             universal_newlines=True,
-                             stdout=subprocess.PIPE,
-                             # stdout=open('/dev/null', 'w'),
-                             # stdout=open('%s/log/stdout-%s.log'%(inst_dir,_tm),'w'),
-                             stderr=open('%s/log/stderr-%s.log'%(self.instanceDir, _tm),'w'))
+        self.stderr = '%s/log/stderr-%s.log'%(self.instanceDir, _tm)
+        self.p = subprocess.Popen(settings.ACCEXEC,
+                                  # set working dir
+                                  cwd=self.instanceDir,
+                                  # limit ram to 1GB soft, 2GB hard
+                                  preexec_fn=lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31)),
+                                  shell=True,
+                                  universal_newlines=True,
+                                  stdout=subprocess.PIPE,
+                                  # stdout=open('/dev/null', 'w'),
+                                  #  stdout=open('%s/log/stdout-%s.log'%(inst_dir,_tm),'w'),
+                                  stderr=open(self.stderr,'w'))
 
         # wait for the stop signal or for the server to die on its own
-        retval = None
-        while retval is None:
+        self.retval = None
+        while self.retval is None:
             if self.stop.value == 1: self.p.kill()
             time.sleep(1)
-            retval = self.p.poll()
+            self.retval = self.p.poll()
 
-        shutil.rmtree(self.instanceDir)
-        print("Retval:",retval)
+        print("Retval:",self.retval)
 
 
 # the server process execution threads
 executors = {}
 
 
-def stderr(name):
-    return
+def stderr(request, name):
+    text = ''
+    if name in executors:
+        text = subprocess.check_output(['tail', executors[name].stderr])
+    return HttpResponse(text)
 
 
-def stdout(name):
-    return
+def stdout(request, name):
+    text = ''
+    if name in executors:
+        serverout = os.path.join(executors[name].instanceDir, 'log', 'server.log')
+        text = subprocess.check_output(['tail', serverout])
+    return HttpResponse(text)
+
+
+def delete(request, name):
+    if name in executors:
+        shutil.rmtree(executors[name].instanceDir)
+        executors.pop(name)
+
+    return HttpResponseRedirect("../../")
 
 
 def start(request):
@@ -98,12 +121,19 @@ def startstop(request, name, start=True):
                 executors[name] = Executor(inst_dir, cfg, request.POST['cfg'])
                 executors[name].start()
 
-        else:
-            if name in executors:
-                executors[name].stop.value = 1
-                executors.pop(name)
+            return HttpResponseRedirect("../")
 
-    return HttpResponseRedirect("../")
+        else:
+            if name in executors and executors[name].stop.value != 1:
+                executors[name].stop.value = 1
+
+                i = 0
+                # wait max 2 seconds for the instance to stop
+                while executors[name].is_alive() and i<10:
+                    time.sleep(.2)
+                    i+=1
+
+            return HttpResponseRedirect("../../")
 
 
 class InstanceForm(forms.Form):

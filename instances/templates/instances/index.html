@@ -46,7 +46,7 @@ button:hover {
 
 <div class="container">
     <div class="card">
-        <h6 style="font-weight:bold">Running instances</h6><br>
+        <h6 style="font-weight:bold">Server instances</h6><br>
         <table>
             <tr><td>Instance Name</td><td>Server Name</td><td>Config</td><td>UDP</td><td>TCP</td><td>PID</td><td></td></tr>
             {% for name,executor in executors.items %}
@@ -56,12 +56,21 @@ button:hover {
                 <td style="">{{executor.config}}</td>
                 <td style="">{{executor.udpPort}}</td>
                 <td style="">{{executor.tcpPort}}</td>
+                {% if executor.is_alive %}
                 <td style="">{{executor.p.pid}}</td>
                 <td>
-                    <form style="margin: 0" action="/instances/{{name}}/stop" method="post">{% csrf_token %}
+                    <form style="margin: 0" action="/instances/{{name}}/stop/" method="post">{% csrf_token %}
                         <input type="submit" value="Stop" class="btn red">
                     </form>
                 </td>
+                {% else %}
+                <td style="">exited with {{executor.retval}}</td>
+                <td>
+                    <form style="margin: 0" action="/instances/{{name}}/delete/" method="post">{% csrf_token %}
+                        <input type="submit" value="Delete" class="btn red">
+                    </form>
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </table>
