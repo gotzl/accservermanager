@@ -127,6 +127,21 @@ STATIC_URL = '/static/'
 LOGIN_REDIRECT_URL = '/cfgs'
 LOGOUT_REDIRECT_URL = '/cfgs'
 
+
+
+# list of available tracks
+TRACKS = (
+    ('misano', 'Misano'),
+    ('paul_ricard', 'Paul Ricard'),
+    ('nurburgring', 'Nuerburgring GP'),
+)
+
+# THINGS TO CONFIGURE
+# the ACC server exe, in case of linux start it with wine
 ACCEXEC = 'WINEDEBUG=-all wine accServer.exe'
 ACCSERVER = '/server'
-# ACCSERVER = '/tmp/server'
+
+# folder where the created configs are stored, will be created if doesn't exist
+CONFIGS = '/tmp/configs'
+# folder where the running instances are placed, will be created if doesn't exist
+INSTANCES = '/tmp/instances'

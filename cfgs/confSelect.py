@@ -8,7 +8,7 @@ from accservermanager import settings
 def getCfgs():
     """ Check the cfg/custom folder for available configs, return list of file names w/o suffix """
     return list(map(lambda x: os.path.splitext(ntpath.basename(x))[0],
-                    glob.glob('%s/*.json'%(os.path.join(settings.ACCSERVER,'cfg','custom')))))
+                    glob.glob('%s/*.json'%(settings.CONFIGS))))
 
 
 class CustomSelect(forms.Select):

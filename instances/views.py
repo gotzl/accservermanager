@@ -6,7 +6,7 @@ import subprocess, time, datetime
 from multiprocessing import Value
 from threading import Thread
 
-import os, json
+import os, shutil, json
 
 from accservermanager import settings
 from cfgs.confEdit import createLabel
@@ -17,31 +17,23 @@ class Executor(Thread):
     """
     Thread for running the server process
     """
-    def __init__(self, serverName, config):
+    def __init__(self, instanceDir, serverName, config):
         super().__init__()
         self.p = None
+        self.instanceDir = instanceDir
         self.serverName = serverName
         self.config = config
 
     def run(self):
-        cfg_dir = os.path.join(settings.ACCSERVER,'cfg')
-        # the target config
-        cfg = os.path.join(cfg_dir, 'custom', self.config+'.json')
-        # the config read by the accServer.exe (i.e. 'custom.json' in its dir)
-        cfg_sym = os.path.join(cfg_dir, 'custom.json')
-        # remove old symlink and create the new one
-        if os.path.exists(cfg_sym) or os.path.islink(cfg_sym): os.remove(cfg_sym)
-        os.symlink(cfg, cfg_sym)
-
         # fire up the server, store stderr to the log/ dir
         _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
-        self.p = subprocess.Popen('cd "%s" && %s'%(settings.ACCSERVER,settings.ACCEXEC),
+        self.p = subprocess.Popen('cd "%s" && %s'%(self.instanceDir, settings.ACCEXEC),
                              shell=True,
                              universal_newlines=True,
                              stdout=subprocess.PIPE,
                              # stdout=open('/dev/null', 'w'),
-                             # stdout=open('%s/log/stdout-%s.log'%(settings.ACCSERVER,_tm),'w'),
-                             stderr=open('%s/log/stderr-%s.log'%(settings.ACCSERVER,_tm),'w'))
+                             # stdout=open('%s/log/stdout-%s.log'%(inst_dir,_tm),'w'),
+                             stderr=open('%s/log/stderr-%s.log'%(self.instanceDir, _tm),'w'))
 
         # wait for the stop signal or for the server to die on its own
         retval = None
@@ -50,6 +42,7 @@ class Executor(Thread):
             time.sleep(1)
             retval = self.p.poll()
 
+        shutil.rmtree(self.instanceDir)
         print("Retval:",retval)
 
 
@@ -66,13 +59,22 @@ def startstop(request, start=True):
         global executor_inst
         if start:
             if executor_inst is None or not executor_inst.is_alive():
-                cfg = json.load(open(PATH,'r'))
+                # create instance environment
+                inst_dir = os.path.join(settings.INSTANCES, request.POST['instanceName'])
+                shutil.copytree(settings.ACCSERVER, inst_dir)
+                # the target config
+                cfg = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
+                # copy it to the config read by the accServer.exe (i.e. 'custom.json' in its dir)
+                shutil.copy(cfg, os.path.join(inst_dir, 'custom.json'))
+
+                # update the configuration.json
+                cfg = json.load(open(os.path.join(settings.ACCSERVER,'cfg','configuration.json'), 'r'))
                 for key in ['serverName','udpPort','tcpPort']:
                     cfg[key] = request.POST[key]
-                json.dump(cfg, open(PATH,'w'))
+                json.dump(cfg, open(os.path.join(inst_dir, 'cfg', 'configuration.json'), 'w'))
 
                 stop.value = 0
-                executor_inst = Executor(cfg['serverName'], request.POST['cfg'])
+                executor_inst = Executor(inst_dir, cfg['serverName'], request.POST['cfg'])
                 executor_inst.start()
 
         else:
@@ -89,10 +91,11 @@ class InstanceForm(forms.Form):
     """
     def __init__(self, data):
         super().__init__()
+        self.fields['instanceName'] = forms.CharField(max_length=100)
         self.fields['serverName'] = forms.CharField(max_length=100)
         self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
         self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
-        for key in ['serverName','udpPort','tcpPort']:
+        for key in ['serverName','udpPort','tcpPort', 'instanceName']:
             self.fields[key].label = createLabel(key)
             self.fields[key].required = True
             self.fields[key].initial = data[key]
@@ -101,11 +104,9 @@ class InstanceForm(forms.Form):
         self.fields['cfg'].label = 'Config'
 
 
-PATH = '%s/cfg/configuration.json'%settings.ACCSERVER
-
-
 def index(request):
-    cfg = json.load(open(PATH,'r'))
+    cfg = json.load(open(os.path.join(settings.ACCSERVER,'cfg','configuration.json'), 'r'))
+    cfg['instanceName'] = 'test'
 
     template = loader.get_template('instances/index.html')
     context = {

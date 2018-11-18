@@ -7,14 +7,12 @@ from accservermanager import settings
 from cfgs.confEdit import createLabel, createForm
 from cfgs.confSelect import CfgsForm, getCfgs, CfgCreate
 
-PATH = os.path.join(settings.ACCSERVER,'cfg','custom')
-
 
 def confCreate(request):
     """ Create a new config based on the backuped origin custom.json """
     if request.method == 'POST':
-        _base = os.path.join(PATH,'../','custom.json.bkup')
-        _f = os.path.join(PATH, request.POST['name']+'.json')
+        _base = os.path.join(settings.ACCSERVER,'cfg','custom.json')
+        _f = os.path.join(settings.CONFIGS, request.POST['name']+'.json')
         if not os.path.exists(_f):  shutil.copy(_base, _f)
         return HttpResponseRedirect('..')
 
@@ -22,7 +20,7 @@ def confCreate(request):
 def confDelete(request):
     """ Delete a config file """
     if request.method == 'POST':
-        _f = os.path.join(PATH, request.POST['cfg']+'.json')
+        _f = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
         if os.path.exists(_f):  os.remove(_f)
         return HttpResponseRedirect('..')
 
@@ -38,7 +36,8 @@ def confSelect(request):
 
 def formForKey(request, config, *args):
     """ Read the select config file and display the selected portion of the json object """
-    cfg = json.load(open(os.path.join(PATH, config+'.json'),'r'))
+    cfg_path = os.path.join(settings.CONFIGS, config+'.json')
+    cfg = json.load(open(cfg_path, 'r'))
     args = args[0]
 
     # drill down into the json object to the selected part
@@ -55,7 +54,7 @@ def formForKey(request, config, *args):
                     elif arg=='remove':
                         obj.remove(obj[int(args.split('/')[-1])])
 
-                    json.dump(cfg, open(os.path.join(PATH, config+'.json'),'w'))
+                    json.dump(cfg, open(cfg_path, 'w'))
                     return HttpResponseRedirect('/cfgs/'+path)
 
                 # select specific element of the list object
@@ -85,7 +84,7 @@ def formForKey(request, config, *args):
                 print('Unknown type',type(obj[key]), type(value))
             obj[key] = value
 
-        json.dump(cfg, open(os.path.join(PATH, config+'.json'),'w'))
+        json.dump(cfg, open(cfg_path, 'w'))
         return HttpResponseRedirect(request.path)
 
     _form, _forms = None, None

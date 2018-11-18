@@ -3,12 +3,7 @@ from django.utils.safestring import mark_safe
 
 import re
 
-# list of available tracks
-TRACKS = (
-    ('misano', 'Misano'),
-    ('paul_ricard', 'Paul Ricard'),
-    ('nurburgring', 'Nuerburgring GP'),
-)
+from accservermanager.settings import TRACKS
 
 
 def fieldForKey(key, value):

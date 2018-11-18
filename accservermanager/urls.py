@@ -29,13 +29,9 @@ urlpatterns = [
 def on_startup():
     import os, shutil
     from accservermanager import settings
-    directory = os.path.join(settings.ACCSERVER,'cfg','custom')
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-        cfg = os.path.join(settings.ACCSERVER,'cfg','custom.json'), \
-              os.path.join(directory,'custom.json')
-        shutil.copy(cfg[0], cfg[0]+'.bkup')
-        os.rename(cfg[0], cfg[1])
-        os.symlink(cfg[1], cfg[0])
+    if not os.path.exists(settings.CONFIGS): os.makedirs(settings.CONFIGS)
+    if not os.path.exists(settings.INSTANCES): os.makedirs(settings.INSTANCES)
+    shutil.copy(os.path.join(settings.ACCSERVER,'cfg','custom.json'),
+                os.path.join(settings.CONFIGS,'custom.json'))
 
 on_startup()
