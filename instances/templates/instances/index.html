@@ -54,7 +54,7 @@ button:hover {
         {% if not running %}
         {% load material_form %}
         <h6 style="font-weight:bold">Instance config</h6>
-        <form action="start/" method="POST">{% csrf_token %}
+        <form name="instance_form" action="start/" method="POST" onsubmit="return (document.forms['instance_form']['cfg'].value.length>0)">{% csrf_token %}
             {% form form=form %}{% endform %}
             <button type="submit">Start</button>
         </form>

@@ -9,6 +9,7 @@ from threading import Thread
 import os, json
 
 from accservermanager import settings
+from cfgs.confEdit import createLabel
 from cfgs.confSelect import getCfgsField
 
 
@@ -25,11 +26,11 @@ class Executor(Thread):
     def run(self):
         cfg_dir = os.path.join(settings.ACCSERVER,'cfg')
         # the target config
-        cfg = os.path.join(cfg_dir, 'custom', self.config)
+        cfg = os.path.join(cfg_dir, 'custom', self.config+'.json')
         # the config read by the accServer.exe (i.e. 'custom.json' in its dir)
         cfg_sym = os.path.join(cfg_dir, 'custom.json')
         # remove old symlink and create the new one
-        if os.path.exists(cfg_sym): os.remove(cfg_sym)
+        if os.path.exists(cfg_sym) or os.path.islink(cfg_sym): os.remove(cfg_sym)
         os.symlink(cfg, cfg_sym)
 
         # fire up the server, store stderr to the log/ dir
@@ -88,10 +89,11 @@ class InstanceForm(forms.Form):
     """
     def __init__(self, data):
         super().__init__()
-        self.fields['serverName'] = forms.CharField(label='Server name', max_length=100)
+        self.fields['serverName'] = forms.CharField(max_length=100)
         self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
         self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
         for key in ['serverName','udpPort','tcpPort']:
+            self.fields[key].label = createLabel(key)
             self.fields[key].required = True
             self.fields[key].initial = data[key]
         self.fields['cfg'] = getCfgsField()

@@ -26,7 +26,7 @@ tr:hover {
         <form action="/cfgs/create/" method="post">
             {% csrf_token %}
             {% form form=form %}{% endform %}
-            <input type="submit" value="Create">
+            <input type="submit" value="Create" class="btn green">
         </form>
     </div>
 </div>
@@ -39,11 +39,11 @@ tr:hover {
             {% for cfg in cfgs %}
             <tr>
                 <td style="width: 200px">{{cfg}}</td>
-                <td><a href="/cfgs/{{cfg}}">Edit</a></td>
+                <td><a href="/cfgs/{{cfg}}" class="btn blue">Edit</a></td>
                 <td>
-                    <form action="/cfgs/delete/" method="post">{% csrf_token %}
+                    <form style="margin: 0" action="/cfgs/delete/" method="post">{% csrf_token %}
                         <input hidden name="cfg" value="{{cfg}}">
-                        <input type="submit" value="Delete">
+                        <input type="submit" value="Delete" class="btn red">
                     </form>
                 </td>
             </tr>

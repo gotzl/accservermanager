@@ -31,12 +31,11 @@ def confSelect(request):
     """ Show available configs and form to create a new config """
     if request.method == 'POST':
         print(request.path)
-        cfg = os.path.splitext(request.POST['cfgs'])[0]
-        return HttpResponseRedirect('/cfgs/%s/'%cfg)
+        return HttpResponseRedirect('/cfgs/%s/'%request.POST['cfgs'])
 
     context = {
         'form' : CfgCreate(),
-        'cfgs' : [os.path.splitext(i)[0] for i in getCfgs()],
+        'cfgs' : getCfgs(),
     }
     return render(request, 'cfgs/confSelect.html', context)
 
@@ -87,7 +86,7 @@ def formForKey(request, config, *args):
 
     context = {
         'keys': [(k, createLabel(k)) for k in keys],
-        'cfgs': CfgsForm(config+'.json'),
+        'cfgs': CfgsForm(config),
         'cfg': config,
         'forms': _forms,
         'form': _form
