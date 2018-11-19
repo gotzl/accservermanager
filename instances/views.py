@@ -40,7 +40,7 @@ class Executor(Thread):
         # in linux, limit ram to 1GB soft, 2GB hard
         preexec_fn = None
         if resource:
-            preexec_fn = lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31)),
+            preexec_fn = lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31))
 
         # fire up the server, store stderr to the log/ dir
         _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
