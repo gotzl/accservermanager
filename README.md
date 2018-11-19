@@ -1,5 +1,5 @@
 Small web project to manage Assetto Corsa Competizione servers, build on Django.
-Allows to manage multiple configs and multiple server instances.
+Allows to manage multiple configs and multiple server instances. Works in Linux and in Windows.
 
 
 ## Development
@@ -12,15 +12,14 @@ Configure the path to your ACC server files at the bottom of accservermanager/se
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
-```
-
-Only tested on linux so far. It's my first Django app, so don't expect nice code ;) 
-
+``` 
 
 ## Dependencies
 ```bash
 pip install django django-material random-word
 ```
+Windows users might want to follow the official Django install instructions.
+
 
 ## Deployment
 Follow the development instructions to deploy the app, should be good enough for our purposes...

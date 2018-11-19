@@ -36,7 +36,7 @@ button:hover {
     <div class="card">
         {% load material_form %}
         <h6 style="font-weight:bold">Instance config</h6>
-        <form name="instance_form" action="start/" method="POST"
+        <form name="instance_form" action="start" method="POST"
               onsubmit="return (document.forms['instance_form']['cfg'].value.length>0)">{% csrf_token %}
             {% form form=form %}{% endform %}
             <button type="submit">Start</button>
@@ -59,14 +59,14 @@ button:hover {
                 {% if executor.is_alive %}
                 <td style="">{{executor.p.pid}}</td>
                 <td>
-                    <form style="margin: 0" action="/instances/{{name}}/stop/" method="post">{% csrf_token %}
+                    <form style="margin: 0" action="/instances/{{name}}/stop" method="post">{% csrf_token %}
                         <input type="submit" value="Stop" class="btn red">
                     </form>
                 </td>
                 {% else %}
                 <td style="">exited with {{executor.retval}}</td>
                 <td>
-                    <form style="margin: 0" action="/instances/{{name}}/delete/" method="post">{% csrf_token %}
+                    <form style="margin: 0" action="/instances/{{name}}/delete" method="post">{% csrf_token %}
                         <input type="submit" value="Delete" class="btn red">
                     </form>
                 </td>

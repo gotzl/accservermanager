@@ -66,14 +66,14 @@ button:hover {
     });
 
     (function stdout(){
-        $.post('{{request.path}}stdout/', function(data) {
+        $.post('{{request.path}}stdout', function(data) {
             $('textarea#stdout').val(data);
             setTimeout(stdout,2000);
         });
     })();
 
     (function stderr(){
-        $.post('{{request.path}}stderr/', function(data) {
+        $.post('{{request.path}}stderr', function(data) {
             $('textarea#stderr').val(data);
             setTimeout(stderr,2000);
         });

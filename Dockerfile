@@ -1,6 +1,5 @@
 FROM ubuntu:latest
 
-ENV WINEARCH=win64
 RUN dpkg --add-architecture i386 && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y xvfb cabextract wget gnupg software-properties-common python3-pip && \
@@ -17,9 +16,13 @@ RUN pip3 install django django-material random-word
 ADD . /accservermanager
 WORKDIR /accservermanager
 
-RUN useradd -ms /bin/bash someuser
-RUN chown -R someuser:someuser /accservermanager
+RUN useradd -ms /bin/bash someuser && \
+        chown -R someuser:someuser /accservermanager
 USER someuser
+
+ENV WINEARCH=win64 \
+    WINEDEBUG=-all
+RUN wineboot --init
 
 EXPOSE 9231 9232 8000
 VOLUME /server

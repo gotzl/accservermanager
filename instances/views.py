@@ -10,7 +10,9 @@ import subprocess, time, datetime
 from multiprocessing import Value
 from threading import Thread
 
-import os, shutil, json, resource
+import os, shutil, json
+try: import resource
+except: resource = None
 
 from accservermanager import settings
 from cfgs.confEdit import createLabel
@@ -35,15 +37,20 @@ class Executor(Thread):
 
 
     def run(self):
+        # in linux, limit ram to 1GB soft, 2GB hard
+        preexec_fn = None
+        if resource:
+            preexec_fn = lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31)),
+
         # fire up the server, store stderr to the log/ dir
-        _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
-        self.stdout = '%s/log/stdout-%s.log'%(self.instanceDir, _tm)
-        self.stderr = '%s/log/stderr-%s.log'%(self.instanceDir, _tm)
+        _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+        self.stdout = os.path.join(self.instanceDir, 'log', 'stdout-%s.log'%(_tm))
+        self.stderr = os.path.join(self.instanceDir, 'log', 'stderr-%s.log'%(_tm))
         self.p = subprocess.Popen(settings.ACCEXEC,
                                   # set working dir
                                   cwd=self.instanceDir,
                                   # limit ram to 1GB soft, 2GB hard
-                                  preexec_fn=lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31)),
+                                  preexec_fn=preexec_fn,
                                   # shell=True,
                                   universal_newlines=True,
                                   stdout=open(self.stdout,'w'),
@@ -65,6 +72,7 @@ executors = {}
 
 @login_required
 def instance(request, name):
+    if name not in executors: return HttpResponseRedirect('/instances')
     template = loader.get_template('instances/instance.html')
     return HttpResponse(template.render({}, request))
 
@@ -92,60 +100,57 @@ def delete(request, name):
         shutil.rmtree(executors[name].instanceDir)
         executors.pop(name)
 
-    return HttpResponseRedirect("../../")
+    return HttpResponseRedirect('/instances')
+
+
+@login_required
+def stop(request, name):
+    """ handle stop request from client """
+    global executors
+    if name in executors and executors[name].stop.value != 1:
+        executors[name].stop.value = 1
+
+        i = 0
+        # wait max 2 seconds for the instance to stop
+        while executors[name].is_alive() and i<10:
+            time.sleep(.2)
+            i+=1
+
+    return HttpResponseRedirect('/instances')
 
 
 @login_required
 def start(request):
-    return startstop(request, request.POST['instanceName'])
+    """ handle start request from client """
+    name = request.POST['instanceName']
+    if name not in executors:
+        # create instance environment
+        inst_dir = os.path.join(settings.INSTANCES, name)
 
-
-@login_required
-def startstop(request, name, start=True):
-    """ handle start/stop request from client """
-    if request.method == 'POST':
-        global executors
-        if start:
-            if name not in executors:
-                # create instance environment
-                inst_dir = os.path.join(settings.INSTANCES, name)
-
-                # return if dir already exist or ports are already in use or ports are equal
-                if os.path.isdir(inst_dir) or \
-                        request.POST['udpPort'] == request.POST['tcpPort'] or \
-                        len(list(filter(lambda x: request.POST['udpPort'] in [x.udpPort, x.tcpPort] or
-                                                  request.POST['tcpPort'] in [x.udpPort, x.tcpPort],
-                                        executors.values()))) > 0:
-                    return HttpResponseRedirect("../")
-
-                shutil.copytree(settings.ACCSERVER, inst_dir)
-                # the target config
-                cfg = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
-                # copy it to the config read by the accServer.exe
-                shutil.copy(cfg, os.path.join(inst_dir, 'cfg', 'custom.json'))
-
-                # update the configuration.json
-                cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
-                for key in ['serverName','udpPort','tcpPort']:
-                    cfg[key] = request.POST[key]
-                json.dump(cfg, open(os.path.join(inst_dir, 'cfg', 'configuration.json'), 'w'))
-
-                executors[name] = Executor(inst_dir, cfg, request.POST['cfg'])
-                executors[name].start()
-
+        # return if dir already exist or ports are already in use or ports are equal
+        if os.path.isdir(inst_dir) or \
+                request.POST['udpPort'] == request.POST['tcpPort'] or \
+                len(list(filter(lambda x: request.POST['udpPort'] in [x.udpPort, x.tcpPort] or
+                                          request.POST['tcpPort'] in [x.udpPort, x.tcpPort],
+                                executors.values()))) > 0:
             return HttpResponseRedirect("../")
 
-        else:
-            if name in executors and executors[name].stop.value != 1:
-                executors[name].stop.value = 1
+        shutil.copytree(settings.ACCSERVER, inst_dir)
+        # the target config
+        cfg = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
+        # copy it to the config read by the accServer.exe
+        shutil.copy(cfg, os.path.join(inst_dir, 'cfg', 'custom.json'))
 
-                i = 0
-                # wait max 2 seconds for the instance to stop
-                while executors[name].is_alive() and i<10:
-                    time.sleep(.2)
-                    i+=1
+        # update the configuration.json
+        cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
+        for key in ['serverName','udpPort','tcpPort']:
+            cfg[key] = request.POST[key]
+        json.dump(cfg, open(os.path.join(inst_dir, 'cfg', 'configuration.json'), 'w'))
 
-            return HttpResponseRedirect("../../")
+        executors[name] = Executor(inst_dir, cfg, request.POST['cfg'])
+        executors[name].start()
+
+    return HttpResponseRedirect('/instances')
 
 
 class InstanceForm(forms.Form):

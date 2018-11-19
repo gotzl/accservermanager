@@ -136,12 +136,12 @@ TRACKS = (
     ('nurburgring', 'Nuerburgring GP'),
 )
 
+
 # THINGS TO CONFIGURE
 # the ACC server exe, in case of linux start it with wine
-ACCEXEC = ['wine','accServer.exe']
-ACCSERVER = '/server'
+ACCEXEC = ['wine','accServer.exe']      # windows: ['cmd','accServer.exe']
+ACCSERVER = '/server'                   # windows: ['C:\\PATH\\TO\\ACC\\server']
 
-# folder where the created configs are stored, will be created if doesn't exist
-CONFIGS = '/tmp/configs'
-# folder where the running instances are placed, will be created if doesn't exist
-INSTANCES = '/tmp/instances'
+# folders where the created configs and instances are stored, will be created if doesn't exist
+CONFIGS = '/tmp/configs'                # windows: ['C:\\Users\\someuser\\configs']
+INSTANCES = '/tmp/instances'            # windows: ['C:\\Users\\someuser\\instances']

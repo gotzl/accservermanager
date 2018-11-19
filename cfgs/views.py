@@ -12,20 +12,18 @@ from cfgs.confSelect import CfgsForm, getCfgs, CfgCreate
 @login_required
 def confCreate(request):
     """ Create a new config based on the backuped origin custom.json """
-    if request.method == 'POST':
-        _base = os.path.join(settings.ACCSERVER,'cfg','custom.json')
-        _f = os.path.join(settings.CONFIGS, request.POST['name']+'.json')
-        if not os.path.exists(_f):  shutil.copy(_base, _f)
-        return HttpResponseRedirect('..')
+    _base = os.path.join(settings.ACCSERVER,'cfg','custom.json')
+    _f = os.path.join(settings.CONFIGS, request.POST['name']+'.json')
+    if not os.path.exists(_f):  shutil.copy(_base, _f)
+    return HttpResponseRedirect('/cfgs')
 
 
 @login_required
 def confDelete(request):
     """ Delete a config file """
-    if request.method == 'POST':
-        _f = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
-        if os.path.exists(_f):  os.remove(_f)
-        return HttpResponseRedirect('..')
+    _f = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
+    if os.path.exists(_f):  os.remove(_f)
+    return HttpResponseRedirect('/cfgs')
 
 
 def confSelect(request):
