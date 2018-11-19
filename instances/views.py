@@ -25,6 +25,7 @@ class Executor(Thread):
         super().__init__()
         for key in serverCfg: setattr(self,key,serverCfg[key])
         self.p = None
+        self.stdout = None
         self.stderr = None
         self.retval = None
         self.instanceDir = instanceDir
@@ -36,6 +37,7 @@ class Executor(Thread):
     def run(self):
         # fire up the server, store stderr to the log/ dir
         _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+        self.stdout = '%s/log/stdout-%s.log'%(self.instanceDir, _tm)
         self.stderr = '%s/log/stderr-%s.log'%(self.instanceDir, _tm)
         self.p = subprocess.Popen(settings.ACCEXEC,
                                   # set working dir
@@ -44,9 +46,7 @@ class Executor(Thread):
                                   preexec_fn=lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31)),
                                   shell=True,
                                   universal_newlines=True,
-                                  stdout=subprocess.PIPE,
-                                  # stdout=open('/dev/null', 'w'),
-                                  #  stdout=open('%s/log/stdout-%s.log'%(inst_dir,_tm),'w'),
+                                  stdout=open(self.stdout,'w'),
                                   stderr=open(self.stderr,'w'))
 
         # wait for the stop signal or for the server to die on its own
@@ -64,19 +64,25 @@ executors = {}
 
 
 @login_required
-def stderr(request, name):
-    text = ''
-    if name in executors:
-        text = subprocess.check_output(['tail', executors[name].stderr])
-    return HttpResponse(text)
+def instance(request, name):
+    template = loader.get_template('instances/instance.html')
+    return HttpResponse(template.render({}, request))
 
 
 @login_required
 def stdout(request, name):
+    return log(name,executors[name].stdout)
+
+
+@login_required
+def stderr(request, name):
+    return log(name, executors[name].stderr)
+
+
+def log(name, _f):
     text = ''
     if name in executors:
-        serverout = os.path.join(executors[name].instanceDir, 'log', 'server.log')
-        text = subprocess.check_output(['tail', serverout])
+        text = subprocess.check_output(['tail', _f])
     return HttpResponse(text)
 
 

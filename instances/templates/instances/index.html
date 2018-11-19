@@ -51,7 +51,7 @@ button:hover {
             <tr><td>Instance Name</td><td>Server Name</td><td>Config</td><td>UDP</td><td>TCP</td><td>PID</td><td></td></tr>
             {% for name,executor in executors.items %}
             <tr>
-                <td style="">{{name}}</td>
+                <td><a href="/instances/{{name}}" class="btn blue">{{name}}</a></td>
                 <td style="">{{executor.serverName}}</td>
                 <td style="">{{executor.config}}</td>
                 <td style="">{{executor.udpPort}}</td>
