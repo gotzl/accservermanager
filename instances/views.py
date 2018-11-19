@@ -37,16 +37,20 @@ class Executor(Thread):
 
 
     def run(self):
-        # in linux, limit ram to 1GB soft, 2GB hard
         preexec_fn = None
+        exec = settings.ACCEXEC
         if resource:
+            # in linux, limit ram to 1GB soft, 2GB hard
             preexec_fn = lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31))
+        else:
+            # if 'resource' is not available, assume windows which needs to full path to the exec
+            exec = os.path.join(self.instanceDir, settings.ACCEXEC)
 
         # fire up the server, store stderr to the log/ dir
         _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
         self.stdout = os.path.join(self.instanceDir, 'log', 'stdout-%s.log'%(_tm))
         self.stderr = os.path.join(self.instanceDir, 'log', 'stderr-%s.log'%(_tm))
-        self.p = subprocess.Popen(settings.ACCEXEC,
+        self.p = subprocess.Popen(exec,
                                   # set working dir
                                   cwd=self.instanceDir,
                                   # limit ram to 1GB soft, 2GB hard
@@ -87,10 +91,26 @@ def stderr(request, name):
     return log(name, executors[name].stderr)
 
 
+# https://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail
+def tail(f, n=10):
+    assert n >= 0
+    pos, lines = n+1, []
+    while len(lines) <= n:
+        try:
+            f.seek(-pos, 2)
+        except IOError:
+            f.seek(0)
+            break
+        finally:
+            lines = list(f)
+        pos *= 2
+    return lines[-n:]
+
+
 def log(name, _f):
     text = ''
     if name in executors:
-        text = subprocess.check_output(['tail', _f])
+        text = tail(open(_f))
     return HttpResponse(text)
 
 
@@ -133,7 +153,7 @@ def start(request):
                 len(list(filter(lambda x: request.POST['udpPort'] in [x.udpPort, x.tcpPort] or
                                           request.POST['tcpPort'] in [x.udpPort, x.tcpPort],
                                 executors.values()))) > 0:
-            return HttpResponseRedirect("../")
+            return HttpResponseRedirect('/instances')
 
         shutil.copytree(settings.ACCSERVER, inst_dir)
         # the target config

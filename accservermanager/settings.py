@@ -139,7 +139,7 @@ TRACKS = (
 
 # THINGS TO CONFIGURE
 # the ACC server exe, in case of linux start it with wine
-ACCEXEC = ['wine','accServer.exe']      # windows: ['cmd','accServer.exe']
+ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe' (no list!)
 ACCSERVER = '/server'                   # windows: ['C:\\PATH\\TO\\ACC\\server']
 
 # folders where the created configs and instances are stored, will be created if doesn't exist
