@@ -138,7 +138,7 @@ TRACKS = (
 
 # THINGS TO CONFIGURE
 # the ACC server exe, in case of linux start it with wine
-ACCEXEC = 'WINEDEBUG=-all wine accServer.exe'
+ACCEXEC = ['wine','accServer.exe']
 ACCSERVER = '/server'
 
 # folder where the created configs are stored, will be created if doesn't exist

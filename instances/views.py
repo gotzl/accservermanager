@@ -44,7 +44,7 @@ class Executor(Thread):
                                   cwd=self.instanceDir,
                                   # limit ram to 1GB soft, 2GB hard
                                   preexec_fn=lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31)),
-                                  shell=True,
+                                  # shell=True,
                                   universal_newlines=True,
                                   stdout=open(self.stdout,'w'),
                                   stderr=open(self.stderr,'w'))
