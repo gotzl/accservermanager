@@ -7,6 +7,7 @@ urlpatterns = [
     path('start/', views.start, name='start'),
     path('start/', views.start, name='start'),
     path('<name>/', views.instance, name='instance'),
+    path('<name>/stop/', views.startstop, {'start':False}, name='stop'),
     path('<name>/delete/', views.delete, name='delete'),
     path('<name>/stderr/', views.stderr, name='stderr'),
     path('<name>/stdout/', views.stdout, name='stdout'),
