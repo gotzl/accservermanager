@@ -6,7 +6,7 @@ from django import forms
 from random_word import RandomWords
 r = RandomWords()
 
-import subprocess, time, datetime
+import subprocess, time, datetime, string
 from multiprocessing import Value
 from threading import Thread
 
@@ -117,10 +117,11 @@ def log(name, _f):
 @login_required
 def delete(request, name):
     if name in executors:
-        shutil.rmtree(executors[name].instanceDir)
-        executors.pop(name)
+        if not executors[name].is_alive():
+            shutil.rmtree(executors[name].instanceDir)
+            executors.pop(name)
 
-    return HttpResponseRedirect('/instances')
+    return HttpResponse(json.dumps({'success': True}), content_type='application/json')
 
 
 @login_required
@@ -136,7 +137,8 @@ def stop(request, name):
             time.sleep(.2)
             i+=1
 
-    return HttpResponseRedirect('/instances')
+    # return HttpResponseRedirect('/instances')
+    return HttpResponse(json.dumps({'success': True, 'retval':executors[name].retval}), content_type='application/json')
 
 
 @login_required
@@ -150,8 +152,9 @@ def start(request):
         # return if dir already exist or ports are already in use or ports are equal
         if os.path.isdir(inst_dir) or \
                 request.POST['udpPort'] == request.POST['tcpPort'] or \
-                len(list(filter(lambda x: request.POST['udpPort'] in [x.udpPort, x.tcpPort] or
-                                          request.POST['tcpPort'] in [x.udpPort, x.tcpPort],
+                len(list(filter(lambda x: x.is_alive() and
+                                          (request.POST['udpPort'] in [x.udpPort, x.tcpPort] or
+                                          request.POST['tcpPort'] in [x.udpPort, x.tcpPort]),
                                 executors.values()))) > 0:
             return HttpResponseRedirect('/instances')
 
@@ -192,9 +195,16 @@ class InstanceForm(forms.Form):
         self.fields['cfg'].label = 'Config'
 
 
+def random_word():
+    s = None
+    while s is None or any(c for c in s if c not in string.ascii_letters):
+        s = r.get_random_word(hasDictionaryDef="true",minLength=5, maxLength=10)
+    return s
+
+
 def index(request):
     cfg = json.load(open(os.path.join(settings.ACCSERVER,'cfg','configuration.json'), 'r'))
-    cfg['instanceName'] = r.get_random_word(hasDictionaryDef="true",minLength=5, maxLength=10)
+    cfg['instanceName'] = random_word()
 
     template = loader.get_template('instances/index.html')
     context = {

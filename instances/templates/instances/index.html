@@ -50,25 +50,21 @@ button:hover {
         <table>
             <tr><td>Instance Name</td><td>Server Name</td><td>Config</td><td>UDP</td><td>TCP</td><td>PID</td><td></td></tr>
             {% for name,executor in executors.items %}
-            <tr>
+            <tr id="row{{forloop.counter0}}">
                 <td><a href="/instances/{{name}}" class="btn blue">{{name}}</a></td>
                 <td style="">{{executor.serverName}}</td>
                 <td style="">{{executor.config}}</td>
                 <td style="">{{executor.udpPort}}</td>
                 <td style="">{{executor.tcpPort}}</td>
                 {% if executor.is_alive %}
-                <td style="">{{executor.p.pid}}</td>
+                <td id="pid{{forloop.counter0}}" style="">{{executor.p.pid}}</td>
                 <td>
-                    <form style="margin: 0" action="/instances/{{name}}/stop" method="post">{% csrf_token %}
-                        <input type="submit" value="Stop" class="btn red">
-                    </form>
+                    <button id="stop{{forloop.counter0}}" class="btn red" onclick="stop(this, '{{name}}')">Stop</button>
                 </td>
                 {% else %}
                 <td style="">exited with {{executor.retval}}</td>
                 <td>
-                    <form style="margin: 0" action="/instances/{{name}}/delete" method="post">{% csrf_token %}
-                        <input type="submit" value="Delete" class="btn red">
-                    </form>
+                    <button id="delete{{forloop.counter0}}" class="btn red" onclick="del(this, '{{name}}')">Delete</button>
                 </td>
                 {% endif %}
             </tr>
@@ -76,4 +72,24 @@ button:hover {
         </table>
     </div>
 </div>
+
+<script>
+    function stop(el, name) {
+        el.innerHTML  = 'Stopping'
+        el.disabled = true;
+        $.post("/instances/"+name+"/stop", function(json) {
+            $('td#pid'+el.id.replace('stop','')).html('exited with '+json['retval']);
+            el.id = el.id.replace('stop','delete')
+            el.innerHTML = 'Delete';
+            el.onclick = function() {del(el, name)};
+            el.disabled = false;
+        });
+    }
+    function del(el, name) {
+        el.disabled = true;
+        $.post("/instances/"+name+"/delete", function(json) {
+            $('tr#row'+el.id.replace('delete','')).remove();
+        });
+    }
+</script>
 {% endblock %}
