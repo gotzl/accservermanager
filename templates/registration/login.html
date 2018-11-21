@@ -1,6 +1,5 @@
-<html>
-    {% include 'material/includes/material_css.html' %}
-    {% include 'material/includes/material_js.html' %}
+{% extends "base.html" %}
+{% block base %}
 
     <style>
     .card {
@@ -16,27 +15,26 @@
     }
     </style>
 
-    <body style="background-color: #f2f2f2;">
 
-        {% load material_form %}
-        <div class="container">
-            <div class="card">
-                <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
-                    {% if 'username' in form.fields %}
-                    {% form %}
-                    {% part form.username prefix %}<i class="material-icons prefix">account_box</i>{% endpart %}
-                    {% part form.password prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
-                    {% endform %}
-                    {% else %}
-                    {% form %}{% endform %}
-                    {% endif %}
+    {% load material_form %}
+    <div class="container">
+        <div class="card">
+            <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+                {% if 'username' in form.fields %}
+                {% form %}
+                {% part form.username prefix %}<i class="material-icons prefix">account_box</i>{% endpart %}
+                {% part form.password prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
+                {% endform %}
+                {% else %}
+                {% form %}{% endform %}
+                {% endif %}
 
-                    <div class="action right-align">
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </div>
-                </form>
-            </div>
+                <div class="action right-align">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
         </div>
-    </body>
-<html>
+    </div>
+{% endblock %}
+
 
