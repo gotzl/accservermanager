@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cfgs',
-    'instances'
+    'instances',
 ]
 
 MIDDLEWARE = [
@@ -140,8 +140,8 @@ TRACKS = (
 # THINGS TO CONFIGURE
 # the ACC server exe, in case of linux start it with wine
 ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe' (no list!)
-ACCSERVER = '/server'                   # windows: ['C:\\PATH\\TO\\ACC\\server']
+ACCSERVER = '/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
 
 # folders where the created configs and instances are stored, will be created if doesn't exist
-CONFIGS = '/tmp/configs'                # windows: ['C:\\Users\\someuser\\configs']
-INSTANCES = '/tmp/instances'            # windows: ['C:\\Users\\someuser\\instances']
+CONFIGS = '/tmp/configs'                # windows: 'C:\\Users\\someuser\\configs'
+INSTANCES = '/tmp/instances'            # windows: 'C:\\Users\\someuser\\instances'
