@@ -206,7 +206,7 @@ def index(request):
     cfg = json.load(open(os.path.join(settings.ACCSERVER,'cfg','configuration.json'), 'r'))
     cfg['instanceName'] = random_word()
 
-    template = loader.get_template('instances/index.html')
+    template = loader.get_template('instances/instances.html')
     context = {
         'form': InstanceForm(cfg),
         'executors': executors,

@@ -3,13 +3,13 @@
 
     <header>
         <nav style="background: #c21807;">
-            <a style="font-size:20px; font-weight: bold; padding: 14px 20px; color: black;" href="/instances">Instances</a>
-            <a style="font-size:20px; font-weight: bold; padding: 14px 20px; color: black;" href="/cfgs">Configs</a>
-            <a style="font-size:20px; font-weight: bold; padding: 14px 20px; color: black;" href="{% url 'logout' %}">Logout</a>
+            <a href="/instances">Instances</a>
+            <a href="/cfgs">Configs</a>
         </nav>
     </header>
 
-    {% block content %}
-    {% endblock %}
-
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
 {% endblock %}

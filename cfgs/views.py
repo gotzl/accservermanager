@@ -110,4 +110,4 @@ def formForKey(request, config, *args):
         'forms': _forms,
         'form': _form
     }
-    return render(request, 'cfgs/index.html', context)
+    return render(request, 'cfgs/confEdit.html', context)
