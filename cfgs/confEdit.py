@@ -44,7 +44,8 @@ def createForm(obj, path):
     form = forms.Form()
     for key, value in sorted(obj.items(), key=lambda x:x[0]):
         # if the element is a object itself, let the form display a link to further drilldown into this object
-        if (isinstance(value, dict)):
+        if isinstance(value, dict) or \
+                (isinstance(value, list) and len(value)>0 and isinstance(value[0], dict)):
             form.fields[key] = forms.CharField(widget=forms.TextInput,
                                                disabled=True,
                                                label=mark_safe('<a href="/cfgs/%s/%s">%s</a>'%(path,key,key)))
