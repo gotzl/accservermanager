@@ -2,12 +2,7 @@ FROM ubuntu:latest
 
 RUN dpkg --add-architecture i386 && \
     apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y xvfb cabextract wget gnupg software-properties-common python3-pip && \
-    wget -nc https://dl.winehq.org/wine-builds/Release.key && \
-    apt-key add Release.key && \
-    apt-add-repository https://dl.winehq.org/wine-builds/ubuntu/ && \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --install-recommends winehq-stable && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y wine-development python3-pip && \
     apt-get clean  && \
     rm -rf /var/lib/apt/lists/*
 

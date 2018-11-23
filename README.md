@@ -34,7 +34,7 @@ Alternatively, I've created a Dockerfile which uses wine to run the ACC server.
 # Create the image
 docker build -t accservermanager .
 # fire up a container
-docker run -d --name accservermanager -v PATH_TO_ACC/server:/server:r -p 8000:8000 -p 9231:9231/udp -p 9232:9232/tcp accservermanager
+docker run -d --name accservermanager -v PATH_TO_ACC/server:/server -p 8000:8000 -p 9231:9231/udp -p 9232:9232/tcp accservermanager
 # initiate the app and create a manager user
 docker exec -i -t accservermanager /bin/bash
 python3 manage.py migrate

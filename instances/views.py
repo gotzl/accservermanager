@@ -7,7 +7,7 @@ from random_word import RandomWords
 r = RandomWords()
 
 import subprocess, time, datetime, string
-from multiprocessing import Value
+from multiprocessing import Value, Process
 from threading import Thread
 
 import os, shutil, json
@@ -33,7 +33,6 @@ class Executor(Thread):
         self.instanceDir = instanceDir
         self.config = config
         self.stop = Value('i', 0)
-
 
 
     def run(self):
@@ -109,7 +108,7 @@ def tail(f, n=10):
 
 def log(name, _f):
     text = ''
-    if name in executors:
+    if _f is not None and os.path.isfile(_f) and name in executors:
         text = tail(open(_f))
     return HttpResponse(text)
 
@@ -167,7 +166,13 @@ def start(request):
         # update the configuration.json
         cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
         for key in ['serverName','udpPort','tcpPort']:
-            cfg[key] = request.POST[key]
+            value = request.POST[key]
+            if isinstance(cfg[key], list): continue
+            if isinstance(cfg[key], int): value = int(value)
+            elif isinstance(cfg[key], float): value = float(value)
+            elif not isinstance(cfg[key], str):
+                print('Unknown type',type(cfg[key]), type(value))
+            cfg[key] = value
         json.dump(cfg, open(os.path.join(inst_dir, 'cfg', 'configuration.json'), 'w'))
 
         executors[name] = Executor(inst_dir, cfg, request.POST['cfg'])
