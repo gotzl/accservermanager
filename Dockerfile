@@ -8,18 +8,16 @@ RUN dpkg --add-architecture i386 && \
 
 RUN pip3 install django django-material random-word
 
-ADD . /accservermanager
-WORKDIR /accservermanager
-
-RUN useradd -ms /bin/bash someuser && \
-        chown -R someuser:someuser /accservermanager
+RUN useradd -ms /bin/bash someuser
 USER someuser
 
 ENV WINEARCH=win64 \
     WINEDEBUG=-all
 RUN wineboot --init
 
-EXPOSE 9231 9232 8000
 VOLUME /server
+ADD . /accservermanager
+WORKDIR /accservermanager
 
+EXPOSE 9231 9232 8000
 CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]

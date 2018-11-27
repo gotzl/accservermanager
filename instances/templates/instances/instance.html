@@ -9,10 +9,10 @@
 
 <div class="container">
     <div class="card" style="padding: 10px 16px 20px 16px;">
-        <h6 style="font-weight:bold">Latest stdout</h6>
+        <h6 style="font-weight:bold">Latest stdout | <a href="{{request.path}}stdout">Download full</a>  </h6>
         <textarea id="stdout" style="height: 200px;" disabled></textarea>
 
-        <h6 style="font-weight:bold">Latest stderr</h6>
+        <h6 style="font-weight:bold">Latest stderr | <a href="{{request.path}}stdout">Download full</a> </h6>
         <textarea id="stderr" style="height: 200px;" disabled></textarea>
     </div>
 </div>
@@ -20,14 +20,14 @@
 
 <script>
     (function stdout(){
-        $.post('{{request.path}}stdout', function(data) {
+        $.post('{{request.path}}stdout', { lines: 10 }).done(function(data) {
             $('textarea#stdout').val(data);
             setTimeout(stdout,2000);
         });
     })();
 
     (function stderr(){
-        $.post('{{request.path}}stderr', function(data) {
+        $.post('{{request.path}}stderr', { lines: 10 }).done(function(data) {
             $('textarea#stderr').val(data);
             setTimeout(stderr,2000);
         });

@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
 from django import forms
 
@@ -82,12 +82,16 @@ def instance(request, name):
 
 @login_required
 def stdout(request, name):
-    return log(name,executors[name].stdout)
+    if 'lines' not in request.POST:
+        return download(executors[name].stdout)
+    return log(executors[name].stdout, int(request.POST['lines']))
 
 
 @login_required
 def stderr(request, name):
-    return log(name, executors[name].stderr)
+    if 'lines' not in request.POST:
+        return download(executors[name].stderr)
+    return log(executors[name].stderr, int(request.POST['lines']))
 
 
 # https://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail
@@ -106,11 +110,20 @@ def tail(f, n=10):
     return lines[-n:]
 
 
-def log(name, _f):
-    text = ''
-    if _f is not None and os.path.isfile(_f) and name in executors:
-        text = tail(open(_f))
-    return HttpResponse(text)
+def log(_f, n):
+    if _f is not None and os.path.isfile(_f):
+        with open(_f) as fh:
+            return HttpResponse(tail(fh, n))
+    raise Http404
+
+
+def download(_f):
+    if _f is not None and os.path.isfile(_f):
+        with open(_f, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="text/plain")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(_f)
+            return response
+    raise Http404
 
 
 @login_required
