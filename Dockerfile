@@ -6,7 +6,7 @@ RUN dpkg --add-architecture i386 && \
     apt-get clean  && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install django django-material random-word
+RUN pip3 install django django-material django_tables2 random-word
 
 RUN useradd -ms /bin/bash someuser
 USER someuser

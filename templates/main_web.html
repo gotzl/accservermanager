@@ -4,8 +4,9 @@
     {% if user.is_authenticated %}
     <header>
         <nav>
-            <a href="/instances">Instances</a>
             <a href="/cfgs">Configs</a>
+            <a href="/instances">Instances</a>
+            <a href="/results">Results</a>
             <a href="{% url 'logout' %}">Logout</a>
         </nav>
     </header>

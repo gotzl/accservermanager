@@ -48,7 +48,7 @@ def createForm(obj, path):
                 (isinstance(value, list) and len(value)>0 and isinstance(value[0], dict)):
             form.fields[key] = forms.CharField(widget=forms.TextInput,
                                                disabled=True,
-                                               label=mark_safe('<a href="/cfgs/%s/%s">%s</a>'%(path,key,key)))
+                                               label=mark_safe('<a href="%s/%s">%s</a>'%(path,key,key)))
 
         else:
             form.fields[key] = fieldForKey(key, value)

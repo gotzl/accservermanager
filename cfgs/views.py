@@ -43,7 +43,7 @@ def formForKey(request, config, *args):
 
     # drill down into the json object to the selected part
     obj = cfg
-    path = config
+    path = '/cfgs/%s'%config
     if len(args)>0:
         for arg in args.split('/'):
             if isinstance(obj, list):
@@ -56,14 +56,14 @@ def formForKey(request, config, *args):
                         obj.remove(obj[int(args.split('/')[-1])])
 
                     json.dump(cfg, open(cfg_path, 'w'))
-                    return HttpResponseRedirect('/cfgs/'+path)
+                    return HttpResponseRedirect(path)
 
                 # select specific element of the list object
                 arg = int(arg)
                 # if the element is not in the list, redirect to the current path
                 # (happens eg when jumping to another config which doesn't have the same
                 # number of events)
-                if arg>=len(obj): return HttpResponseRedirect('/cfgs/'+path)
+                if arg>=len(obj): return HttpResponseRedirect(path)
 
             obj = obj[arg]
             path = '%s/%s'%(path,arg)
@@ -90,7 +90,7 @@ def formForKey(request, config, *args):
 
     _form, _forms = None, None
     # create the form only if an element of the config was selected
-    if path != config:
+    if path != '/cfgs/%s'%config:
         _form = createForm(obj, path)
 
     # ugly switch to handle list-values (like events)

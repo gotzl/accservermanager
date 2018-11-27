@@ -1,0 +1,35 @@
+{% extends "main.html" %}
+{% block content %}
+
+<style>
+    tr:hover {
+      background-color: #d3d3d3;
+    }
+    .container {
+        padding: 20px 16px;
+    }
+</style>
+
+<div class="container">
+    <div class="card">
+        <h6 style="font-weight:bold">Available results</h6>
+        <table>
+            <tr><td style="font-weight:bold">Name</td><td></td><td></td></tr>
+            {% for result in results %}
+            <tr>
+                <td style="width: 200px">{{result}}</td>
+                <td><a href="/results/{{result}}" class="btn blue">View</a></td>
+                <td>
+                    <form style="margin: 0" action="/results/delete" method="post">{% csrf_token %}
+                        <input hidden name="result" value="{{result}}">
+                        <input type="submit" value="Delete" class="btn red">
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}

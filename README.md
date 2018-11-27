@@ -20,7 +20,7 @@ Currently, the web-app consists of two sub-apps
 
 ## Dependencies
 ```bash
-pip install django django-material random-word
+pip install django django-material django_tables2 random-word
 ```
 Windows users might want to follow the official Django install instructions.
 
