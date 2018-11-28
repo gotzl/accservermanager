@@ -16,7 +16,7 @@ class SimpleTable(tables.Table):
 
 
 WINEPREFIX = os.environ['WINEPREFIX'] if 'WINEPREFIX' in os.environ else \
-    '/home/%s/.wine-acc/dosdevices'%getpass.getuser()
+    '/home/%s/.wine/dosdevices'%getpass.getuser()
 PATH = "c:/users/%s/My Documents/Assetto Corsa Competizione/Results/Server"%getpass.getuser()
 
 
@@ -76,8 +76,11 @@ def index(request, result, *args):
 
 def resultSelect(request):
     """ Show available results """
+    results_path = PATH
+    if platform != "Windows":
+        results_path = os.path.join(WINEPREFIX, results_path)
     results = list(map(lambda x: os.path.splitext(ntpath.basename(x))[0],
-                    glob.glob('%s/*.json'%(PATH))))
+                    glob.glob('%s/*.json'%(results_path))))
     context = {
         'results' : results,
     }
