@@ -112,14 +112,14 @@ def tail(f, n=10):
 
 def log(_f, n):
     if _f is not None and os.path.isfile(_f):
-        with open(_f) as fh:
+        with open(_f, 'r') as fh:
             return HttpResponse(tail(fh, n))
     raise Http404
 
 
 def download(_f):
     if _f is not None and os.path.isfile(_f):
-        with open(_f, 'rb') as fh:
+        with open(_f, 'r') as fh:
             response = HttpResponse(fh.read(), content_type="text/plain")
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(_f)
             return response
@@ -216,12 +216,12 @@ class InstanceForm(forms.Form):
 def random_word():
     s = None
     while s is None or any(c for c in s if c not in string.ascii_letters):
-        s = r.get_random_word(hasDictionaryDef="true",minLength=5, maxLength=10)
+        s = r.get_random_word(hasDictionaryDef="true", minLength=5, maxLength=10)
     return s
 
 
 def index(request):
-    cfg = json.load(open(os.path.join(settings.ACCSERVER,'cfg','configuration.json'), 'r'))
+    cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
     cfg['instanceName'] = random_word()
 
     template = loader.get_template('instances/instances.html')

@@ -3,7 +3,7 @@ from django.utils.safestring import mark_safe
 
 import re
 
-from accservermanager.settings import TRACKS
+from accservermanager.settings import TRACKS, SESSION_TYPES
 
 
 def fieldForKey(key, value):
@@ -14,7 +14,10 @@ def fieldForKey(key, value):
             choices=TRACKS,
         )
     if key == 'sessionType':
-        return forms.IntegerField(max_value=None, min_value=0)
+        return forms.ChoiceField(
+            widget=forms.Select,
+            choices=SESSION_TYPES,
+        )
 
     if isinstance(value, list): return forms.CharField()
     if isinstance(value, int): return forms.IntegerField()

@@ -136,6 +136,13 @@ TRACKS = (
     ('misano', 'Misano'),
     ('paul_ricard', 'Paul Ricard'),
     ('nurburgring', 'Nuerburgring GP'),
+    ('hungaroring', 'Hungaroring'),
+)
+
+SESSION_TYPES = (
+    (0,'Practice'),
+    (4,'Qualify'),
+    (10,'Race'),
 )
 
 
