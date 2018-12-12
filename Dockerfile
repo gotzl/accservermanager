@@ -8,7 +8,10 @@ RUN dpkg --add-architecture i386 && \
 
 RUN pip3 install django django-material django_tables2 random-word
 
-RUN useradd -ms /bin/bash someuser
+ADD . /accservermanager
+RUN useradd -ms /bin/bash someuser && \
+	chown -R someuser:someuser /accservermanager
+
 USER someuser
 
 ENV WINEARCH=win64 \
@@ -16,7 +19,6 @@ ENV WINEARCH=win64 \
 RUN wineboot --init
 
 VOLUME /server
-ADD . /accservermanager
 WORKDIR /accservermanager
 
 EXPOSE 9231 9232 8000
