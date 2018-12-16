@@ -56,14 +56,14 @@ def formForKey(request, config, *args):
                         obj.remove(obj[int(args.split('/')[-1])])
 
                     json.dump(cfg, open(cfg_path, 'w'))
-                    return HttpResponseRedirect(path)
+                    return HttpResponseRedirect('/'+'/'.join(path))
 
                 # select specific element of the list object
                 arg = int(arg)
                 # if the element is not in the list, redirect to the current path
                 # (happens eg when jumping to another config which doesn't have the same
                 # number of events)
-                if arg>=len(obj): return HttpResponseRedirect(path)
+                if arg>=len(obj): return HttpResponseRedirect('/'+'/'.join(path))
 
             obj = obj[arg]
             path.append(str(arg))
