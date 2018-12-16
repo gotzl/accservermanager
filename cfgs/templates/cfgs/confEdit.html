@@ -9,12 +9,12 @@
 
     #cfg-inner-wrapper {
         height:100%;
-        padding-top: 80px;
+        padding-top: 100px;
     }
 
     #cfgs {
-        height:80px;
-        margin-top:-80px;
+        height:100px;
+        margin-top:-100px;
     }
 
     #cfg {
@@ -40,6 +40,14 @@
     }
 </style>
 
+{% load django_bootstrap_breadcrumbs %}
+{% block breadcrumbs %}
+{% clear_breadcrumbs %}
+{% for b, u in path %}
+{% breadcrumb_raw_safe b u %}
+{% endfor %}
+{% endblock %}
+
 <div id="cfg-wrapper" class="container">
     <div class="card" style="height:100%">
         <div id="cfg-inner-wrapper">
@@ -48,6 +56,7 @@
                 <form action="" method="post">{% csrf_token %}
                     {{ cfgs }}
                 </form>
+                {% render_breadcrumbs %}
             </header>
 
             {% if cfg is not None %}
@@ -61,7 +70,7 @@
             {% load material_form %}
             <div id="cfg">
                 <!--<div>-->
-                    <h6 style="font-weight:bold">{{request.path}}</h6>
+                    <!--<h6 style="font-weight:bold">{{request.path}}</h6>-->
                     <form action="" method="post" style="padding-right:20px">
 
                         {% csrf_token %}
@@ -77,7 +86,7 @@
             <div id="cfg">
                 {% for frm in forms %}
                 <div id="form{{forloop.counter0}}" class="card" style="display:none">
-                    <h6 style="font-weight:bold">{{request.path}}/{{forloop.counter0}}</h6>
+                    <!--<h6 style="font-weight:bold">{{request.path}}/{{forloop.counter0}}</h6>-->
                     <form action="" method="post" style="padding-right:20px">
 
                         {% csrf_token %}

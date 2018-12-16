@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'material',
     'material.frontend',
+    'django_bootstrap_breadcrumbs',
     'django_tables2',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -137,6 +138,13 @@ TRACKS = (
     ('paul_ricard', 'Paul Ricard'),
     ('nurburgring', 'Nuerburgring GP'),
     ('hungaroring', 'Hungaroring'),
+)
+
+CAR_MODEL_TYPES = (
+    (2, 'Lambo'),
+    (4, 'Bentley'),
+    (7, 'BMW'),
+    (11, 'Ferrari'),
 )
 
 SESSION_TYPES = (

@@ -14,15 +14,7 @@
     #cfg {
         height: 100%;
         overflow: auto;
-        margin-left: 200px;
-        padding-left: 30px;
-        border-left: 1px solid #9e9e9e;
-    }
-
-    sidenav {
-        position: fixed!important;
-        width:200px;
-        padding-left:10px;
+        padding-left: 10px;
     }
 
     input[type=submit] {
@@ -34,28 +26,31 @@
     }
 </style>
 
+{% load django_bootstrap_breadcrumbs %}
+{% block breadcrumbs %}
+{% clear_breadcrumbs %}
+{% for b, u in path %}
+    {% breadcrumb_raw_safe b u %}
+{% endfor %}
+{% endblock %}
+
 <div id="cfg-wrapper" class="container">
     <div class="card" style="height:100%">
         <div id="cfg-inner-wrapper">
-
-            {% if cfg is not None %}
-            <sidenav>
-                {% for i,j in keys %}
-                <a style="font-size:16px; font-weight: bold; display:block;" href="/results/{{cfg}}/{{i}}">{{ j }}</a>
-                {% endfor %}
-            </sidenav>
-
-            {% if form is not None %}
-            {% load material_form %}
+            {% render_breadcrumbs %}
+            {% if form is not None or table is not None %}
             <div id="cfg">
-                <!--<div>-->
-                    <h6 style="font-weight:bold">{{request.path}}</h6>
-                    <form action="" method="post" style="padding-right:20px">
-                        <fieldset disabled>
-                        {% form form=form %}{% endform %}
-                        </fieldset>
-                    </form>
-                <!--</div>-->
+
+
+                {% if form is not None %}
+                {% load material_form %}
+                <form action="" method="post" style="padding-right:20px">
+                    <fieldset disabled>
+                    {% form form=form %}{% endform %}
+                    </fieldset>
+                </form>
+                {% endif%}
+
                 {% if table is not None %}
                 {% load django_tables2 %}
                 {% render_table table %}
@@ -69,7 +64,7 @@
             <div id="cfg">
                 {% for frm in forms %}
                 <div id="form{{forloop.counter0}}" class="card" style="display:none">
-                    <h6 style="font-weight:bold">{{request.path}}/{{forloop.counter0}}</h6>
+                    <!--<h6 style="font-weight:bold">{{request.path}}/{{forloop.counter0}}</h6>-->
                     <form action="" method="post" style="padding-right:20px">
                         <!--{{ frm }}-->
                         <fieldset disabled>
@@ -107,7 +102,6 @@
                 handleButtons(form_id)
             </script>
 
-            {% endif %}
             {% endif %}
         </div>
     </div>

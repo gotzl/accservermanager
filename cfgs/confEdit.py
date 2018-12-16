@@ -37,7 +37,7 @@ def createForm(obj, path):
 
     # if the object is a list, create a form for each item
     if isinstance(obj, list):
-        return [createForm(obj[i],'%s/%i'%(path,i)) for i in range(len(obj))]
+        return [createForm(obj[i], path + [str(i)]) for i in range(len(obj))]
 
     # if the object is a integer, create a temporary object and proceed
     if isinstance(obj, int):
@@ -51,7 +51,7 @@ def createForm(obj, path):
                 (isinstance(value, list) and len(value)>0 and isinstance(value[0], dict)):
             form.fields[key] = forms.CharField(widget=forms.TextInput,
                                                disabled=True,
-                                               label=mark_safe('<a href="%s/%s">%s</a>'%(path,key,key)))
+                                               label=mark_safe('<a href="/%s">%s</a>'%('/'.join(path+[key]),key)))
 
         else:
             form.fields[key] = fieldForKey(key, value)
