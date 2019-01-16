@@ -138,6 +138,7 @@ TRACKS = (
     ('paul_ricard', 'Paul Ricard'),
     ('nurburgring', 'Nuerburgring GP'),
     ('hungaroring', 'Hungaroring'),
+    ('zolder', 'Zolder'),
 )
 
 CAR_MODEL_TYPES = (
@@ -145,6 +146,7 @@ CAR_MODEL_TYPES = (
     (4, 'Bentley'),
     (7, 'BMW'),
     (11, 'Ferrari'),
+    (14, 'Jaguar'),
 )
 
 SESSION_TYPES = (
