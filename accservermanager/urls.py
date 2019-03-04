@@ -32,7 +32,7 @@ def on_startup():
     from accservermanager import settings
     if not os.path.exists(settings.CONFIGS): os.makedirs(settings.CONFIGS)
     if not os.path.exists(settings.INSTANCES): os.makedirs(settings.INSTANCES)
-    shutil.copy(os.path.join(settings.ACCSERVER,'cfg','custom.json'),
-                os.path.join(settings.CONFIGS,'custom.json'))
+    shutil.copy(os.path.join(settings.ACCSERVER,'cfg','event.json'),
+                os.path.join(settings.CONFIGS,'event.json'))
 
 on_startup()

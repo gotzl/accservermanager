@@ -20,9 +20,9 @@
     #cfg {
         height: 100%;
         overflow: auto;
-        margin-left: 200px;
+        <!--margin-left: 200px;-->
         padding-left: 30px;
-        border-left: 1px solid #9e9e9e;
+        <!--border-left: 1px solid #9e9e9e;-->
     }
 
     sidenav {
@@ -59,12 +59,12 @@
                 {% render_breadcrumbs %}
             </header>
 
-            {% if cfg is not None %}
-            <sidenav>
-                {% for i,j in keys %}
-                <a style="font-size:16px; font-weight: bold; display:block;" href="/cfgs/{{cfg}}/{{i}}">{{ j }}</a>
-                {% endfor %}
-            </sidenav>
+            <!--{% if cfg is not None %}-->
+            <!--<sidenav>-->
+                <!--{% for i,j in keys %}-->
+                <!--<a style="font-size:16px; font-weight: bold; display:block;" href="/cfgs/{{cfg}}/{{i}}">{{ j }}</a>-->
+                <!--{% endfor %}-->
+            <!--</sidenav>-->
 
             {% if form is not None %}
             {% load material_form %}

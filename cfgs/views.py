@@ -89,9 +89,7 @@ def formForKey(request, config, *args):
         return HttpResponseRedirect(request.path)
 
     _form, _forms = None, None
-    # create the form only if an element of the config was selected
-    if len(path)>2:
-        _form = createForm(obj, path)
+    _form = createForm(obj, path)
 
     # ugly switch to handle list-values (like events)
     if isinstance(_form, list):
@@ -104,7 +102,7 @@ def formForKey(request, config, *args):
     keys = sorted(filter(emptyList, cfg.keys()))
 
     context = {
-        'keys': [(k, createLabel(k)) for k in keys],
+        # 'keys': [(k, createLabel(k)) for k in keys],
         'cfgs': CfgsForm(config),
         'cfg': config,
         'path': [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],

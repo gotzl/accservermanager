@@ -146,7 +146,7 @@ def index(request, result, *args):
     if platform != "Windows":
         results_path = os.path.join(WINEPREFIX, results_path)
 
-    results = json.load(open(results_path, 'r'))
+    results = json.load(open(results_path, 'r', encoding='latin-1'))
     args = args[0]
 
     # drill down into the json object to the selected part

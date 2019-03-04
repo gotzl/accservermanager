@@ -139,6 +139,7 @@ TRACKS = (
     ('nurburgring', 'Nuerburgring GP'),
     ('hungaroring', 'Hungaroring'),
     ('zolder', 'Zolder'),
+    ('monza', 'Monza'),
 )
 
 CAR_MODEL_TYPES = (
@@ -147,18 +148,25 @@ CAR_MODEL_TYPES = (
     (7, 'BMW'),
     (11, 'Ferrari'),
     (14, 'Jaguar'),
+    (0, 'Nissan1'),
+    (0, 'Nissan2'),
 )
 
 SESSION_TYPES = (
-    (0,'Practice'),
-    (4,'Qualify'),
-    (10,'Race'),
+    ("P",'Practice'),
+    ("Q",'Qualify'),
+    ("R",'Race'),
+)
+
+EVENT_TYPES = (
+    ("E_3h",'Endurance - 3h'),
+    ("E_6h",'Endurance - 6h'),
 )
 
 
 # THINGS TO CONFIGURE
 # the ACC server exe, in case of linux start it with wine
-ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe' (no list!)
+ACCEXEC = ['wine','bin/accServer.exe']      # windows: just set it to 'bin\\accServer.exe' (no list!)
 ACCSERVER = '/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
 
 # folders where the created configs and instances are stored, will be created if doesn't exist

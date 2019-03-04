@@ -15,7 +15,7 @@ try: import resource
 except: resource = None
 
 from accservermanager import settings
-from cfgs.confEdit import createLabel
+from cfgs.confEdit import createLabel, fieldForKey
 from cfgs.confSelect import getCfgsField
 
 
@@ -23,9 +23,10 @@ class Executor(Thread):
     """
     Thread for running the server process
     """
-    def __init__(self, instanceDir, serverCfg, config):
+    def __init__(self, instanceDir, serverCfg, severSett, config):
         super().__init__()
-        for key in serverCfg: setattr(self,key,serverCfg[key])
+        for key in serverCfg: setattr(self, key, serverCfg[key])
+        for key in severSett: setattr(self, key, severSett[key])
         self.p = None
         self.stdout = None
         self.stderr = None
@@ -112,14 +113,14 @@ def tail(f, n=10):
 
 def log(_f, n):
     if _f is not None and os.path.isfile(_f):
-        with open(_f, 'r') as fh:
+        with open(_f, 'r', encoding='latin-1') as fh:
             return HttpResponse(tail(fh, n))
     raise Http404
 
 
 def download(_f):
     if _f is not None and os.path.isfile(_f):
-        with open(_f, 'r') as fh:
+        with open(_f, 'r', encoding='latin-1') as fh:
             response = HttpResponse(fh.read(), content_type="text/plain")
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(_f)
             return response
@@ -174,21 +175,32 @@ def start(request):
         # the target config
         cfg = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
         # copy it to the config read by the accServer.exe
-        shutil.copy(cfg, os.path.join(inst_dir, 'cfg', 'custom.json'))
+        shutil.copy(cfg, os.path.join(inst_dir, 'cfg', 'event.json'))
 
         # update the configuration.json
+        def parse_val(d, value):
+            if isinstance(d[key], list): value = None
+            elif isinstance(d[key], int): value = int(value)
+            elif isinstance(d[key], float): value = float(value)
+            elif not isinstance(d[key], str):
+                print('Unknown type',type(d[key]), type(value))
+                value = None
+            return value
+
         cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
-        for key in ['serverName','udpPort','tcpPort']:
-            value = request.POST[key]
-            if isinstance(cfg[key], list): continue
-            if isinstance(cfg[key], int): value = int(value)
-            elif isinstance(cfg[key], float): value = float(value)
-            elif not isinstance(cfg[key], str):
-                print('Unknown type',type(cfg[key]), type(value))
-            cfg[key] = value
+        for key in ['udpPort','tcpPort', 'maxClients']:
+            value = parse_val(cfg, request.POST[key])
+            if value is not None: cfg[key] = value
         json.dump(cfg, open(os.path.join(inst_dir, 'cfg', 'configuration.json'), 'w'))
 
-        executors[name] = Executor(inst_dir, cfg, request.POST['cfg'])
+        # update the settings.json
+        stings = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'settings.json'), 'r'))
+        for key in ['serverName','password']:
+            value = parse_val(stings, request.POST[key])
+            if value is not None: stings[key] = value
+        json.dump(stings, open(os.path.join(inst_dir, 'cfg', 'settings.json'), 'w'))
+
+        executors[name] = Executor(inst_dir, cfg, stings, request.POST['cfg'])
         executors[name].start()
 
     return HttpResponseRedirect('/instances')
@@ -200,11 +212,21 @@ class InstanceForm(forms.Form):
     """
     def __init__(self, data):
         super().__init__()
-        self.fields['instanceName'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={"onkeyup":"nospaces(this)"}))
+        self.fields['instanceName'] = forms.CharField(
+            max_length=100,
+            widget=forms.TextInput(attrs={"onkeyup":"nospaces(this)"}))
         self.fields['serverName'] = forms.CharField(max_length=100)
-        self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
-        self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
-        for key in ['serverName','udpPort','tcpPort', 'instanceName']:
+        self.fields['password'] = forms.CharField(max_length=100)
+        self.fields['maxClients'] = forms.IntegerField(
+            max_value=100, min_value=0)
+        self.fields['udpPort'] = forms.IntegerField(
+            max_value=None, min_value=1000)
+        self.fields['tcpPort'] = forms.IntegerField(
+            max_value=None, min_value=1000)
+        for key in data:
+            if key not in self.fields:
+                # self.fields[key] = fieldForKey(key, data[key])
+                continue
             self.fields[key].label = createLabel(key)
             self.fields[key].required = True
             self.fields[key].initial = data[key]
@@ -214,14 +236,21 @@ class InstanceForm(forms.Form):
 
 
 def random_word():
-    s = None
-    while s is None or any(c for c in s if c not in string.ascii_letters):
-        s = r.get_random_word(hasDictionaryDef="true", minLength=5, maxLength=10)
+    s = 'somename'
+    try:
+        while s is None or any(c for c in s if c not in string.ascii_letters):
+            s = r.get_random_word(hasDictionaryDef="true",
+                              minLength=5,
+                              maxLength=10)
+    except: pass
     return s
 
 
 def index(request):
-    cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
+    cfg = json.load(open(os.path.join(
+        settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
+    cfg.update(json.load(open(os.path.join(
+        settings.ACCSERVER, 'cfg', 'settings.json'), 'r')))
     cfg['instanceName'] = random_word()
 
     template = loader.get_template('instances/instances.html')

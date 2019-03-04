@@ -3,12 +3,12 @@ from django.utils.safestring import mark_safe
 
 import re
 
-from accservermanager.settings import TRACKS, SESSION_TYPES
+from accservermanager.settings import TRACKS, SESSION_TYPES, EVENT_TYPES
 
 
 def fieldForKey(key, value):
     # list of fields that get special treatment, other fields are derived from value type
-    if key == 'trackName':
+    if key == 'track':
         return forms.ChoiceField(
             widget=forms.Select,
             choices=TRACKS,
@@ -17,6 +17,11 @@ def fieldForKey(key, value):
         return forms.ChoiceField(
             widget=forms.Select,
             choices=SESSION_TYPES,
+        )
+    if key == 'eventType':
+        return forms.ChoiceField(
+            widget=forms.Select,
+            choices=EVENT_TYPES,
         )
 
     if isinstance(value, list): return forms.CharField()
@@ -40,7 +45,7 @@ def createForm(obj, path):
         return [createForm(obj[i], path + [str(i)]) for i in range(len(obj))]
 
     # if the object is a integer, create a temporary object and proceed
-    if isinstance(obj, int):
+    if isinstance(obj, int) or isinstance(obj, float) or isinstance(obj, str):
         obj = {'value': obj}
 
     # iterate over the objects elements and add fields to the form
