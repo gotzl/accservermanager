@@ -4,7 +4,8 @@ from django.template import loader
 from django import forms
 
 from random_word import RandomWords
-r = RandomWords()
+try: r = RandomWords()
+except: r = None
 
 import subprocess, time, datetime, string
 from multiprocessing import Value, Process
