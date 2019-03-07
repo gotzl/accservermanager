@@ -1,1 +1,24 @@
-main_web.html
+{% extends "base.html" %}
+{% block base %}
+
+    {% if user.is_authenticated %}
+    <header>
+        <nav>
+            <a href="/cfgs">Configs</a>
+            <a href="/instances">Instances</a>
+            <a href="/results">Results</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {% else %}
+    <p>You are not logged in</p>
+    <a href="{% url 'login' %}">login</a>
+    {% endif %}
+
+{% endblock %}
