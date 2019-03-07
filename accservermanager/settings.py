@@ -131,6 +131,15 @@ LOGIN_REDIRECT_URL = '/cfgs'
 LOGOUT_REDIRECT_URL = '/cfgs'
 
 
+# session template used in case no session is present
+SESSION_TEMPLATE = {
+    "hourOfDay": 14,
+    "dayOfWeekend": 2,
+    "timeMultiplier": 1,
+    "sessionType": "R",
+    "sessionDurationMinutes": 10
+}
+
 
 # list of available tracks
 TRACKS = (
@@ -148,8 +157,8 @@ CAR_MODEL_TYPES = (
     (7, 'BMW'),
     (11, 'Ferrari'),
     (14, 'Jaguar'),
-    (0, 'Nissan1'),
-    (0, 'Nissan2'),
+    (10, 'Nissan GT-R 2018'),
+    (6, 'Nissan GT-R 2015'),
 )
 
 SESSION_TYPES = (

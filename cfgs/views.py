@@ -5,6 +5,7 @@ from django.shortcuts import render
 import os, json, shutil
 
 from accservermanager import settings
+from accservermanager.settings import SESSION_TEMPLATE
 from cfgs.confEdit import createLabel, createForm
 from cfgs.confSelect import CfgsForm, getCfgs, CfgCreate
 
@@ -12,7 +13,7 @@ from cfgs.confSelect import CfgsForm, getCfgs, CfgCreate
 @login_required
 def confCreate(request):
     """ Create a new config based on the backuped origin custom.json """
-    _base = os.path.join(settings.ACCSERVER,'cfg','custom.json')
+    _base = os.path.join(settings.ACCSERVER,'cfg','event.json')
     _f = os.path.join(settings.CONFIGS, request.POST['name']+'.json')
     if not os.path.exists(_f):  shutil.copy(_base, _f)
     return HttpResponseRedirect('/cfgs')
@@ -39,6 +40,8 @@ def formForKey(request, config, *args):
     """ Read the select config file and display the selected portion of the json object """
     cfg_path = os.path.join(settings.CONFIGS, config+'.json')
     cfg = json.load(open(cfg_path, 'r'))
+    if len(cfg['sessions']) == 0:
+        cfg['sessions'] = [SESSION_TEMPLATE]
     args = args[0]
 
     # drill down into the json object to the selected part
