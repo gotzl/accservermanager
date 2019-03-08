@@ -16,18 +16,6 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'a3(q--a38x9efla_m94k0bj7=(-l=3^zb+4ci^$_jlu=pmgd5q'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -173,8 +161,20 @@ EVENT_TYPES = (
 )
 
 
-# THINGS TO CONFIGURE
-# the ACC server exe, in case of linux start it with wine
+### THINGS TO CONFIGURE
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ['SECRET_KEY']  # create a key with eg 'openssl rand -base64 32', one may also put it directly here
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+# Default is to only accept connections from localhost.
+ALLOWED_HOSTS = []
+
+# The ACC server exe, in case of linux, wine is used to execute the binary
 ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe' (no list!)
 ACCSERVER = '/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
 
