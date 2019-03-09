@@ -10,7 +10,8 @@ RUN pip3 install django django-material django_tables2 django-bootstrap-breadcru
 
 ADD . /accservermanager
 RUN useradd -ms /bin/bash someuser && \
-	chown -R someuser:someuser /accservermanager
+	mkdir /data && \
+	chown -R someuser:someuser /accservermanager /data
 
 USER someuser
 
@@ -18,7 +19,7 @@ ENV WINEARCH=win64 \
     WINEDEBUG=-all
 RUN wineboot --init
 
-VOLUME /accservermanager/accservermanager
+VOLUME /data
 
 WORKDIR /accservermanager
 

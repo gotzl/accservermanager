@@ -39,7 +39,7 @@ docker build -t accservermanager .
 # Create a volume (if you didn't already create one)
 docker volume create accservermanager-data
 # fire up a container
-docker run -d --name accservermanager -e SECRET_KEY=RANDOM_SEQUENCE -v accservermanager-data:/accservermanager/accservermanager -v PATH_TO_ACC/server:/server -p 8000:8000 -p 9231:9231/udp -p 9232:9232/tcp accservermanager
+docker run -d --name accservermanager -e SECRET_KEY=RANDOM_SEQUENCE -v accservermanager-data:/data -v PATH_TO_ACC/server:/server -p 8000:8000 -p 9231:9231/udp -p 9232:9232/tcp accservermanager
 # initiate the app and create a manager user (only neccessary at the very first start)
 docker exec -i -t accservermanager python3 manage.py migrate
 docker exec -i -t accservermanager python3 manage.py createsuperuser
@@ -47,5 +47,5 @@ docker exec -i -t accservermanager python3 manage.py createsuperuser
 
 
 ## Persistence
-All relevant data will be persisted outside of the container using a docker volume.
-This means you can delete and rebuild your container without needing to restore your settings manually.
+All relevant data will be placed insided the 'settings.DATA_DIR' folder. In case of docker the folder is persisted outside of the container using a docker volume.
+This means you can delete and rebuild your container without needing to restore your settings manually (apart from changes done to the settings.py).

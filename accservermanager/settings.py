@@ -15,9 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Directory which is mounted from the host via a docker volume
-VOLUME_DIR = os.path.abspath(os.path.join(BASE_DIR, 'accservermanager'))
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -65,17 +62,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'accservermanager.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(VOLUME_DIR, 'db.sqlite3'),
-    }
-}
 
 
 # Password validation
@@ -180,6 +166,17 @@ ALLOWED_HOSTS = []
 ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe' (no list!)
 ACCSERVER = '/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
 
-# folders where the created configs and instances are stored, will be created if doesn't exist
-CONFIGS = os.path.join(VOLUME_DIR, 'configs')
-INSTANCES = os.path.join(VOLUME_DIR, 'instances')
+# Directory where configs and instances are placed (docker: this is mounted from the host via a docker volume)
+DATA_DIR = '/data'                      # s.t. like '/tmp/accserver-data' or 'C:\\Users\\someuser\\accserver-data'
+CONFIGS = os.path.join(DATA_DIR, 'configs')
+INSTANCES = os.path.join(DATA_DIR, 'instances')
+########
+
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
+    }
+}
