@@ -7,16 +7,17 @@ from random_word import RandomWords
 try: r = RandomWords()
 except: r = None
 
-import subprocess, time, datetime, string
-from multiprocessing import Value, Process
+import subprocess, time, datetime, string, glob
+from multiprocessing import Value
 from threading import Thread
+from pathlib import Path
 
 import os, shutil, json
 try: import resource
 except: resource = None
 
 from accservermanager import settings
-from cfgs.confEdit import createLabel, fieldForKey
+from cfgs.confEdit import createLabel
 from cfgs.confSelect import getCfgsField
 
 
@@ -24,16 +25,24 @@ class Executor(Thread):
     """
     Thread for running the server process
     """
-    def __init__(self, instanceDir, serverCfg, severSett, config):
+    def __init__(self, instanceDir):
         super().__init__()
-        for key in serverCfg: setattr(self, key, serverCfg[key])
-        for key in severSett: setattr(self, key, severSett[key])
+
+        # add all configuration values to the object
+        for key, val in json.load(open(os.path.join(instanceDir, 'cfg', 'configuration.json'), 'r')).items():
+            setattr(self, key, val)
+        for key, val in json.load(open(os.path.join(instanceDir, 'cfg', 'settings.json'), 'r')).items():
+            setattr(self, key, val)
+
+        # find the name of the config file, just needed to display it in the instances list
+        self.config = Path(os.path.join(instanceDir, 'cfg', 'event.json')).resolve().name
+
         self.p = None
         self.stdout = None
         self.stderr = None
         self.retval = None
         self.instanceDir = instanceDir
-        self.config = config
+
         self.stop = Value('i', 0)
 
 
@@ -135,7 +144,8 @@ def delete(request, name):
             shutil.rmtree(executors[name].instanceDir)
             executors.pop(name)
 
-    return HttpResponse(json.dumps({'success': True}), content_type='application/json')
+    return HttpResponse(json.dumps({'success': True}),
+                        content_type='application/json')
 
 
 @login_required
@@ -152,15 +162,43 @@ def stop(request, name):
             i+=1
 
     # return HttpResponseRedirect('/instances')
-    return HttpResponse(json.dumps({'success': True, 'retval':executors[name].retval}), content_type='application/json')
+    return HttpResponse(json.dumps({'success': True, 'retval':executors[name].retval}),
+                        content_type='application/json')
 
 
 @login_required
-def start(request):
-    """ handle start request from client """
+def start(request, name):
+    """ handle (re)start request from client """
+    global executors
+
+    # create the Executor for the instance
+    # - if it does not exist yet
+    # - if the executor thread was alive and exited
+    if name not in executors or  \
+        (not executors[name].is_alive() and executors[name].retval is not None):
+        inst_dir = os.path.join(settings.INSTANCES, name)
+        executors[name] = Executor(inst_dir)
+
+    # don't try to start running instances
+    if not executors[name].is_alive():
+        executors[name].start()
+        i = 0
+        # wait max 2 seconds for the instance to start
+        while (not executors[name].is_alive() or executors[name].p is None) and i<10:
+            time.sleep(.2)
+            i+=1
+
+    return HttpResponse(json.dumps({'success': True, 'pid':executors[name].p.pid}),
+                        content_type='application/json')
+
+
+@login_required
+def create(request):
+    """ handle create/start request from client """
     name = request.POST['instanceName']
+
+    # create instance environment
     if name not in executors:
-        # create instance environment
         inst_dir = os.path.join(settings.INSTANCES, name)
 
         # return if dir already exist or ports are already in use or ports are equal
@@ -175,10 +213,10 @@ def start(request):
         shutil.copytree(settings.ACCSERVER, inst_dir)
         # the target config
         cfg = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
-        # copy it to the config read by the accServer.exe
-        shutil.copy(cfg, os.path.join(inst_dir, 'cfg', 'event.json'))
+        # delete the event.json and link the requested config into the instance environment
+        os.remove(os.path.join(inst_dir, 'cfg', 'event.json'))
+        os.symlink(cfg, os.path.join(inst_dir, 'cfg', 'event.json'))
 
-        # update the configuration.json
         def parse_val(d, value):
             if isinstance(d[key], list): value = None
             elif isinstance(d[key], int): value = int(value)
@@ -188,6 +226,7 @@ def start(request):
                 value = None
             return value
 
+        # update the configuration.json
         cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
         for key in ['udpPort','tcpPort', 'maxClients']:
             value = parse_val(cfg, request.POST[key])
@@ -201,8 +240,8 @@ def start(request):
             if value is not None: stings[key] = value
         json.dump(stings, open(os.path.join(inst_dir, 'cfg', 'settings.json'), 'w'))
 
-        executors[name] = Executor(inst_dir, cfg, stings, request.POST['cfg'])
-        executors[name].start()
+        # start the instance
+        start(request, name)
 
     return HttpResponseRedirect('/instances')
 
@@ -253,6 +292,11 @@ def index(request):
     cfg.update(json.load(open(os.path.join(
         settings.ACCSERVER, 'cfg', 'settings.json'), 'r')))
     cfg['instanceName'] = random_word()
+
+    for inst_dir in glob.glob(os.path.join(settings.INSTANCES, '*')):
+        inst_name = os.path.split(inst_dir)[-1]
+        if inst_name not in executors:
+            executors[inst_name] = Executor(inst_dir)
 
     template = loader.get_template('instances/instances.html')
     context = {

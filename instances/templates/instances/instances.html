@@ -31,14 +31,22 @@
                 <td style="">{{executor.config}}</td>
                 <td style="">{{executor.udpPort}}</td>
                 <td style="">{{executor.tcpPort}}</td>
+
+                <td id="pid{{forloop.counter0}}" style="">
+                    {% if executor.is_alive %}
+                        {{executor.p.pid}}
+                    {% else %}
+                        exited with {{executor.retval}}
+                    {% endif %}
+                </td>
                 {% if executor.is_alive %}
-                <td id="pid{{forloop.counter0}}" style="">{{executor.p.pid}}</td>
                 <td>
                     <button id="stop{{forloop.counter0}}" class="btn red" onclick="stop(this, '{{name}}')">Stop</button>
-                </td>
+                </td><td></td>
                 {% else %}
-                <td style="">exited with {{executor.retval}}</td>
                 <td>
+                    <button id="restart{{forloop.counter0}}" class="btn green" onclick="start(this, '{{name}}')">Start</button>
+                </td><td>
                     <button id="delete{{forloop.counter0}}" class="btn red" onclick="del(this, '{{name}}')">Delete</button>
                 </td>
                 {% endif %}
@@ -49,6 +57,20 @@
 </div>
 
 <script>
+    function start(el, name) {
+        el.innerHTML  = 'Starting'
+        el.disabled = true;
+        var delel = $('#delete'+el.id.replace('restart',''))[0];
+        delel.disabled = true;
+        $.post("/instances/"+name+"/start", function(json) {
+            $('td#pid'+el.id.replace('restart','')).html(json['pid']);
+            delel.id = el.id.replace('restart','stop');
+            delel.innerHTML = 'Stop';
+            delel.onclick = function() {stop(el, name)};
+            delel.disabled = false;
+            el.remove();
+        });
+    }
     function stop(el, name) {
         el.innerHTML  = 'Stopping'
         el.disabled = true;
