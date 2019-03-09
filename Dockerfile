@@ -18,6 +18,8 @@ ENV WINEARCH=win64 \
     WINEDEBUG=-all
 RUN wineboot --init
 
+VOLUME /accservermanager/accservermanager
+
 WORKDIR /accservermanager
 
 EXPOSE 9231 9232 8000
