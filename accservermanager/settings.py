@@ -15,6 +15,8 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Directory which is mounted from the host via a docker volume
+VOLUME_DIR = os.path.abspath(os.path.join(BASE_DIR, 'accservermanager'))
 
 # Application definition
 
@@ -71,7 +73,7 @@ WSGI_APPLICATION = 'accservermanager.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(VOLUME_DIR, 'db.sqlite3'),
     }
 }
 
@@ -179,5 +181,5 @@ ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe
 ACCSERVER = '/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
 
 # folders where the created configs and instances are stored, will be created if doesn't exist
-CONFIGS = '/tmp/configs'                # windows: 'C:\\Users\\someuser\\configs'
-INSTANCES = '/tmp/instances'            # windows: 'C:\\Users\\someuser\\instances'
+CONFIGS = os.path.join(VOLUME_DIR, 'configs')
+INSTANCES = os.path.join(VOLUME_DIR, 'instances')

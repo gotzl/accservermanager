@@ -36,16 +36,16 @@ Alternatively, I've created a Dockerfile which uses wine to run the ACC server.
 ```bash
 # Create the image
 docker build -t accservermanager .
+# Create a volume (if you didn't already create one)
+docker volume create accservermanager-data
 # fire up a container
-docker run -d --name accservermanager -e SECRET_KEY=RANDOM_SEQUENCE -v PATH_TO_ACC/server:/server -p 8000:8000 -p 9231:9231/udp -p 9232:9232/tcp accservermanager
-# initiate the app and create a manager user
+docker run -d --name accservermanager -e SECRET_KEY=RANDOM_SEQUENCE -v accservermanager-data:/accservermanager/accservermanager -v PATH_TO_ACC/server:/server -p 8000:8000 -p 9231:9231/udp -p 9232:9232/tcp accservermanager
+# initiate the app and create a manager user (only neccessary at the very first start)
 docker exec -i -t accservermanager python3 manage.py migrate
 docker exec -i -t accservermanager python3 manage.py createsuperuser
 ```
 
 
 ## Persistence
-Things that should be backuped (in case of docker, stored outside the container):
-* The folder 'settings.CONFIGS' which containes the created configs.
-* The DB file 'db.sqlite3' which contains the user store.
-* The 'settings.py' with the custom configuration values (however, the settings.py will change with new versions of this application).
+All relevant data will be persisted outside of the container using a docker volume.
+This means you can delete and rebuild your container without needing to restore your settings manually.
