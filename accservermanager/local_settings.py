@@ -8,9 +8,10 @@ import os
 
 # The ACC server exe, in case of linux, wine is used to execute the binary
 ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe' (no list!)
-ACCSERVER = '/tmp/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
+ACCSERVER = '/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
 
-# Directory where configs and instances are placed (docker: this is mounted from the host via a docker volume)
-DATA_DIR = '/tmp/data'                      # s.t. like '/tmp/accserver-data' or 'C:\\Users\\someuser\\accserver-data'
+# Directory where configs and instances are placed, cannot be inside ACCSERVER directory!
+# (docker: this folder is mounted from the host via a docker volume)
+DATA_DIR = '/data'                      # s.t. like '/tmp/accserver-data' or 'C:\\Users\\someuser\\accserver-data'
 CONFIGS = os.path.join(DATA_DIR, 'configs')
 INSTANCES = os.path.join(DATA_DIR, 'instances')
