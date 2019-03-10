@@ -133,6 +133,11 @@ DATABASES = {
     }
 }
 
+# list of acc server files that are copied to the instance, make sure they are found
+SERVER_FILES = ['accServer.exe','cfg/configuration.json','cfg/settings.json']
+for f in SERVER_FILES:
+    if not os.path.isfile(os.path.join(ACCSERVER, f)):
+        raise Exception('Cannot find required server file: %s.'%f)
 
 # session template used in case no session is present
 SESSION_TEMPLATE = {

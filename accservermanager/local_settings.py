@@ -10,7 +10,7 @@ import os
 ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe' (no list!)
 ACCSERVER = '/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
 
-# Directory where configs and instances are placed, cannot be inside ACCSERVER directory!
+# Directory where configs and instances are placed
 # (docker: this folder is mounted from the host via a docker volume)
 DATA_DIR = '/data'                      # s.t. like '/tmp/accserver-data' or 'C:\\Users\\someuser\\accserver-data'
 CONFIGS = os.path.join(DATA_DIR, 'configs')

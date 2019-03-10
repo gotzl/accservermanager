@@ -210,11 +210,15 @@ def create(request):
                                 executors.values()))) > 0:
             return HttpResponseRedirect('/instances')
 
-        shutil.copytree(settings.ACCSERVER, inst_dir)
+        # create the directory for the instance, copy necessary files
+        os.makedirs(os.path.join(inst_dir, 'cfg'))
+        os.makedirs(os.path.join(inst_dir, 'log'))
+        for f in settings.SERVER_FILES:
+            shutil.copy(os.path.join(settings.ACCSERVER,f), os.path.join(inst_dir,f))
+
         # the target config
         cfg = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
-        # delete the event.json and link the requested config into the instance environment
-        os.remove(os.path.join(inst_dir, 'cfg', 'event.json'))
+        # link the requested config into the instance environment
         os.symlink(cfg, os.path.join(inst_dir, 'cfg', 'event.json'))
 
         def parse_val(d, value):
