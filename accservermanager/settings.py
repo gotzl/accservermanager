@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-import os
+import os, json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -107,6 +107,33 @@ LOGIN_REDIRECT_URL = '/cfgs'
 LOGOUT_REDIRECT_URL = '/cfgs'
 
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.environ['SECRET_KEY']  # create a key with eg 'openssl rand -base64 32', one may also put it directly here
+
+ALLOWED_HOSTS = json.loads(os.environ['ALLOWED_HOSTS']) \
+    if 'ALLOWED_HOSTS' in os.environ else []
+
+try:
+    from accservermanager.local_settings import *
+except ImportError:
+    raise Exception("A local_settings.py file is required to run this project")
+
+# Database
+# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
+    }
+}
+
+
 # session template used in case no session is present
 SESSION_TEMPLATE = {
     "hourOfDay": 14,
@@ -148,35 +175,3 @@ EVENT_TYPES = (
     ("E_6h",'Endurance - 6h'),
 )
 
-
-### THINGS TO CONFIGURE
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']  # create a key with eg 'openssl rand -base64 32', one may also put it directly here
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-# Default is to only accept connections from localhost.
-ALLOWED_HOSTS = []
-
-# The ACC server exe, in case of linux, wine is used to execute the binary
-ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe' (no list!)
-ACCSERVER = '/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
-
-# Directory where configs and instances are placed (docker: this is mounted from the host via a docker volume)
-DATA_DIR = '/data'                      # s.t. like '/tmp/accserver-data' or 'C:\\Users\\someuser\\accserver-data'
-CONFIGS = os.path.join(DATA_DIR, 'configs')
-INSTANCES = os.path.join(DATA_DIR, 'instances')
-########
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
-    }
-}

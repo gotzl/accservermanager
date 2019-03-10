@@ -6,22 +6,24 @@ RUN dpkg --add-architecture i386 && \
     apt-get clean  && \
     rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install django django-material django_tables2 django-bootstrap-breadcrumbs random-word
+RUN mkdir -p /accservermanager /data
 
-ADD . /accservermanager
+WORKDIR /accservermanager
+VOLUME /data
+
 RUN useradd -ms /bin/bash someuser && \
-	mkdir /data && \
-	chown -R someuser:someuser /accservermanager /data
+        chown -R someuser:someuser /accservermanager /data
 
 USER someuser
+
+ADD requirements.txt .
+RUN pip3 install --user --no-cache-dir -r requirements.txt
 
 ENV WINEARCH=win64 \
     WINEDEBUG=-all
 RUN wineboot --init
 
-VOLUME /data
-
-WORKDIR /accservermanager
+ADD . /accservermanager
 
 EXPOSE 9231 9232 8000
 CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]

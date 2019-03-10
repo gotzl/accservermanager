@@ -1,0 +1,5 @@
+django
+django-material
+django_tables2
+django-bootstrap-breadcrumbs
+random-word
