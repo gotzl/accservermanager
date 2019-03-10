@@ -114,7 +114,8 @@ LOGOUT_REDIRECT_URL = '/cfgs'
 DEBUG = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']  # create a key with eg 'openssl rand -base64 32', one may also put it directly here
+SECRET_KEY = os.environ['SECRET_KEY'] \
+    if 'SECRET_KEY' in os.environ else None  # create a key with eg 'openssl rand -base64 32', one may also put it directly here
 
 ALLOWED_HOSTS = json.loads(os.environ['ALLOWED_HOSTS']) \
     if 'ALLOWED_HOSTS' in os.environ else []
