@@ -9,12 +9,12 @@ RUN dpkg --add-architecture i386 && \
 RUN mkdir -p /accservermanager /data
 
 WORKDIR /accservermanager
-VOLUME /data
 
 RUN useradd -ms /bin/bash someuser && \
         chown -R someuser:someuser /accservermanager /data
 
 USER someuser
+VOLUME /data
 
 ADD requirements.txt .
 RUN pip3 install --user --no-cache-dir -r requirements.txt
