@@ -56,3 +56,26 @@ If you want to allow connections to the server from anywhere, use `-e ALLOWED_HO
 ## Persistence
 All relevant data will be placed insided the 'local_settings.DATA_DIR' folder. In case of docker the folder is persisted outside of the container using a docker volume.
 This means you can delete and rebuild your container without needing to restore your settings manually.
+
+
+## Compose example
+```bash
+version: '2'
+
+services:
+ acc:
+  image: gotzl/accservermanager
+  volumes:
+   - /acc/server:/server
+   - accservermanager-data:/data
+  environment:
+#   - ALLOWED_HOSTS=["*"]
+   - SECRET_KEY=
+  ports:
+   - 9232:9232/tcp
+   - 9231:9231/udp
+   - 8000:8000
+
+volumes:
+  accservermanager-data:
+```
