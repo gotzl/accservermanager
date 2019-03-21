@@ -2,7 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
-import os, json, shutil
+import os, json, shutil, glob
+from pathlib import Path
 
 from accservermanager import settings
 from accservermanager.settings import SESSION_TEMPLATE
@@ -20,13 +21,58 @@ def confCreate(request):
 
 
 @login_required
-def confDelete(request):
-    """ Delete a config file """
+def confClone(request):
+    """ Clone a config file """
     _f = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
-    if os.path.exists(_f):  os.remove(_f)
+    _n = os.path.join(settings.CONFIGS, request.POST['cfg']+'_clone.json')
+    if not os.path.exists(_n):  shutil.copy(_f, _n)
     return HttpResponseRedirect('/cfgs')
 
 
+@login_required
+def confRename(request):
+    """ Rename a config file """
+    _o = request.POST['cfg']
+    _n = request.POST['cfgname']
+    _old = os.path.join(settings.CONFIGS, _o+'.json')
+    _new = os.path.join(settings.CONFIGS, _n+'.json')
+    if _o != _n and os.path.exists(_old) and not os.path.exists(_new):
+        # create a copy of the config with the new name
+        shutil.copy(_old, _new)
+        # change the link of instances using the old config
+        from instances.views import executors
+        for inst_dir in glob.glob(os.path.join(settings.INSTANCES, '*')):
+            inst_name = os.path.split(inst_dir)[-1]
+            if inst_name in executors:
+                executors[inst_name].config = _n+'.json'
+
+            cfg = os.path.join(inst_dir, 'cfg', 'event.json')
+            if Path(cfg).resolve().name == _o+'.json':
+                os.remove(cfg)
+                os.symlink(_new, cfg)
+
+        # finally, remove the original config
+        os.remove(_old)
+
+    return HttpResponseRedirect('/cfgs')
+
+
+@login_required
+def confDelete(request):
+    """ Delete a config file """
+    _f = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
+    if os.path.exists(_f):
+        # check that no executor references the cfg
+        # TODO: give some feedback to the UI!
+        for inst_dir in glob.glob(os.path.join(settings.INSTANCES, '*')):
+            cfg = os.path.join(inst_dir, 'cfg', 'event.json')
+            if Path(cfg).resolve().name == request.POST['cfg']+'.json':
+                return HttpResponseRedirect('/cfgs')
+        os.remove(_f)
+    return HttpResponseRedirect('/cfgs')
+
+
+@login_required
 def confSelect(request):
     """ Show available configs and form to create a new config """
     context = {

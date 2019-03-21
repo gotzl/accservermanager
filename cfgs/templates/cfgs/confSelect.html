@@ -30,8 +30,22 @@
             <tr><td style="font-weight:bold">Name</td><td></td><td></td></tr>
             {% for cfg in cfgs %}
             <tr>
-                <td style="width: 200px">{{cfg}}</td>
-                <td><a href="/cfgs/{{cfg}}" class="btn blue">Edit</a></td>
+                <td style="width: 200px">
+                    <form id="cfgform{{forloop.counter0}}" style="margin: 0" action="/cfgs/rename" method="post">{% csrf_token %}
+                        <input hidden name="cfg" value="{{cfg}}">
+                        <input id="cfgname{{forloop.counter0}}" name="cfgname" type="text" oldvalue={{cfg}} value={{cfg}} readonly>
+                    </form>
+                </td>
+                <td>
+                    <input id="rename{{forloop.counter0}}" type="button" value="Rename" class="btn blue">
+                    <a href="/cfgs/{{cfg}}" class="btn blue">Edit</a>
+                </td>
+                <td>
+                    <form style="margin: 0" action="/cfgs/clone" method="post">{% csrf_token %}
+                        <input hidden name="cfg" value="{{cfg}}">
+                        <input type="submit" value="Clone" class="btn green">
+                    </form>
+                </td>
                 <td>
                     <form style="margin: 0" action="/cfgs/delete" method="post">{% csrf_token %}
                         <input hidden name="cfg" value="{{cfg}}">
@@ -39,10 +53,23 @@
                     </form>
                 </td>
             </tr>
+            <script>
+                $("#rename{{forloop.counter0}}").click(function (){
+                    var cfg = $("#cfgname{{forloop.counter0}}");
+                    var ro   = cfg.prop('readonly');
+                    if (ro) {
+                        cfg.prop('oldvalue', cfg.val());
+                    } else {
+                        if (cfg.prop('oldvalue') != cfg.val()) {
+                            $("#cfgform{{forloop.counter0}}").submit();
+                        }
+                    }
+                    cfg.prop('readonly', !ro).focus();
+                })
+            </script>
             {% endfor %}
         </table>
     </div>
 </div>
-
 
 {% endblock %}
