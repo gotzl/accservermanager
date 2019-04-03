@@ -239,7 +239,7 @@ def create(request):
 
         # update the settings.json
         stings = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'settings.json'), 'r'))
-        for key in ['serverName','password']:
+        for key in ['serverName','password','trackMedalsRequirement','safetyRatingRequirement','racecraftRatingRequirement']:
             value = parse_val(stings, request.POST[key])
             if value is not None: stings[key] = value
         json.dump(stings, open(os.path.join(inst_dir, 'cfg', 'settings.json'), 'w'))
@@ -261,12 +261,12 @@ class InstanceForm(forms.Form):
             widget=forms.TextInput(attrs={"onkeyup":"nospaces(this)"}))
         self.fields['serverName'] = forms.CharField(max_length=100)
         self.fields['password'] = forms.CharField(max_length=100)
-        self.fields['maxClients'] = forms.IntegerField(
-            max_value=100, min_value=0)
-        self.fields['udpPort'] = forms.IntegerField(
-            max_value=None, min_value=1000)
-        self.fields['tcpPort'] = forms.IntegerField(
-            max_value=None, min_value=1000)
+        self.fields['maxClients'] = forms.IntegerField(max_value=100, min_value=0)
+        self.fields['trackMedalsRequirement'] = forms.IntegerField(max_value=100, min_value=-1)
+        self.fields['safetyRatingRequirement'] = forms.IntegerField(max_value=100, min_value=-1)
+        self.fields['racecraftRatingRequirement'] = forms.IntegerField(max_value=100, min_value=-1)
+        self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
+        self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
         for key in data:
             if key not in self.fields:
                 # self.fields[key] = fieldForKey(key, data[key])
