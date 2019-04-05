@@ -27,18 +27,19 @@
     <div class="card">
         <h6 style="font-weight:bold">Existing configs</h6>
         <table>
-            <tr><td style="font-weight:bold">Name</td><td></td><td></td></tr>
+            <tr><td style="font-weight:bold">Name</td><td></td><td></td><td></td></tr>
             {% for cfg in cfgs %}
             <tr>
                 <td style="width: 200px">
                     <form id="cfgform{{forloop.counter0}}" style="margin: 0" action="/cfgs/rename" method="post">{% csrf_token %}
                         <input hidden name="cfg" value="{{cfg}}">
-                        <input id="cfgname{{forloop.counter0}}" name="cfgname" type="text" oldvalue={{cfg}} value={{cfg}} readonly>
+                        <input id="cfgname{{forloop.counter0}}" name="cfgname" type="button"
+                               class="btn blue" oldvalue={{cfg}} value={{cfg}} onclick="location.href = '/cfgs/{{cfg}}';">
                     </form>
                 </td>
                 <td>
                     <input id="rename{{forloop.counter0}}" type="button" value="Rename" class="btn blue">
-                    <a href="/cfgs/{{cfg}}" class="btn blue">Edit</a>
+                    <!--<a href="/cfgs/{{cfg}}" class="btn blue">Edit</a>-->
                 </td>
                 <td>
                     <form style="margin: 0" action="/cfgs/clone" method="post">{% csrf_token %}
@@ -56,15 +57,21 @@
             <script>
                 $("#rename{{forloop.counter0}}").click(function (){
                     var cfg = $("#cfgname{{forloop.counter0}}");
-                    var ro   = cfg.prop('readonly');
-                    if (ro) {
+                    var type   = cfg.prop('type');
+                    cfg.toggleClass("btn blue")
+                    if (type == 'button') {
                         cfg.prop('oldvalue', cfg.val());
+                        cfg.prop('type', 'text');
+                        cfg.off('click');
+                        cfg.removeAttr("onclick");
                     } else {
                         if (cfg.prop('oldvalue') != cfg.val()) {
                             $("#cfgform{{forloop.counter0}}").submit();
                         }
+                        cfg.prop('type', 'button');
+                        cfg.on('click');
+                        cfg.attr('onclick',"location.href = '/cfgs/{{cfg}}';");
                     }
-                    cfg.prop('readonly', !ro).focus();
                 })
             </script>
             {% endfor %}

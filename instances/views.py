@@ -259,14 +259,20 @@ class InstanceForm(forms.Form):
         self.fields['instanceName'] = forms.CharField(
             max_length=100,
             widget=forms.TextInput(attrs={"onkeyup":"nospaces(this)"}))
+
         self.fields['serverName'] = forms.CharField(max_length=100)
         self.fields['password'] = forms.CharField(max_length=100)
         self.fields['maxClients'] = forms.IntegerField(max_value=100, min_value=0)
-        self.fields['trackMedalsRequirement'] = forms.IntegerField(max_value=100, min_value=-1)
+        self.fields['trackMedalsRequirement'] = forms.IntegerField(max_value=3, min_value=-1)
         self.fields['safetyRatingRequirement'] = forms.IntegerField(max_value=100, min_value=-1)
         self.fields['racecraftRatingRequirement'] = forms.IntegerField(max_value=100, min_value=-1)
         self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
         self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
+
+        self.fields['cfg'] = getCfgsField()
+        self.fields['cfg'].required = True
+        self.fields['cfg'].label = 'Config'
+
         for key in data:
             if key not in self.fields:
                 # self.fields[key] = fieldForKey(key, data[key])
@@ -274,9 +280,7 @@ class InstanceForm(forms.Form):
             self.fields[key].label = createLabel(key)
             self.fields[key].required = True
             self.fields[key].initial = data[key]
-        self.fields['cfg'] = getCfgsField()
-        self.fields['cfg'].required = True
-        self.fields['cfg'].label = 'Config'
+
 
 
 def random_word():
