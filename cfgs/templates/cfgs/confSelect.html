@@ -27,7 +27,7 @@
     <div class="card">
         <h6 style="font-weight:bold">Existing configs</h6>
         <table>
-            <tr><td style="font-weight:bold">Name</td><td></td><td></td><td></td></tr>
+            <tr><td style="font-weight:bold">Name</td><td style="font-weight:bold">Actions</td><td></td><td></td></tr>
             {% for cfg in cfgs %}
             <tr>
                 <td style="width: 200px">
@@ -35,11 +35,14 @@
                         <input hidden name="cfg" value="{{cfg}}">
                         <input id="cfgname{{forloop.counter0}}" name="cfgname" type="button"
                                class="btn blue" oldvalue={{cfg}} value={{cfg}} onclick="location.href = '/cfgs/{{cfg}}';">
+                    <i id="rename{{forloop.counter0}}" type="button" title="Rename" class="material-icons">edit</i>
                     </form>
                 </td>
                 <td>
-                    <input id="rename{{forloop.counter0}}" type="button" value="Rename" class="btn blue">
-                    <!--<a href="/cfgs/{{cfg}}" class="btn blue">Edit</a>-->
+                    <form style="margin: 0" action="/cfgs/clone" method="post">{% csrf_token %}
+                        <input hidden name="cfg" value="{{cfg}}">
+                        <a href="/cfgs/{{cfg}}" class="btn blue">Edit</a>
+                    </form>
                 </td>
                 <td>
                     <form style="margin: 0" action="/cfgs/clone" method="post">{% csrf_token %}

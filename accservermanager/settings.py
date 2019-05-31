@@ -158,6 +158,10 @@ TRACKS = (
     ('hungaroring', 'Hungaroring'),
     ('zolder', 'Zolder'),
     ('monza', 'Monza'),
+    ('brands_hatch', 'Brands Hatch'),
+    ('barcelona', 'Catalunya (Barcelona)'),
+    ('silverstone', 'Silverstone'),
+    ('spa', 'Spa-Francorchamps'),
 )
 
 CAR_MODEL_TYPES = (
@@ -168,6 +172,17 @@ CAR_MODEL_TYPES = (
     (14, 'Jaguar'),
     (10, 'Nissan GT-R 2018'),
     (6, 'Nissan GT-R 2015'),
+    (-1, 'Porsche 911 (991) GT3 R'),
+    (-1, 'Porsche 911 (991II) GT3 Cup'),
+    (-1, 'Mercedes-AMG GT3'),
+    (-1, 'Audi R8 LMS'),
+    (-1, 'Lamborghini Huracán Super Trofeo (2015 Model Year)'),
+    (-1, 'McLaren 650S GT3'),
+    (-1, 'Bentley Continental GT3 (2018 Model Year)'),
+    (-1, 'Aston Martin Racing V12 Vantage GT3'),
+    (-1, 'Reiter Engineering R-EX GT3'),
+    (-1, 'Lexus RC F GT3'),
+    (-1, 'Honda/Acura NSX GT3'),
 )
 
 SESSION_TYPES = (
