@@ -33,9 +33,11 @@
                 <td style="width: 200px">
                     <form id="cfgform{{forloop.counter0}}" style="margin: 0" action="/cfgs/rename" method="post">{% csrf_token %}
                         <input hidden name="cfg" value="{{cfg}}">
-                        <input id="cfgname{{forloop.counter0}}" name="cfgname" type="button"
-                               class="btn blue" oldvalue={{cfg}} value={{cfg}} onclick="location.href = '/cfgs/{{cfg}}';">
-                    <i id="rename{{forloop.counter0}}" type="button" title="Rename" class="material-icons">edit</i>
+                        <i id="rename{{forloop.counter0}}" type="button"
+                           style="vertical-align: middle; color: blue"
+                           title="Rename" class="material-icons">edit</i>
+                        <input id="cfgname{{forloop.counter0}}" name="cfgname"
+                               oldvalue={{cfg}} value={{cfg}} style="width: 150px" readonly>
                     </form>
                 </td>
                 <td>
@@ -60,20 +62,18 @@
             <script>
                 $("#rename{{forloop.counter0}}").click(function (){
                     var cfg = $("#cfgname{{forloop.counter0}}");
-                    var type   = cfg.prop('type');
-                    cfg.toggleClass("btn blue")
-                    if (type == 'button') {
+                    var ro  = cfg.prop('readonly');
+                    cfg.prop('readonly', !ro);
+                    if (ro) {
+                        $(this).css('color','red');
                         cfg.prop('oldvalue', cfg.val());
                         cfg.prop('type', 'text');
-                        cfg.off('click');
-                        cfg.removeAttr("onclick");
+                        cfg.focus()
                     } else {
+                        $(this).css('color','blue');
                         if (cfg.prop('oldvalue') != cfg.val()) {
                             $("#cfgform{{forloop.counter0}}").submit();
                         }
-                        cfg.prop('type', 'button');
-                        cfg.on('click');
-                        cfg.attr('onclick',"location.href = '/cfgs/{{cfg}}';");
                     }
                 })
             </script>

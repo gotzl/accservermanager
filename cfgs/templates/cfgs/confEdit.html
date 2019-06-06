@@ -75,7 +75,6 @@
 
                         {% csrf_token %}
                         {% form form=form %}{% endform %}
-                        <input type="submit" class="btn green" value="Save">
                     </form>
                 <!--</div>-->
             </div>
@@ -92,7 +91,6 @@
                         {% csrf_token %}
                         <!--{{ frm }}-->
                         {% form form=frm %}{% endform %}
-                        <input type="submit" class="btn green" value="Save">
                         <input type="hidden" name="_id" value="{{forloop.counter0}}">
                     </form>
                 </div>
@@ -142,6 +140,16 @@
 
             {% endif %}
             {% endif %}
+
+
+            <script>
+                $(function() { $(":input").change(function() {
+                    $.post( '', $(this.form).serialize(), function(data) {
+                         alert('server response'+data);
+                       }, 'json' );
+                })
+                });
+            </script>
         </div>
     </div>
 </div>
