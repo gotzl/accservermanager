@@ -165,24 +165,24 @@ TRACKS = (
 )
 
 CAR_MODEL_TYPES = (
-    (2, 'Lambo'),
-    (4, 'Bentley'),
-    (7, 'BMW'),
-    (11, 'Ferrari'),
-    (14, 'Jaguar'),
-    (10, 'Nissan GT-R 2018'),
-    (6, 'Nissan GT-R 2015'),
-    (-1, 'Porsche 911 (991) GT3 R'),
-    (-1, 'Porsche 911 (991II) GT3 Cup'),
-    (-1, 'Mercedes-AMG GT3'),
-    (-1, 'Audi R8 LMS'),
-    (-1, 'Lamborghini Huracán Super Trofeo (2015 Model Year)'),
-    (-1, 'McLaren 650S GT3'),
-    (-1, 'Bentley Continental GT3 (2018 Model Year)'),
-    (-1, 'Aston Martin Racing V12 Vantage GT3'),
-    (-1, 'Reiter Engineering R-EX GT3'),
-    (-1, 'Lexus RC F GT3'),
-    (-1, 'Honda/Acura NSX GT3'),
+    (0, 'Porsche 911 (991) GT3 R'),
+    (1, 'Mercedes-AMG GT3'),
+    (2, 'Ferrari 488 GT3'),
+    (3, 'Audi R8 LMS'),
+    (4, 'Lamborghini Huracán GT3'),
+    (5, 'McLaren 650S GT3'),
+    (6, 'Nissan GT-R Nismo GT3 (2018)'),
+    (7, 'BMW M6 GT3'),
+    (8, 'Bentley Continental GT3 (2018)'),
+    (9, 'Porsche 911.2 GT3 Cup'),
+    (10, 'Nissan GT-R Nismo GT3 (2017)'),
+    (11, 'Bentley Continental GT3 (2016)'),
+    (12, 'Aston Martin Racing V12 Vantage GT3'),
+    (13, 'Lamborghini Gallardo R-EX'),
+    (14, 'Jaguar G3'),
+    (15, 'Lexus RC F GT3'),
+    (17, 'Honda/Acura NSX GT3'),
+    (18, 'Lamborghini Huracán Super Trofeo (2015)'),
 )
 
 SESSION_TYPES = (
@@ -196,3 +196,19 @@ EVENT_TYPES = (
     ("E_6h",'Endurance - 6h'),
 )
 
+DRIVER_CATEGORY = {
+    (3, "Platinum"),
+    (2, "Gold"),
+    (1, "Silver"),
+    (0, "Bronze")
+}
+
+CUP_CATEGORY = {
+    (0, "Overall"),
+    (1, "ProAm"),
+    (2, "Am"),
+    (3, "Silver"),
+    (4, "National")
+}
+
+MESSAGES = json.load(open('/home/gotzl/workspace/accservermanager/accservermanager/messages.json', 'r'))

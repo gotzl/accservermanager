@@ -232,14 +232,15 @@ def create(request):
 
         # update the configuration.json
         cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
-        for key in ['udpPort','tcpPort', 'maxClients']:
+        cfg_keys = ['udpPort','tcpPort', 'maxClients', 'registerToLobby']
+        for key in cfg_keys:
             value = parse_val(cfg, request.POST[key])
             if value is not None: cfg[key] = value
         json.dump(cfg, open(os.path.join(inst_dir, 'cfg', 'configuration.json'), 'w'))
 
         # update the settings.json
         stings = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'settings.json'), 'r'))
-        for key in ['serverName','password','trackMedalsRequirement','safetyRatingRequirement','racecraftRatingRequirement']:
+        for key in filter(lambda x:x not in cfg_keys, request.POST.keys()):
             value = parse_val(stings, request.POST[key])
             if value is not None: stings[key] = value
         json.dump(stings, open(os.path.join(inst_dir, 'cfg', 'settings.json'), 'w'))
@@ -262,10 +263,21 @@ class InstanceForm(forms.Form):
 
         self.fields['serverName'] = forms.CharField(max_length=100)
         self.fields['password'] = forms.CharField(max_length=100)
+        self.fields['spectatorPassword'] = forms.CharField(max_length=100)
+        self.fields['adminPassword'] = forms.CharField(max_length=100)
+
         self.fields['maxClients'] = forms.IntegerField(max_value=100, min_value=0)
-        self.fields['trackMedalsRequirement'] = forms.IntegerField(max_value=3, min_value=-1)
-        self.fields['safetyRatingRequirement'] = forms.IntegerField(max_value=100, min_value=-1)
-        self.fields['racecraftRatingRequirement'] = forms.IntegerField(max_value=100, min_value=-1)
+        self.fields['spectatorSlots'] = forms.IntegerField(min_value=0)
+
+        self.fields['trackMedalsRequirement'] = forms.IntegerField(max_value=3, min_value=0)
+        self.fields['safetyRatingRequirement'] = forms.IntegerField(max_value=99, min_value=-1)
+        self.fields['racecraftRatingRequirement'] = forms.IntegerField(max_value=99, min_value=-1)
+
+        self.fields['isRaceLocked'] = forms.BooleanField()
+        self.fields['dumpLeaderboards'] = forms.BooleanField()
+        self.fields['registerToLobby'] = forms.BooleanField()
+
+
         self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
         self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
 
@@ -273,12 +285,17 @@ class InstanceForm(forms.Form):
         self.fields['cfg'].required = True
         self.fields['cfg'].label = 'Config'
 
-        for key in data:
-            if key not in self.fields:
-                # self.fields[key] = fieldForKey(key, data[key])
-                continue
+        # generate a label, all fields are required
+        for key in self.fields:
             self.fields[key].label = createLabel(key)
             self.fields[key].required = True
+            if key in settings.MESSAGES:
+                self.fields[key].help_text = settings.MESSAGES[key]
+
+        # use defaults from the 'data' object
+        for key in data:
+            if key not in self.fields:
+                continue
             self.fields[key].initial = data[key]
 
 
@@ -295,11 +312,16 @@ def random_word():
 
 
 def index(request):
+    # read defaults from files
     cfg = json.load(open(os.path.join(
         settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
     cfg.update(json.load(open(os.path.join(
         settings.ACCSERVER, 'cfg', 'settings.json'), 'r')))
+
+    # some static defaults
     cfg['instanceName'] = random_word()
+    cfg['serverName'] = 'ACC server'
+    cfg['dumpLeaderboards'] = 1
 
     for inst_dir in glob.glob(os.path.join(settings.INSTANCES, '*')):
         inst_name = os.path.split(inst_dir)[-1]

@@ -3,6 +3,7 @@ from django.utils.safestring import mark_safe
 
 import re
 
+from accservermanager import settings
 from accservermanager.settings import TRACKS, SESSION_TYPES, EVENT_TYPES
 
 
@@ -63,5 +64,7 @@ def createForm(obj, path):
             form.fields[key].label = createLabel(key)
             form.fields[key].initial = value
             form.fields[key].required = True
+            if key in settings.MESSAGES:
+                form.fields[key].help_text = settings.MESSAGES[key]
 
     return form
