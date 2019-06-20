@@ -211,4 +211,4 @@ CUP_CATEGORY = {
     (4, "National")
 }
 
-MESSAGES = json.load(open('/home/gotzl/workspace/accservermanager/accservermanager/messages.json', 'r'))
+MESSAGES = json.load(open(os.path.join(BASE_DIR, 'accservermanager/messages.json'), 'r'))
