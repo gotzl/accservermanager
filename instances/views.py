@@ -221,7 +221,9 @@ def create(request):
         # link the requested config into the instance environment
         os.symlink(cfg, os.path.join(inst_dir, 'cfg', 'event.json'))
 
-        def parse_val(d, value):
+        def parse_val(key, d, value):
+            if key not in d: return value
+
             if isinstance(d[key], list): value = None
             elif isinstance(d[key], int): value = int(value)
             elif isinstance(d[key], float): value = float(value)
@@ -234,14 +236,14 @@ def create(request):
         cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
         cfg_keys = ['udpPort','tcpPort', 'maxClients', 'registerToLobby']
         for key in cfg_keys:
-            value = parse_val(cfg, request.POST[key])
+            value = parse_val(key, cfg, request.POST[key])
             if value is not None: cfg[key] = value
         json.dump(cfg, open(os.path.join(inst_dir, 'cfg', 'configuration.json'), 'w'))
 
         # update the settings.json
         stings = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'settings.json'), 'r'))
         for key in filter(lambda x:x not in cfg_keys, request.POST.keys()):
-            value = parse_val(stings, request.POST[key])
+            value = parse_val(key, stings, request.POST[key])
             if value is not None: stings[key] = value
         json.dump(stings, open(os.path.join(inst_dir, 'cfg', 'settings.json'), 'w'))
 
@@ -273,9 +275,9 @@ class InstanceForm(forms.Form):
         self.fields['safetyRatingRequirement'] = forms.IntegerField(max_value=99, min_value=-1)
         self.fields['racecraftRatingRequirement'] = forms.IntegerField(max_value=99, min_value=-1)
 
-        self.fields['isRaceLocked'] = forms.BooleanField()
-        self.fields['dumpLeaderboards'] = forms.BooleanField()
-        self.fields['registerToLobby'] = forms.BooleanField()
+        self.fields['isRaceLocked'] = forms.BooleanField(initial=False)
+        self.fields['dumpLeaderboards'] = forms.BooleanField(initial=True)
+        self.fields['registerToLobby'] = forms.BooleanField(initial=True)
 
 
         self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
