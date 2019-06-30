@@ -1,0 +1,42 @@
+{% extends "main.html" %}
+{% block content %}
+
+{% load render_table from django_tables2 %}
+{% load django_bootstrap_breadcrumbs %}
+{% block breadcrumbs %}
+{% clear_breadcrumbs %}
+{% for b, u in path %}
+{% breadcrumb_raw_safe b u %}
+{% endfor %}
+{% endblock %}
+
+
+<div class="container">
+    <div class="card">
+        <header>
+        {% render_breadcrumbs %}
+        </header>
+    </div>
+    <div class="card">
+        {% load material_form %}
+        <form name="instance_form" method="POST" >{% csrf_token %}
+            {% form form=form %}{% endform %}
+            <button class="btn green" type="submit">Create</button>
+        </form>
+    </div>
+    <div class="card">
+        <form method="post">
+            {% render_table table %}
+        </form>
+
+    </div>
+</div>
+
+<script>
+$('table tbody tr').click(function () {
+    let url = $(this).closest('tr').attr('url');
+    window.location.href=url;
+});
+</script>
+
+{% endblock %}

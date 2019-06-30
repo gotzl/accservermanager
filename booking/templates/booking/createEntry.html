@@ -1,0 +1,28 @@
+{% extends "main.html" %}
+{% block content %}
+
+{% load django_bootstrap_breadcrumbs %}
+{% block breadcrumbs %}
+{% clear_breadcrumbs %}
+{% for b, u in path %}
+{% breadcrumb_raw_safe b u %}
+{% endfor %}
+{% endblock %}
+
+<div class="container">
+    <div class="card">
+        <header>
+            {% render_breadcrumbs %}
+        </header>
+    </div>
+    <div class="card">
+        {% load material_form %}
+        <form name="instance_form" method="POST" >{% csrf_token %}
+            {% form form=form %}{% endform %}
+            <button class="btn green" type="submit">Save</button>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

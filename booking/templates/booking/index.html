@@ -1,0 +1,42 @@
+{% extends "main.html" %}
+{% block content %}
+
+{% load render_table from django_tables2 %}
+{% load django_bootstrap_breadcrumbs %}
+{% block breadcrumbs %}
+{% clear_breadcrumbs %}
+{% for b, u in path %}
+{% breadcrumb_raw_safe b u %}
+{% endfor %}
+{% endblock %}
+
+
+<div class="container">
+    <div class="card" id="entrylists">
+        <h5><a href="entrylists">Entry lists</a></h5>
+        {% render_table entrylists %}
+    </div>
+    <div class="card" id="entries">
+        <h5><a href="entries">List of entry options</a></h5>
+        {% render_table entries %}
+    </div>
+    <div class="card" id="drivers">
+        <h5><a href="entries">List of driver options</a></h5>
+        {% render_table drivers %}
+    </div>
+</div>
+
+<script>
+$('table tbody tr').click(function () {
+    let url = $(this).closest('tr').attr('url');
+    let type = $(this).closest('tr')
+        .parent()
+        .parent()
+        .parent()
+        .parent()
+        .attr('id');
+    window.location.href=type+'/'+url;
+});
+</script>
+
+{% endblock %}

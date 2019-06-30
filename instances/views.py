@@ -1,9 +1,13 @@
 from django.contrib.auth.decorators import login_required
+from django.forms import model_to_dict
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
 from django import forms
 
 from random_word import RandomWords
+
+from booking.models import EntryList
+
 try: r = RandomWords()
 except: r = None
 
@@ -245,6 +249,15 @@ def create(request):
             if value is not None: stings[key] = value
         json.dump(stings, open(os.path.join(inst_dir, 'cfg', 'settings.json'), 'w'))
 
+        # create entrylist.json if entrylist selected
+        if 'entries' in request.POST and request.POST['entries'] != '':
+            entries = model_to_dict( EntryList.objects.get(pk=request.POST['entries']) )
+            entries['entries'] = [model_to_dict(e) for e in entries['entries']]
+            for entry in entries['entries']:
+                entry['drivers'] = [model_to_dict(d) for d in entry['drivers']]
+            json.dump(entries,
+                      open(os.path.join(inst_dir, 'cfg', 'entrylist.json'), 'w'))
+
         # start the instance
         start(request, name)
 
@@ -298,6 +311,13 @@ class InstanceForm(forms.Form):
                 continue
             self.fields[key].initial = data[key]
 
+        self.fields['entries'] = forms.TypedChoiceField(
+            choices=[('','-----')]+[(e.pk, e.name) for e in EntryList.objects.all()],
+            empty_value=None,
+            initial=None,
+            required=False,
+            label='EntryList',
+        )
 
 
 def random_word():

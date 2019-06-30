@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'cfgs',
     'instances',
     'results',
+    'booking',
 ]
 
 MIDDLEWARE = [

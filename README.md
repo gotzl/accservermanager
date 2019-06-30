@@ -77,3 +77,10 @@ services:
 volumes:
   accservermanager-data:
 ```
+
+
+## Updating
+Updating from v0.3 to v0.4 requires to update the DB scheme:
+```
+python manage.py migrate --run-syncdb
+```
