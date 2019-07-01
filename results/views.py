@@ -19,6 +19,7 @@ class LeaderBoard(tables.Table):
     drivers = Column(accessor='car.drivers')
     bestLap = Column(accessor='timing.bestLap')
     laps = Column(accessor='timing.lapCount')
+    totaltime = Column(accessor='timing.totalTime')
 
     def __init__(self, *args, **kwargs):
         super(LeaderBoard, self).__init__(*args, **kwargs)
@@ -33,11 +34,17 @@ class LeaderBoard(tables.Table):
     def render_drivers(self, value):
         return '/'.join([d['shortName'] for d in value])
 
-    def render_bestLap(self, value):
+    def render_time(self, value):
         s = value//1000
         m = s//60
         s %=60
         return '%i:%02i.%03i'%(m, s, value%1000)
+
+    def render_bestLap(self, value):
+        return self.render_time(value)
+
+    def render_totaltime(self, value):
+        return self.render_time(value)
 
 
 class Results(tables.Table):
@@ -56,13 +63,14 @@ def results(request, *args, **kwargs):
     results_path = os.path.join(DATA_DIR, 'instances', instance, 'results')
     results = json.load(open(os.path.join(results_path, result+'.json'), 'rb'))
 
-    # drill down into the json object to the selected part
-    obj = results
-    path = ['results', result]
+    path = request.path
+    if path[0] == '/': path = path[1:]
+    if path[-1] == '/':path = path[:-1]
+    path = path.split('/')
 
     context = {
         'path': [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],
-        'table': LeaderBoard(obj['leaderBoardLines'])
+        'table': LeaderBoard(results['leaderBoardLines'])
     }
     return render(request, 'results/results.html', context)
 
@@ -82,8 +90,13 @@ def resultSelect(request, instance):
             wetSession=r['isWetSession'],
         ))
 
+    path = request.path
+    if path[0] == '/': path = path[1:]
+    if path[-1] == '/':path = path[:-1]
+    path = path.split('/')
 
     context = {
+        'path' : [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],
         'table' : Results(results),
     }
     return render(request, 'results/results.html', context)
