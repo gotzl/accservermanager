@@ -2,25 +2,6 @@
 {% block content %}
 
 <style>
-    #cfg-wrapper {
-        height:100%;
-        position:relative;
-    }
-
-    #cfg-inner-wrapper {
-        height:100%;
-    }
-
-    #cfg {
-        height: 100%;
-        overflow: auto;
-        padding-left: 10px;
-    }
-
-    input[type=submit] {
-      width: 100%;
-    }
-
     .container {
         padding: 20px 16px;
     }
@@ -34,13 +15,11 @@
 {% endfor %}
 {% endblock %}
 
-<div id="cfg-wrapper" class="container">
-    <div class="card" style="height:100%">
-        <div id="cfg-inner-wrapper">
-            {% render_breadcrumbs %}
-            {% load django_tables2 %}
-            {% render_table table %}
-        </div>
+<div class="container">
+    <div class="card">
+        {% render_breadcrumbs %}
+        {% load django_tables2 %}
+        {% render_table table %}
     </div>
 </div>
 

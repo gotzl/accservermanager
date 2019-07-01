@@ -78,7 +78,7 @@ def results(request, *args, **kwargs):
 def resultSelect(request, instance):
     """ Show available results """
     results_path = os.path.join(DATA_DIR, 'instances', instance, 'results')
-    files = glob.glob('%s/*result*.json'%(results_path))
+    files = sorted(glob.glob('%s/*result*.json'%(results_path)))
 
     results = []
     for f in files:
