@@ -224,7 +224,8 @@ def create(request):
         def parse_val(key, d, value):
             if key in ['registerToLobby',
                        'dumpLeaderboards',
-                       'isRaceLocked']:
+                       'isRaceLocked',
+                       'randomizeTrackWhenEmpty']:
                 return 1 if value=='on' else 0
 
             if isinstance(d[key], list): value = None
@@ -281,6 +282,7 @@ class InstanceForm(forms.Form):
         self.fields['isRaceLocked'] = forms.BooleanField(initial=False)
         self.fields['dumpLeaderboards'] = forms.BooleanField(initial=True)
         self.fields['registerToLobby'] = forms.BooleanField(initial=True)
+        self.fields['randomizeTrackWhenEmpty'] = forms.BooleanField(initial=False)
 
 
         self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
