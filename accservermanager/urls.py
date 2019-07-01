@@ -22,7 +22,7 @@ urlpatterns = [
     path('cfgs/', include('cfgs.urls')),
     path('booking/', include('booking.urls')),
     path('instances/', include('instances.urls')),
-    path('results/', include('results.urls')),
+    path('instances/<instance>/results/', include('results.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
 ]

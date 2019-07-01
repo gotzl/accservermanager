@@ -11,20 +11,11 @@ def getCfgs():
                     glob.glob('%s/*.json'%(settings.CONFIGS))))
 
 
-class CustomSelect(forms.Select):
-    """ Select widget where the option with value None or '' is default or hidden """
-    def create_option(self, name, value, label, selected, index, subindex=None, attrs=None):
-        options = super(CustomSelect, self).create_option(name, value, label, selected, index, subindex=None, attrs=None)
-        if value is None or len(value)==0: options['attrs'] = {'selected':True, 'disabled':True, 'hidden':True}
-        # print(value)
-        return options
-
-
 def getCfgsField(selected=None, attrs=None):
     """ A select component showing the available configs """
-    return forms.ChoiceField(
-        widget=CustomSelect(attrs=attrs),
-        choices=[('','')] + [(i,i) for i in getCfgs()],
+    return forms.TypedChoiceField(
+        empty_value=None,
+        choices=[(i,i) for i in getCfgs()],
         initial=None if selected is None else selected,
         label='',
     )

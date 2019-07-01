@@ -38,71 +38,8 @@
     <div class="card" style="height:100%">
         <div id="cfg-inner-wrapper">
             {% render_breadcrumbs %}
-            {% if form is not None or table is not None %}
-            <div id="cfg">
-
-
-                {% if form is not None %}
-                {% load material_form %}
-                <form action="" method="post" style="padding-right:20px">
-                    <fieldset disabled>
-                    {% form form=form %}{% endform %}
-                    </fieldset>
-                </form>
-                {% endif%}
-
-                {% if table is not None %}
-                {% load django_tables2 %}
-                {% render_table table %}
-                {% endif%}
-
-            </div>
-            {% endif%}
-
-            {% if forms is not None %}
-            {% load material_form %}
-            <div id="cfg">
-                {% for frm in forms %}
-                <div id="form{{forloop.counter0}}" class="card" style="display:none">
-                    <!--<h6 style="font-weight:bold">{{request.path}}/{{forloop.counter0}}</h6>-->
-                    <form action="" method="post" style="padding-right:20px">
-                        <!--{{ frm }}-->
-                        <fieldset disabled>
-                        {% form form=frm %}{% endform %}
-                        </fieldset>
-                    </form>
-                </div>
-                {% endfor %}
-
-                <input id="prevbutton" type="button" value="Previous" class="btn blue" disabled/>
-                <input id="nextbutton" type="button" value="Next" class="btn blue" disabled/>
-            </div>
-
-            <script>
-                var form_id = 0
-
-                function handleButtons(new_form_id) {
-                    form_id = new_form_id
-                    $("div[id^='form']").hide();
-                    $("#form"+new_form_id).show();
-
-                    if (new_form_id>0) $("#prevbutton").prop('disabled', false);
-                    else $("#prevbutton").prop('disabled', true);
-
-                    if ($('#form'+(new_form_id+1)).length) {
-                        $("#nextbutton").prop('disabled', false);
-                    } else {
-                        $("#nextbutton").prop('disabled', true);
-                    }
-                }
-
-                $("#prevbutton").click(function (){handleButtons(form_id-1)})
-                $("#nextbutton").click(function (){handleButtons(form_id+1)})
-
-                handleButtons(form_id)
-            </script>
-
-            {% endif %}
+            {% load django_tables2 %}
+            {% render_table table %}
         </div>
     </div>
 </div>
