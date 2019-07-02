@@ -6,7 +6,8 @@ from django.shortcuts import render
 
 import os, json
 
-from django_tables2 import tables, utils, Column, TemplateColumn
+from django.utils.html import format_html
+from django_tables2 import tables, Column, TemplateColumn, RequestConfig
 
 from accservermanager.settings import CAR_MODEL_TYPES, DATA_DIR
 
@@ -17,7 +18,7 @@ class LeaderBoard(tables.Table):
     carModel = Column(accessor='car.carModel')
     teamName = Column(accessor='car.teamName')
     drivers = Column(accessor='car.drivers')
-    bestLap = Column(accessor='timing.bestLap')
+    bestLap = Column(accessor='timing')
     laps = Column(accessor='timing.lapCount')
     totaltime = Column(accessor='timing.totalTime')
 
@@ -34,16 +35,21 @@ class LeaderBoard(tables.Table):
         return 'Unknown model %i'%value
 
     def render_drivers(self, value):
-        return '/'.join([d['shortName'] for d in value])
+        short = ' / '.join([d['shortName'] for d in value])
+        long = ' / '.join(['%s %s'%(d['firstName'],d['lastName']) for d in value])
+        return format_html('<p title="{}">{}</p>', long, short)
 
     def render_time(self, value):
         s = value//1000
         m = s//60
         s %=60
+        if m==0: return '%02i.%03i'%(s, value%1000)
         return '%i:%02i.%03i'%(m, s, value%1000)
 
     def render_bestLap(self, value):
-        return self.render_time(value)
+        return format_html('<p title="{}">{}</p>',
+                           ' | '.join(list(map(self.render_time, value['bestSplits']))),
+                           self.render_time(value['bestLap']))
 
     def render_totaltime(self, value):
         return self.render_time(value)
@@ -80,7 +86,7 @@ def results(request, *args, **kwargs):
 def resultSelect(request, instance):
     """ Show available results """
     results_path = os.path.join(DATA_DIR, 'instances', instance, 'results')
-    files = sorted(glob.glob('%s/*result*.json'%(results_path)))
+    files = sorted(glob.glob('%s/*result*.json'%(results_path)), reverse=True)
 
     results = []
     for f in files:
@@ -97,8 +103,11 @@ def resultSelect(request, instance):
     if path[-1] == '/':path = path[:-1]
     path = path.split('/')
 
+    table = Results(results)
+    RequestConfig(request).configure(table)
+
     context = {
         'path' : [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],
-        'table' : Results(results),
+        'table' : table,
     }
     return render(request, 'results/results.html', context)
