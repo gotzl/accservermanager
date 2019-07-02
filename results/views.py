@@ -29,7 +29,9 @@ class LeaderBoard(tables.Table):
         return '%d' % next(self.counter)
 
     def render_carModel(self, value):
-        return CAR_MODEL_TYPES[value][1]
+        for model in CAR_MODEL_TYPES:
+            if model[0]==value: return model[1]
+        return 'Unknown model %i'%value
 
     def render_drivers(self, value):
         return '/'.join([d['shortName'] for d in value])
