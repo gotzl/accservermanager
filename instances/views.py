@@ -92,7 +92,15 @@ executors = {}
 def instance(request, name):
     if name not in executors: return HttpResponseRedirect('/instances')
     template = loader.get_template('instances/instance.html')
-    return HttpResponse(template.render({}, request))
+
+    path = request.path
+    if path[0] == '/': path = path[1:]
+    if path[-1] == '/':path = path[:-1]
+    path = path.split('/')
+
+    return HttpResponse(template.render(
+        {'path' : [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],},
+        request))
 
 
 @login_required

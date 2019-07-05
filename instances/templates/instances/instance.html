@@ -7,8 +7,17 @@
 }
 </style>
 
+{% load django_bootstrap_breadcrumbs %}
+{% block breadcrumbs %}
+{% clear_breadcrumbs %}
+{% for b, u in path %}
+{% breadcrumb_raw_safe b u %}
+{% endfor %}
+{% endblock %}
+
 <div class="container">
     <div class="card" style="padding: 10px 16px 20px 16px;">
+        {% render_breadcrumbs %}
         <h6 style="font-weight:bold">Latest stdout | <a href="{{request.path}}stdout">Download full</a>  </h6>
         <textarea id="stdout" style="height: 200px;" disabled></textarea>
 
