@@ -258,7 +258,7 @@ def create(request):
 
         # update the settings.json
         stings = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'settings.json'), 'r'))
-        for key in filter(lambda x:x not in cfg_keys+['csrfmiddlewaretoken', 'cfg','instanceName'], request.POST.keys()):
+        for key in filter(lambda x:x not in cfg_keys+['csrfmiddlewaretoken', 'cfg','instanceName','entries'], request.POST.keys()):
             value = parse_val(key, stings, request.POST[key])
             if value is not None: stings[key] = value
         json.dump(stings, open(os.path.join(inst_dir, 'cfg', 'settings.json'), 'w'))
