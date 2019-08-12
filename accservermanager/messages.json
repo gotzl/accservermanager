@@ -25,6 +25,7 @@
   "rain": "Sets the baseline rain level, see  \u201cRace weekend simulation\u201d. Values (0.0, 0.1, \u2026. 1.0). Values greater 0.1 may additionally override the cloud level",
   "weatherRandomness": "Sets the dynamic weather level, see  \u201cRace weekend simulation\u201d. \n0 = static weather; 1-3 fairly realistic weather; 4-7 more chaotic and sensational",
   "postQualySeconds": "The number of seconds the Qualifying result is displayed. Should not be set to 0, otherwise grid spawning is not secure.",
+  "postRaceSeconds": "Additional time after the race ended for everyone, before the next race weekend starts",
   "sessions": "A list of session objects, see the next table",
   "hourOfDay": "Session starting hour of the day (values 0 - 23)",
   "dayOfWeekend": "Race weekend day: 1 = Friday, 2 = Saturday, 3 = Sunday; see  <a href=\"https://www.assettocorsa.net/forum/index.php?threads/the-server-admin-handbook-thread.58245/\">\u201c </a>\n<a href=\"https://www.assettocorsa.net/forum/index.php?threads/the-server-admin-handbook-thread.58245/\">Race weekend simulation\u201d.</a>",
