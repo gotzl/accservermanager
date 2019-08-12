@@ -251,7 +251,10 @@ def create(request):
             if key in ['registerToLobby',
                        'dumpLeaderboards',
                        'isRaceLocked',
-                       'randomizeTrackWhenEmpty']:
+                       'randomizeTrackWhenEmpty',
+                       'allowAutoDQ',
+                       'shortFormationLap',
+                       'dumpEntryList']:
                 return 1 if value=='on' else 0
 
             if isinstance(d[key], list): value = None
