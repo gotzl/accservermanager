@@ -94,6 +94,8 @@ def instance(request, name):
     if path[-1] == '/':path = path[:-1]
     path = path.split('/')
 
+    print([(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)])
+
     return HttpResponse(template.render(
         {'path' : [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],},
         request))
@@ -111,6 +113,24 @@ def stderr(request, name):
     if 'lines' not in request.POST:
         return download(executors[name].stderr)
     return log(executors[name].stderr, int(request.POST['lines']))
+
+
+@login_required
+def download_configuration_file(request, name):
+    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'configuration.json')
+    return download(cfg, content_type='text/json')
+
+
+@login_required
+def download_event_file(request, name):
+    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'event.json')
+    return download(cfg, content_type='text/json')
+
+
+@login_required
+def download_settings_file(request, name):
+    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'settings.json')
+    return download(cfg, content_type='text/json')
 
 
 # https://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail
@@ -136,10 +156,10 @@ def log(_f, n):
     raise Http404
 
 
-def download(_f):
+def download(_f, content_type="text/plain"):
     if _f is not None and os.path.isfile(_f):
         with open(_f, 'r', encoding='latin-1') as fh:
-            response = HttpResponse(fh.read(), content_type="text/plain")
+            response = HttpResponse(fh.read(), content_type=content_type)
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(_f)
             return response
     raise Http404
