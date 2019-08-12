@@ -94,8 +94,6 @@ def instance(request, name):
     if path[-1] == '/':path = path[:-1]
     path = path.split('/')
 
-    print([(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)])
-
     return HttpResponse(template.render(
         {'path' : [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],},
         request))
