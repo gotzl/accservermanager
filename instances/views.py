@@ -292,6 +292,9 @@ class InstanceForm(forms.Form):
         self.fields['registerToLobby'] = forms.BooleanField(initial=True)
         self.fields['randomizeTrackWhenEmpty'] = forms.BooleanField(initial=False)
 
+        self.fields['allowAutoDQ'] = forms.BooleanField(initial=False)
+        self.fields['shortFormationLap'] = forms.BooleanField(initial=False)
+        self.fields['dumpEntryList'] = forms.BooleanField(initial=False)
 
         self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
         self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
