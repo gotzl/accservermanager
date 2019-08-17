@@ -8,6 +8,16 @@
 </style>
 
 <div class="container">
+    {% if messages %}
+    <div class="card red">
+        {% for message in messages %}
+        <div class="alert alert-danger">
+            <strong>{{ message|escape }}</strong>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="card">
         {% load material_form %}
         <h6 style="font-weight:bold">Instance config</h6>
@@ -16,6 +26,7 @@
             {% form form=form %}{% endform %}
             <button class="btn green" type="submit">Start</button>
         </form>
+
     </div>
 </div>
 

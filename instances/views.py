@@ -1,83 +1,19 @@
+import os, shutil, json, time, string, glob
+
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import loader
-from django import forms
+from django.contrib import messages
 
 from random_word import RandomWords
+
+from instances.Executor import Executor
+from instances.InstanceForm import InstanceForm
+
 try: r = RandomWords()
 except: r = None
 
-import subprocess, time, datetime, string, glob
-from multiprocessing import Value
-from threading import Thread
-from pathlib import Path
-
-import os, shutil, json
-try: import resource
-except: resource = None
-
 from accservermanager import settings
-from cfgs.confEdit import createLabel
-from cfgs.confSelect import getCfgsField
-
-
-class Executor(Thread):
-    """
-    Thread for running the server process
-    """
-    def __init__(self, instanceDir):
-        super().__init__()
-
-        # add all configuration values to the object
-        for key, val in json.load(open(os.path.join(instanceDir, 'cfg', 'configuration.json'), 'r')).items():
-            setattr(self, key, val)
-        for key, val in json.load(open(os.path.join(instanceDir, 'cfg', 'settings.json'), 'r')).items():
-            setattr(self, key, val)
-
-        # find the name of the config file, just needed to display it in the instances list
-        self.config = Path(os.path.join(instanceDir, 'cfg', 'event.json')).resolve().name
-
-        self.p = None
-        self.stdout = None
-        self.stderr = None
-        self.retval = None
-        self.instanceDir = instanceDir
-
-        self.stop = Value('i', 0)
-
-
-    def run(self):
-        preexec_fn = None
-        exec = settings.ACCEXEC
-        if resource:
-            # in linux, limit ram to 1GB soft, 2GB hard
-            preexec_fn = lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31))
-        else:
-            # if 'resource' is not available, assume windows which needs to full path to the exec
-            exec = os.path.join(self.instanceDir, settings.ACCEXEC)
-
-        # fire up the server, store stderr to the log/ dir
-        _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-        self.stdout = os.path.join(self.instanceDir, 'log', 'stdout-%s.log'%(_tm))
-        self.stderr = os.path.join(self.instanceDir, 'log', 'stderr-%s.log'%(_tm))
-        self.p = subprocess.Popen(exec,
-                                  # set working dir
-                                  cwd=self.instanceDir,
-                                  # limit ram to 1GB soft, 2GB hard
-                                  preexec_fn=preexec_fn,
-                                  # shell=True,
-                                  universal_newlines=True,
-                                  stdout=open(self.stdout,'w'),
-                                  stderr=open(self.stderr,'w'))
-
-        # wait for the stop signal or for the server to die on its own
-        self.retval = None
-        while self.retval is None:
-            if self.stop.value == 1: self.p.kill()
-            time.sleep(1)
-            self.retval = self.p.poll()
-
-        print("Retval:",self.retval)
 
 
 # the server process execution threads
@@ -218,128 +154,88 @@ def start(request, name):
                         content_type='application/json')
 
 
+def render_from(request, form):
+    template = loader.get_template('instances/instances.html')
+    context = {
+        'form': form,
+        'executors': executors,
+    }
+    return HttpResponse(template.render(context, request))
+
+
+def write_config(name, inst_dir, form):
+    ### use the values of the default *.json as basis
+    cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', name), 'r'))
+    for key in cfg.keys():
+        if key not in form: continue
+        value = form[key].value()
+        if value is not None: cfg[key] = value
+
+    # write the file into the instances' directory
+    json.dump(cfg, open(os.path.join(inst_dir, 'cfg', name), 'w'))
+
+
 @login_required
 def create(request):
     """ handle create/start request from client """
+
+    # this function should only be entered via POST request
+    if request.method != 'POST':
+        return HttpResponseRedirect('/instances')
+
+    form = InstanceForm(request.POST)
     name = request.POST['instanceName']
 
+    # form is invalid...
+    if not form.is_valid():
+        messages.error(request, "Form is not valid")
+        return render_from(request, form)
+
+    # instance with similar name already exists
+    if name in executors:
+        messages.error(request, "Instance with similar name already exists")
+        return render_from(request, form)
+
+    if form['udpPort'].value() == form['tcpPort'].value():
+        messages.error(request,'UDP and TCP port have to be different')
+        return render_from(request, form)
+
+    # check if a running instance already uses the same ports
+    if len(list(filter(lambda x: x.is_alive() and
+                                  (form['udpPort'].value() in [x.udpPort, x.tcpPort] or
+                                   form['tcpPort'].value() in [x.udpPort, x.tcpPort]),
+                        executors.values()))) > 0:
+        messages.error(request, "The ports are already in use")
+        return render_from(request, form)
+
     # create instance environment
-    if name not in executors:
-        inst_dir = os.path.join(settings.INSTANCES, name)
+    inst_dir = os.path.join(settings.INSTANCES, name)
+    if os.path.isdir(inst_dir):
+        messages.error(request, "The instance directory exists already")
+        return render_from(request, form)
 
-        # return if dir already exist or ports are already in use or ports are equal
-        if os.path.isdir(inst_dir) or \
-                request.POST['udpPort'] == request.POST['tcpPort'] or \
-                len(list(filter(lambda x: x.is_alive() and
-                                          (request.POST['udpPort'] in [x.udpPort, x.tcpPort] or
-                                          request.POST['tcpPort'] in [x.udpPort, x.tcpPort]),
-                                executors.values()))) > 0:
-            return HttpResponseRedirect('/instances')
+    # create the directory for the instance, copy necessary files
+    os.makedirs(os.path.join(inst_dir, 'cfg'))
+    os.makedirs(os.path.join(inst_dir, 'log'))
+    for f in settings.SERVER_FILES:
+        shutil.copy(os.path.join(settings.ACCSERVER,f), os.path.join(inst_dir,f))
 
-        # create the directory for the instance, copy necessary files
-        os.makedirs(os.path.join(inst_dir, 'cfg'))
-        os.makedirs(os.path.join(inst_dir, 'log'))
-        for f in settings.SERVER_FILES:
-            shutil.copy(os.path.join(settings.ACCSERVER,f), os.path.join(inst_dir,f))
+    # the target configuration
+    cfg = os.path.join(settings.CONFIGS, form['cfg'].value() + '.json')
+    # link the requested config into the instance environment
+    os.symlink(cfg, os.path.join(inst_dir, 'cfg', 'event.json'))
 
-        # the target config
-        cfg = os.path.join(settings.CONFIGS, request.POST['cfg']+'.json')
-        # link the requested config into the instance environment
-        os.symlink(cfg, os.path.join(inst_dir, 'cfg', 'event.json'))
+    # write the configuration.json
+    write_config('configuration.json', inst_dir, form)
 
-        def parse_val(key, d, value):
-            if key in ['registerToLobby',
-                       'dumpLeaderboards',
-                       'isRaceLocked',
-                       'randomizeTrackWhenEmpty',
-                       'allowAutoDQ',
-                       'shortFormationLap',
-                       'dumpEntryList']:
-                return 1 if value=='on' else 0
+    # write the settings.json
+    write_config('settings.json', inst_dir, form)
 
-            if isinstance(d[key], list): value = None
-            elif isinstance(d[key], int): value = int(value)
-            elif isinstance(d[key], float): value = float(value)
-            elif not isinstance(d[key], str):
-                print('Unknown type',type(d[key]), type(value))
-                value = None
-            return value
+    # start the instance
+    start(request, name)
 
-        # update the configuration.json
-        cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
-        cfg_keys = ['udpPort','tcpPort', 'maxClients', 'registerToLobby']
-        for key in cfg_keys:
-            value = parse_val(key, cfg, request.POST[key])
-            if value is not None: cfg[key] = value
-        json.dump(cfg, open(os.path.join(inst_dir, 'cfg', 'configuration.json'), 'w'))
-
-        # update the settings.json
-        stings = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', 'settings.json'), 'r'))
-        for key in filter(lambda x:x not in cfg_keys+['csrfmiddlewaretoken', 'cfg','instanceName'], request.POST.keys()):
-            value = parse_val(key, stings, request.POST[key])
-            if value is not None: stings[key] = value
-        json.dump(stings, open(os.path.join(inst_dir, 'cfg', 'settings.json'), 'w'))
-
-        # start the instance
-        start(request, name)
-
+    messages.info(request, "Successfully started the instance")
     return HttpResponseRedirect('/instances')
-
-
-class InstanceForm(forms.Form):
-    """
-    Form used to fire up a new server instance
-    """
-    def __init__(self, data):
-        super().__init__()
-        self.fields['instanceName'] = forms.CharField(
-            max_length=100,
-            widget=forms.TextInput(attrs={"onkeyup":"nospaces(this)"}))
-
-        self.fields['serverName'] = forms.CharField(max_length=100)
-        self.fields['password'] = forms.CharField(max_length=100)
-        self.fields['spectatorPassword'] = forms.CharField(max_length=100)
-        self.fields['adminPassword'] = forms.CharField(max_length=100)
-
-        self.fields['maxClients'] = forms.IntegerField(max_value=100, min_value=0)
-        self.fields['spectatorSlots'] = forms.IntegerField(min_value=0)
-
-        self.fields['trackMedalsRequirement'] = forms.IntegerField(max_value=3, min_value=0)
-        self.fields['safetyRatingRequirement'] = forms.IntegerField(max_value=99, min_value=-1)
-        self.fields['racecraftRatingRequirement'] = forms.IntegerField(max_value=99, min_value=-1)
-
-        self.fields['isRaceLocked'] = forms.BooleanField(initial=False)
-        self.fields['dumpLeaderboards'] = forms.BooleanField(initial=True)
-        self.fields['registerToLobby'] = forms.BooleanField(initial=True)
-        self.fields['randomizeTrackWhenEmpty'] = forms.BooleanField(initial=False)
-
-        self.fields['allowAutoDQ'] = forms.BooleanField(initial=False)
-        self.fields['shortFormationLap'] = forms.BooleanField(initial=False)
-        self.fields['dumpEntryList'] = forms.BooleanField(initial=False)
-
-        self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
-        self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
-
-        self.fields['cfg'] = getCfgsField()
-        self.fields['cfg'].required = True
-        self.fields['cfg'].label = 'Config'
-
-        # generate a label, all fields are required
-        for key in self.fields:
-            self.fields[key].label = createLabel(key)
-            self.fields[key].required = True
-            if key in settings.MESSAGES:
-                self.fields[key].help_text = settings.MESSAGES[key]
-
-        # use defaults from the 'data' object
-        for key in data:
-            if key not in self.fields:
-                continue
-            self.fields[key].initial = data[key]
-
-        if self.fields['trackMedalsRequirement'].initial == -1:
-            self.fields['trackMedalsRequirement'].initial = 0
-
 
 
 def random_word():
@@ -364,16 +260,17 @@ def index(request):
     cfg['instanceName'] = random_word()
     cfg['serverName'] = 'ACC server'
     cfg['dumpLeaderboards'] = 1
+    cfg['registerToLobby'] = 1
+    cfg['dumpLeaderboards'] = 1
+
+    # overwrite nonsense trackMedalsRequirement default value
+    if cfg['trackMedalsRequirement'] == -1:
+        cfg['trackMedalsRequirement'] = 0
 
     for inst_dir in glob.glob(os.path.join(settings.INSTANCES, '*')):
         inst_name = os.path.split(inst_dir)[-1]
         if inst_name not in executors:
             executors[inst_name] = Executor(inst_dir)
 
-    template = loader.get_template('instances/instances.html')
-    context = {
-        'form': InstanceForm(cfg),
-        'executors': executors,
-    }
-    return HttpResponse(template.render(context, request))
+    return render_from(request, InstanceForm(cfg))
 

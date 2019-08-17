@@ -53,18 +53,8 @@
         <div id="cfg-inner-wrapper">
 
             <header id="cfgs">
-                <form action="" method="post">{% csrf_token %}
-                    {{ cfgs }}
-                </form>
                 {% render_breadcrumbs %}
             </header>
-
-            <!--{% if cfg is not None %}-->
-            <!--<sidenav>-->
-                <!--{% for i,j in keys %}-->
-                <!--<a style="font-size:16px; font-weight: bold; display:block;" href="/cfgs/{{cfg}}/{{i}}">{{ j }}</a>-->
-                <!--{% endfor %}-->
-            <!--</sidenav>-->
 
             {% if form is not None %}
             {% load material_form %}
@@ -138,7 +128,6 @@
                 handleButtons(form_id)
             </script>
 
-            {% endif %}
             {% endif %}
 
 
