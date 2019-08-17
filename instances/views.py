@@ -167,7 +167,7 @@ def write_config(name, inst_dir, form):
     ### use the values of the default *.json as basis
     cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', name), 'r'))
     for key in cfg.keys():
-        if key not in form: continue
+        if key not in form.fields: continue
         value = form[key].value()
         if value is not None: cfg[key] = value
 
