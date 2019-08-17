@@ -175,6 +175,7 @@ def write_config(name, inst_dir, form):
 
     for key in keys:
         value = form.cleaned_data[key]
+        if isinstance(value, bool): value = int(value)
         if value is not None: cfg[key] = value
 
     # write the file into the instances' directory
