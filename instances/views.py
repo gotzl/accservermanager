@@ -113,6 +113,24 @@ def stderr(request, name):
     return log(executors[name].stderr, int(request.POST['lines']))
 
 
+@login_required
+def download_configuration_file(request, name):
+    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'configuration.json')
+    return download(cfg, content_type='text/json')
+
+
+@login_required
+def download_event_file(request, name):
+    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'event.json')
+    return download(cfg, content_type='text/json')
+
+
+@login_required
+def download_settings_file(request, name):
+    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'settings.json')
+    return download(cfg, content_type='text/json')
+
+
 # https://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail
 def tail(f, n=10):
     assert n >= 0
@@ -136,10 +154,10 @@ def log(_f, n):
     raise Http404
 
 
-def download(_f):
+def download(_f, content_type="text/plain"):
     if _f is not None and os.path.isfile(_f):
         with open(_f, 'r', encoding='latin-1') as fh:
-            response = HttpResponse(fh.read(), content_type="text/plain")
+            response = HttpResponse(fh.read(), content_type=content_type)
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(_f)
             return response
     raise Http404
@@ -233,7 +251,10 @@ def create(request):
             if key in ['registerToLobby',
                        'dumpLeaderboards',
                        'isRaceLocked',
-                       'randomizeTrackWhenEmpty']:
+                       'randomizeTrackWhenEmpty',
+                       'allowAutoDQ',
+                       'shortFormationLap',
+                       'dumpEntryList']:
                 return 1 if value=='on' else 0
 
             if isinstance(d[key], list): value = None
@@ -292,6 +313,9 @@ class InstanceForm(forms.Form):
         self.fields['registerToLobby'] = forms.BooleanField(initial=True)
         self.fields['randomizeTrackWhenEmpty'] = forms.BooleanField(initial=False)
 
+        self.fields['allowAutoDQ'] = forms.BooleanField(initial=False)
+        self.fields['shortFormationLap'] = forms.BooleanField(initial=False)
+        self.fields['dumpEntryList'] = forms.BooleanField(initial=False)
 
         self.fields['udpPort'] = forms.IntegerField(max_value=None, min_value=1000)
         self.fields['tcpPort'] = forms.IntegerField(max_value=None, min_value=1000)
