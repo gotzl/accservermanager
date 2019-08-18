@@ -20,6 +20,16 @@ from instances.InstanceForm import InstanceForm
 executors = {}
 
 
+# resources a running instance uses and can be viewed/downloaded
+# format is (path,label,text), see instance.html
+resources = [
+    ('stdout',  "Latest stdout", "Download full"),
+    ('stderr',  "Latest stderr", "Download full"),
+    ('configuration',  "configuration.json", "Download"),
+    ('event',  "event.json", "Download"),
+    ('settings',  "settings.json", "Download"),
+]
+
 @login_required
 def instance(request, name):
     if name not in executors: return HttpResponseRedirect('/instances')
@@ -31,7 +41,8 @@ def instance(request, name):
     path = path.split('/')
 
     return HttpResponse(template.render(
-        {'path' : [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],},
+        {'path' : [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],
+         'resources': [dict(path=r[0], label=r[1], text=r[2], update=r[0] in ['stdout','stderr']) for r in resources]},
         request))
 
 
