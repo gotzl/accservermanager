@@ -7,11 +7,14 @@ import os
 # ALLOWED_HOSTS = []
 
 # The ACC server exe, in case of linux, wine is used to execute the binary
-ACCEXEC = ['wine','accServer.exe']      # windows: just set it to 'accServer.exe' (no list!)
-ACCSERVER = '/server'                   # windows: 'C:\\PATH\\TO\\ACC\\server'
+WINE_PATH = os.getenv('WINE_PATH', 'wine')                          # defaults to 'wine', windows: just set to empty string ""
+ACC_SERVER_PATH = os.getenv('ACC_SERVER_PATH', 'accServer.exe')     # defaults to 'accServer.exe'
+ACCEXEC = [i for i in [WINE_PATH, ACC_SERVER_PATH] if i]            # Omit WINE_PATH if empty
+
+ACCSERVER = os.getenv('ACCSERVER', '/server')                       # defaults to '/server', windows: 'C:\\PATH\\TO\\ACC\\server'
 
 # Directory where configs and instances are placed
 # (docker: this folder is mounted from the host via a docker volume)
-DATA_DIR = '/data'                      # s.t. like '/tmp/accserver-data' or 'C:\\Users\\someuser\\accserver-data'
+DATA_DIR = os.getenv('DATA_DIR', '/data')                           # defaults to /data, s.t. like '/tmp/accserver-data' or 'C:\\Users\\someuser\\accserver-data'
 CONFIGS = os.path.join(DATA_DIR, 'configs')
 INSTANCES = os.path.join(DATA_DIR, 'instances')

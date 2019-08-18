@@ -1,29 +1,27 @@
-FROM ubuntu:latest
+FROM python:3.7.4-alpine3.10
 
-RUN dpkg --add-architecture i386 && \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y wine-development python3-pip && \
-    apt-get clean  && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache shadow wine freetype ncurses-libs && \
+    ln -s /usr/bin/wine64 /usr/bin/wine && \
+    rm -rf /var/cache/apk/*
 
 RUN mkdir -p /accservermanager /data
 
 WORKDIR /accservermanager
 
 RUN useradd -ms /bin/bash someuser && \
-        chown -R someuser:someuser /accservermanager /data
+    chown -R someuser:someuser /accservermanager /data
 
 USER someuser
 VOLUME /data
 
-ADD requirements.txt .
+COPY ./requirements.txt .
 RUN pip3 install --user --no-cache-dir -r requirements.txt
 
 ENV WINEARCH=win64 \
     WINEDEBUG=-all
 RUN wineboot --init
 
-ADD . /accservermanager
+COPY . /accservermanager
 
-EXPOSE 9231 9232 8000
+EXPOSE 9231/udp 9232/tcp 8000/tcp
 CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]

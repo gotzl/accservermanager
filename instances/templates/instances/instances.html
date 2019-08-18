@@ -2,12 +2,25 @@
 {% block content %}
 
 <style>
-.container {
-    padding: 20px 16px;
-}
+    .container {
+        padding: 20px 16px;
+    }
 </style>
 
 <div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                        class="card red"
+                 {% else %}  class="card green"
+                 {% endif %}>
+                <div id="message" {% if message.tags %} class="{{ message.tags }}" {% endif %} style="padding: 10px 5px;">
+                    <strong>{{ message|escape }}</strong>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <div class="card">
         {% load material_form %}
         <h6 style="font-weight:bold">Instance config</h6>
@@ -16,6 +29,7 @@
             {% form form=form %}{% endform %}
             <button class="btn green" type="submit">Start</button>
         </form>
+
     </div>
 </div>
 
@@ -57,6 +71,10 @@
 </div>
 
 <script>
+    $('#message').on('click', function(){
+        $(this).parent().remove();
+    });
+
     function start(el, name) {
         el.innerHTML  = 'Starting'
         el.disabled = true;

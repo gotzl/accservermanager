@@ -20,9 +20,9 @@ if __name__== "__main__":
     for b in re.findall(outer, open(sys.argv[1]).read()):
         for (key, value) in re.findall(pattern, b):
             key = key.replace('&#160;',' ').replace('<br/>','').strip()
-            value = value.replace('&#160;',' ').replace('<br/>','').strip()
+            value = value.replace('&#160;',' ').replace('<br/>','').replace('\n','').strip()
             value = re.sub(r'href="(.*)"',r'href="https://www.assettocorsa.net/forum/index.php?threads/the-server-admin-handbook-thread.58245/"', value)
             messages[key] = value
 
     print(messages.keys())
-    json.dump(messages, open('messages.json', 'w'))
+    json.dump(messages, open('messages.json', 'w'), sort_keys=True, indent=4)

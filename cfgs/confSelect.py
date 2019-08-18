@@ -11,13 +11,13 @@ def getCfgs():
                     glob.glob('%s/*.json'%(settings.CONFIGS))))
 
 
-def getCfgsField(selected=None, attrs=None):
+def getCfgsField(selected=None, **kwargs):
     """ A select component showing the available configs """
     return forms.TypedChoiceField(
         empty_value=None,
         choices=[(i,i) for i in getCfgs()],
         initial=None if selected is None else selected,
-        label='',
+        **kwargs
     )
 
 
@@ -25,7 +25,7 @@ class CfgsForm(forms.Form):
     """ A form with a select component showing the available configs """
     def __init__(self, selected=None):
         super().__init__()
-        self.fields['cfgs'] = getCfgsField(selected, attrs={"onChange":'this.form.submit()'})
+        self.fields['cfgs'] = getCfgsField(selected)
 
 
 class CfgCreate(forms.Form):
