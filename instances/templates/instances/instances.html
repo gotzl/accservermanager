@@ -2,20 +2,23 @@
 {% block content %}
 
 <style>
-.container {
-    padding: 20px 16px;
-}
+    .container {
+        padding: 20px 16px;
+    }
 </style>
 
 <div class="container">
     {% if messages %}
-    <div class="card red">
         {% for message in messages %}
-        <div class="alert alert-danger">
-            <strong>{{ message|escape }}</strong>
-        </div>
+            <div {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                        class="card red"
+                 {% else %}  class="card green"
+                 {% endif %}>
+                <div id="message" {% if message.tags %} class="{{ message.tags }}" {% endif %} style="padding: 10px 5px;">
+                    <strong>{{ message|escape }}</strong>
+                </div>
+            </div>
         {% endfor %}
-    </div>
     {% endif %}
 
     <div class="card">
@@ -68,6 +71,10 @@
 </div>
 
 <script>
+    $('#message').on('click', function(){
+        $(this).parent().remove();
+    });
+
     function start(el, name) {
         el.innerHTML  = 'Starting'
         el.disabled = true;
