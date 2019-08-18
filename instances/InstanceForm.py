@@ -45,7 +45,6 @@ class InstanceForm(forms.Form):
     cfg = getCfgsField(label='Config', required=False)
 
     entries = forms.TypedChoiceField(
-        choices=[('','-----')]+[(e.pk, e.name) for e in EntryList.objects.all()],
         empty_value=None,
         initial=None,
         required=False,
@@ -56,7 +55,7 @@ class InstanceForm(forms.Form):
         super().__init__(data)
 
         for key in self.fields:
-            if key=='cfg': continue
+            if key in ['cfg', 'entries'] : continue
             # generate better label
             self.fields[key].label = createLabel(key)
 
@@ -67,3 +66,7 @@ class InstanceForm(forms.Form):
             # use default values from the 'data' object
             if key in data:
                 self.fields[key].initial = data[key]
+
+        # get the available entrylists
+        self.fields['entries'].choices = [('','-----')]+[(e.pk, e.name) for e in EntryList.objects.all()]
+

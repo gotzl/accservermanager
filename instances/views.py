@@ -28,6 +28,7 @@ resources = [
     ('configuration',  "configuration.json", "Download"),
     ('event',  "event.json", "Download"),
     ('settings',  "settings.json", "Download"),
+    ('entrylist',  "entrylist.json", "Download"),
 ]
 
 @login_required
@@ -75,6 +76,12 @@ def download_event_file(request, name):
 @login_required
 def download_settings_file(request, name):
     cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'settings.json')
+    return download(cfg, content_type='text/json')
+
+
+@login_required
+def download_entrylist_file(request, name):
+    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'entrylist.json')
     return download(cfg, content_type='text/json')
 
 

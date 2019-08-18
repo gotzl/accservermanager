@@ -14,4 +14,5 @@ urlpatterns = [
     path('<name>/configuration', views.download_configuration_file, name='configuration'),
     path('<name>/event', views.download_event_file, name='event'),
     path('<name>/settings', views.download_settings_file, name='settings'),
+    path('<name>/entrylist', views.download_entrylist_file, name='entrylist'),
 ]
