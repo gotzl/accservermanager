@@ -1,5 +1,6 @@
 from django import forms
 
+from booking.models import EntryList
 from cfgs.confEdit import createLabel
 from cfgs.confSelect import getCfgsField
 
@@ -42,6 +43,14 @@ class InstanceForm(forms.Form):
     # There is an issue with the 'required' error, so set this field
     # to not-required. This is ok, since it is always pre-filled.
     cfg = getCfgsField(label='Config', required=False)
+
+    entries = forms.TypedChoiceField(
+        choices=[('','-----')]+[(e.pk, e.name) for e in EntryList.objects.all()],
+        empty_value=None,
+        initial=None,
+        required=False,
+        label='EntryList',
+    )
 
     def __init__(self, data):
         super().__init__(data)
