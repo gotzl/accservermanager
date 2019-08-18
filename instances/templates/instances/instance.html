@@ -18,65 +18,28 @@
 <div class="container">
     <div class="card" style="padding: 10px 16px 20px 16px;">
         {% render_breadcrumbs %}
-        <h6 style="font-weight:bold">Latest stdout | <a href="{{request.path}}stdout">Download full</a>  </h6>
-        <textarea id="stdout" style="height: 200px;" disabled></textarea>
 
-        <h6 style="font-weight:bold">Latest stderr | <a href="{{request.path}}stdout">Download full</a> </h6>
-        <textarea id="stderr" style="height: 200px;" disabled></textarea>
+        {% for r in resources %}
+            <h6 style="font-weight:bold">{{r.label}} | <a href="{{request.path}}{{r.path}}">{{r.text}}</a> </h6>
+            <textarea id="{{r.path}}" style="height: 200px;" disabled></textarea>
+            <script>
+                (function {{r.path}}() {
+                    $.post(
+                        '{{request.path}}{{r.path}}',
+                        {% if r.update %} { lines: 10 } {% else %} { } {% endif %}
+                    ).done(function(data) {
+                        $('textarea#{{r.path}}').val(JSON.stringify(data, null, 4));
+                        {% if r.update %} setTimeout({{r.path}}, 2000); {% endif %}
+                    });
+                })();
+            </script>
+        {% endfor %}
 
-        <h6 style="font-weight:bold">configuration.json | <a href="{{request.path}}configuration">Download full</a> </h6>
-        <textarea id="configuration" style="height: 200px;" disabled></textarea>
-
-        <h6 style="font-weight:bold">event.json | <a href="{{request.path}}events">Download full</a> </h6>
-        <textarea id="event" style="height: 200px;" disabled></textarea>
-
-        <h6 style="font-weight:bold">settings.json | <a href="{{request.path}}settings">Download full</a> </h6>
-        <textarea id="settings" style="height: 200px;" disabled></textarea>
     </div>
     <div class="card"  style="padding: 10px 16px 20px 16px;">
         <a href="results"><input value="Results" class="btn green"></a>
     </div>
 </div>
-
-
-<script>
-console.log(JSON.stringify({ x: 5, y: 6 }, null, 4));
-
-    (function stdout(){
-        $.post('{{request.path}}stdout', { lines: 10 }).done(function(data) {
-            $('textarea#stdout').val(data);
-            setTimeout(stdout,2000);
-        });
-    })();
-
-    (function stderr(){
-        $.post('{{request.path}}stderr', { lines: 10 }).done(function(data) {
-            $('textarea#stderr').val(data);
-            setTimeout(stderr,2000);
-        });
-    })();
-
-    (function configuration(){
-        $.post('{{request.path}}configuration', { }).done(function(data) {
-            $('textarea#configuration').val(JSON.stringify(data, null, 4));
-            setTimeout(stderr,2000);
-        });
-    })();
-
-        (function events(){
-        $.post('{{request.path}}event', { }).done(function(data) {
-            $('textarea#event').val(JSON.stringify(data, null, 4));
-            setTimeout(stderr,2000);
-        });
-    })();
-
-        (function settings(){
-        $.post('{{request.path}}settings', { }).done(function(data) {
-            $('textarea#settings').val(JSON.stringify(data, null, 4));
-            setTimeout(stderr,2000);
-        });
-    })();
-</script>
 
 
 {% endblock %}
