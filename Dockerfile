@@ -24,4 +24,4 @@ RUN wineboot --init
 COPY . /accservermanager
 
 EXPOSE 9231/udp 9232/tcp 8000/tcp
-CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python3", "manage.py", "runserver", "--insecure", "0.0.0.0:8000"]
