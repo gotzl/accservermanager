@@ -20,8 +20,7 @@ class InstanceForm(forms.Form):
     spectatorPassword = forms.CharField(max_length=100, required=False)
     adminPassword = forms.CharField(max_length=100, required=False)
 
-    maxClients = forms.IntegerField(max_value=100, min_value=0, required=False)
-    spectatorSlots = forms.IntegerField(min_value=0, required=False)
+    maxConnections = forms.IntegerField(max_value=1000, min_value=0, required=False)
 
     trackMedalsRequirement = forms.IntegerField(max_value=3, min_value=0, required=False)
     safetyRatingRequirement = forms.IntegerField(max_value=99, min_value=-1, required=False)
@@ -32,12 +31,15 @@ class InstanceForm(forms.Form):
     registerToLobby = forms.BooleanField(required=False)
     randomizeTrackWhenEmpty = forms.BooleanField(required=False)
 
+    maxCarSlots = forms.IntegerField(max_value=1000, min_value=0, required=False)
+
     allowAutoDQ = forms.BooleanField(required=False)
     shortFormationLap = forms.BooleanField(required=False)
     dumpEntryList = forms.BooleanField(required=False)
 
     udpPort = forms.IntegerField(max_value=None, min_value=1000)
     tcpPort = forms.IntegerField(max_value=None, min_value=1000)
+    lanDiscovery = forms.BooleanField(required=False)
 
     # There is an issue with the 'required' error, so set this field
     # to not-required. This is ok, since it is always pre-filled.

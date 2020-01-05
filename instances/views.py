@@ -178,9 +178,9 @@ def write_config(name, inst_dir, form):
     ### use the values of the default *.json as basis
     cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', name), 'r'))
 
-    conf_keys = ['udpPort','tcpPort', 'maxClients', 'registerToLobby']
+    conf_keys = ['udpPort','tcpPort', 'maxConnections', 'lanDiscovery', 'registerToLobby']
     if name == 'settings.json':
-        keys = filter(lambda x:x not in (conf_keys+['csrfmiddlewaretoken', 'cfg','instanceName']),
+        keys = filter(lambda x:x not in (conf_keys+['csrfmiddlewaretoken', 'cfg', 'instanceName']),
                       form.cleaned_data.keys())
     else: keys = conf_keys
 

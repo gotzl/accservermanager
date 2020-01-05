@@ -10,7 +10,7 @@ import re, sys, json
 
 if __name__== "__main__":
     if len(sys.argv)!=2:
-        print('Usage: python extractMessages.py ../path/to/ServerAdminHandbook_v1s.html')
+        print('Usage: python extractMessages.py ../path/to/ServerAdminHandbook_v*s.html')
         exit(1)
 
     outer = """<b>Property.*\n<b>Remarks.*\n((?:.|\n)*?)<br\/>\n(?:<b>)?&#160;(?:<\/b>)?<br\/>"""

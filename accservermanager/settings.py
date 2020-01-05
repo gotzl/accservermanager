@@ -151,7 +151,7 @@ SESSION_TEMPLATE = {
 
 
 # list of available tracks
-TRACKS = (
+TRACKS = [
     ('misano', 'Misano'),
     ('paul_ricard', 'Paul Ricard'),
     ('nurburgring', 'Nuerburgring GP'),
@@ -162,7 +162,9 @@ TRACKS = (
     ('barcelona', 'Catalunya (Barcelona)'),
     ('silverstone', 'Silverstone'),
     ('spa', 'Spa-Francorchamps'),
-)
+    ('zandvoort', 'Zandvoort'),
+]
+TRACKS.extend([('%s_2019'%t[0], '%s 2019'%t[1]) for t in TRACKS])
 
 CAR_MODEL_TYPES = (
     (0, 'Porsche 911 (991) GT3 R'),
@@ -181,8 +183,14 @@ CAR_MODEL_TYPES = (
     (13, 'Lamborghini Gallardo R-EX'),
     (14, 'Jaguar G3'),
     (15, 'Lexus RC F GT3'),
+    (16, 'Lamborghini Huracan Evo (2019)'),
     (17, 'Honda/Acura NSX GT3'),
     (18, 'Lamborghini Huracán Super Trofeo (2015)'),
+    (19, 'Audi R8 LMS Evo (2019)'),
+    (20, 'AMR V8 Vantage (2019)'),
+    (21, 'Honda NSX Evo (2019)'),
+    (22, 'McLaren 720S GT3 (Special)'),
+    (23, 'Porsche 911 II GT3 R (2019)'),
 )
 
 SESSION_TYPES = (
