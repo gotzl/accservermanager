@@ -165,6 +165,12 @@ TRACKS = [
     ('zandvoort', 'Zandvoort'),
 ]
 TRACKS.extend([('%s_2019'%t[0], '%s 2019'%t[1]) for t in TRACKS])
+TRACKS.extend([
+    ('kyalami_2019', 'Kyalami'),
+    ('mount_panorama_2019', 'Mount Panaorama'),
+    ('suzuka_2019', 'Suzuka'),
+    ('laguna_seca_2019', 'Laguna Seca'),
+])
 
 CAR_MODEL_TYPES = (
     (0, 'Porsche 911 (991) GT3 R'),
