@@ -28,7 +28,8 @@
                         '{{request.path}}{{r.path}}',
                         {% if r.update %} { lines: 10 } {% else %} { } {% endif %}
                     ).done(function(data) {
-                        $('textarea#{{r.path}}').val(JSON.stringify(data, null, 4));
+                        if (typeof data !== "string") data = JSON.stringify(data, null, 4);
+                        $('textarea#{{r.path}}').val(data);
                         {% if r.update %} setTimeout({{r.path}}, 2000); {% endif %}
                     });
                 })();
