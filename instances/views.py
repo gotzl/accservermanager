@@ -25,6 +25,7 @@ executors = {}
 resources = [
     ('stdout',  "Latest stdout", "Download full"),
     ('stderr',  "Latest stderr", "Download full"),
+    ('serverlog',  "Server log", "Download full"),
     ('configuration',  "configuration.json", "Download"),
     ('event',  "event.json", "Download"),
     ('settings',  "settings.json", "Download"),
@@ -42,7 +43,7 @@ def instance(request, name):
 
     return HttpResponse(template.render(
         {'path' : [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],
-         'resources': [dict(path=r[0], label=r[1], text=r[2], update=r[0] in ['stdout','stderr']) for r in resources]},
+         'resources': [dict(path=r[0], label=r[1], text=r[2], update=r[0] in ['stdout','stderr','serverlog']) for r in resources]},
         request))
 
 
@@ -58,6 +59,13 @@ def stderr(request, name):
     if 'lines' not in request.POST:
         return download(executors[name].stderr)
     return log(executors[name].stderr, int(request.POST['lines']))
+
+
+@login_required
+def serverlog(request, name):
+    if 'lines' not in request.POST:
+        return download(executors[name].serverlog)
+    return log(executors[name].serverlog, int(request.POST['lines']))
 
 
 @login_required

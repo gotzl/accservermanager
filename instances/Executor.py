@@ -28,6 +28,7 @@ class Executor(Thread):
         self.p = None
         self.stdout = None
         self.stderr = None
+        self.serverlog = None
         self.retval = None
         self.instanceDir = instanceDir
 
@@ -47,6 +48,7 @@ class Executor(Thread):
         _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
         self.stdout = os.path.join(self.instanceDir, 'log', 'stdout-%s.log'%(_tm))
         self.stderr = os.path.join(self.instanceDir, 'log', 'stderr-%s.log'%(_tm))
+        self.serverlog = os.path.join(self.instanceDir, 'log', 'server.log')
         self.p = subprocess.Popen(exec,
                                   # set working dir
                                   cwd=self.instanceDir,
