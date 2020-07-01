@@ -17,9 +17,9 @@ class Executor(Thread):
         super().__init__()
 
         # add all configuration values to the object
-        for key, val in json.load(open(os.path.join(instanceDir, 'cfg', 'configuration.json'), 'r')).items():
+        for key, val in json.load(open(os.path.join(instanceDir, 'cfg', 'configuration.json'), 'r', encoding='utf-16')).items():
             setattr(self, key, val)
-        for key, val in json.load(open(os.path.join(instanceDir, 'cfg', 'settings.json'), 'r')).items():
+        for key, val in json.load(open(os.path.join(instanceDir, 'cfg', 'settings.json'), 'r', encoding='utf-16')).items():
             setattr(self, key, val)
 
         # find the name of the config file, just needed to display it in the instances list

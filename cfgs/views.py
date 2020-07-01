@@ -85,7 +85,7 @@ def confSelect(request):
 def formForKey(request, config, *args):
     """ Read the select config file and display the selected portion of the json object """
     cfg_path = os.path.join(settings.CONFIGS, config+'.json')
-    cfg = json.load(open(cfg_path, 'r'))
+    cfg = json.load(open(cfg_path, 'r', encoding='utf-16'))
     if len(cfg['sessions']) == 0:
         cfg['sessions'] = [SESSION_TEMPLATE]
     args = args[0]
@@ -104,7 +104,7 @@ def formForKey(request, config, *args):
                     elif arg=='remove':
                         obj.remove(obj[int(args.split('/')[-1])])
 
-                    json.dump(cfg, open(cfg_path, 'w'))
+                    json.dump(cfg, open(cfg_path, 'w', encoding='utf-16'))
                     return HttpResponseRedirect('/'+'/'.join(path))
 
                 # select specific element of the list object
@@ -134,7 +134,7 @@ def formForKey(request, config, *args):
                 print('Unknown type',type(obj[key]), type(value))
             obj[key] = value
 
-        json.dump(cfg, open(cfg_path, 'w'))
+        json.dump(cfg, open(cfg_path, 'w', encoding='utf-16'))
         return HttpResponseRedirect(request.path)
 
     _form, _forms = None, None

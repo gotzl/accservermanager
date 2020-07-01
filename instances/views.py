@@ -103,7 +103,7 @@ def log(_f, n):
 
 def download(_f, content_type="text/plain"):
     if _f is not None and os.path.isfile(_f):
-        with open(_f, 'r', encoding='latin-1') as fh:
+        with open(_f, 'r', encoding='utf-16') as fh:
             response = HttpResponse(fh.read(), content_type=content_type)
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(_f)
             return response
@@ -176,7 +176,7 @@ def render_from(request, form):
 
 def write_config(name, inst_dir, form):
     ### use the values of the default *.json as basis
-    cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', name), 'r'))
+    cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', name), 'r', encoding='utf-16'))
 
     conf_keys = ['udpPort','tcpPort', 'maxConnections', 'lanDiscovery', 'registerToLobby']
     if name == 'settings.json':
@@ -190,7 +190,7 @@ def write_config(name, inst_dir, form):
         if value is not None: cfg[key] = value
 
     # write the file into the instances' directory
-    json.dump(cfg, open(os.path.join(inst_dir, 'cfg', name), 'w'))
+    json.dump(cfg, open(os.path.join(inst_dir, 'cfg', name), 'w', encoding='utf-16'))
 
 
 @login_required
@@ -270,9 +270,9 @@ def random_word():
 def index(request):
     # read defaults from files
     cfg = json.load(open(os.path.join(
-        settings.ACCSERVER, 'cfg', 'configuration.json'), 'r'))
+        settings.ACCSERVER, 'cfg', 'configuration.json'), 'r', encoding='utf-16'))
     cfg.update(json.load(open(os.path.join(
-        settings.ACCSERVER, 'cfg', 'settings.json'), 'r')))
+        settings.ACCSERVER, 'cfg', 'settings.json'), 'r', encoding='utf-16')))
 
     # some static defaults
     cfg['instanceName'] = random_word()
