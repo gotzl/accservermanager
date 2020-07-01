@@ -41,12 +41,12 @@ class InstanceForm(forms.Form):
     tcpPort = forms.IntegerField(max_value=None, min_value=1000)
     lanDiscovery = forms.BooleanField(required=False)
 
-    # There is an issue with the 'required' error, so set this field
-    # to not-required. This is ok, since it is always pre-filled.
-    cfg = getCfgsField(label='Config', required=False)
-
     def __init__(self, data):
         super().__init__(data)
+
+        # There is an issue with the 'required' error, so set this field
+        # to not-required. This is ok, since it is always pre-filled.
+        self.fields['cfg'] = getCfgsField(label='Config', required=False)
 
         for key in self.fields:
             if key=='cfg': continue
