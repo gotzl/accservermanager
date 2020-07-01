@@ -69,7 +69,7 @@ def results(request, *args, **kwargs):
     instance = kwargs['instance']
     result = args[0]
     results_path = os.path.join(DATA_DIR, 'instances', instance, 'results')
-    results = json.load(open(os.path.join(results_path, result+'.json'), 'rb'))
+    results = json.load(open(os.path.join(results_path, result+'.json'), 'rb', encoding='utf-16'))
 
     path = request.path
     if path[0] == '/': path = path[1:]
@@ -90,7 +90,7 @@ def resultSelect(request, instance):
 
     results = []
     for f in files:
-        r = json.load(open(f, 'rb'))
+        r = json.load(open(f, 'rb', encoding='utf-16'))
         results.append(dict(
             name=os.path.splitext(ntpath.basename(f))[0],
             type=r['type'], # TODO: decode session type, seems to be borked atm
