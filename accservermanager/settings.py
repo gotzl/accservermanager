@@ -121,6 +121,8 @@ SECRET_KEY = os.environ['SECRET_KEY'] \
 ALLOWED_HOSTS = json.loads(os.environ['ALLOWED_HOSTS']) \
     if 'ALLOWED_HOSTS' in os.environ else []
 
+ALLOW_SAME_PORTS = True if os.getenv('ALLOW_SAME_PORTS','False').lower() == 'true' else False
+
 try:
     from accservermanager.local_settings import *
 except ImportError:
