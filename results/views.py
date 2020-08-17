@@ -100,7 +100,7 @@ def resultSelect(request, instance):
             type=r['sessionType'], # TODO: decode session type, seems to be borked atm
             entries=len(r['sessionResult']['leaderBoardLines']),
             wetSession=r['sessionResult']['isWetSession'],
-	    track=r['trackName'],
+	        track=r['trackName'],
         ))
 
     path = request.path
