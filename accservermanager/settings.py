@@ -155,7 +155,7 @@ SESSION_TEMPLATE = {
 TRACKS = [
     ('misano', 'Misano'),
     ('paul_ricard', 'Paul Ricard'),
-    ('nurburgring', 'Nuerburgring GP'),
+    ('nurburgring', 'Nurburgring GP'),
     ('hungaroring', 'Hungaroring'),
     ('zolder', 'Zolder'),
     ('monza', 'Monza'),
