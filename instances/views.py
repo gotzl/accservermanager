@@ -222,7 +222,7 @@ def create(request):
         messages.error(request, "Instance with similar name already exists")
         return render_from(request, form)
 
-    if form['udpPort'].value() == form['tcpPort'].value():
+    if not settings.ALLOW_SAME_PORTS and form['udpPort'].value() == form['tcpPort'].value():
         messages.error(request,'UDP and TCP port have to be different')
         return render_from(request, form)
 

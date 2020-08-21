@@ -40,6 +40,8 @@ class LeaderBoard(tables.Table):
         return format_html('<p title="{}">{}</p>', long, short)
 
     def render_time(self, value):
+        if(value == 2147483647):
+            return '---'
         s = value//1000
         m = s//60
         s %=60
@@ -58,6 +60,7 @@ class LeaderBoard(tables.Table):
 class Results(tables.Table):
     name = Column()
     type = Column()
+    track = Column()
     entries = Column()
     wetSession = Column()
     view = TemplateColumn(template_name='results/table/results_view_column.html')
@@ -69,7 +72,7 @@ def results(request, *args, **kwargs):
     instance = kwargs['instance']
     result = args[0]
     results_path = os.path.join(DATA_DIR, 'instances', instance, 'results')
-    results = json.load(open(os.path.join(results_path, result+'.json'), 'rb', encoding='utf-16'))
+    results = json.load(open(os.path.join(results_path, result+'.json'), 'rb'))
 
     path = request.path
     if path[0] == '/': path = path[1:]
@@ -78,7 +81,7 @@ def results(request, *args, **kwargs):
 
     context = {
         'path': [(j, '/'+'/'.join(path[:i+1])) for i,j in enumerate(path)],
-        'table': LeaderBoard(results['leaderBoardLines'])
+        'table': LeaderBoard(results['sessionResult']['leaderBoardLines'])
     }
     return render(request, 'results/results.html', context)
 
@@ -86,16 +89,18 @@ def results(request, *args, **kwargs):
 def resultSelect(request, instance):
     """ Show available results """
     results_path = os.path.join(DATA_DIR, 'instances', instance, 'results')
-    files = sorted(glob.glob('%s/*result*.json'%(results_path)), reverse=True)
+    files = sorted(glob.glob('%s/*.json'%(results_path)), reverse=True)
 
     results = []
     for f in files:
-        r = json.load(open(f, 'rb', encoding='utf-16'))
+        r = json.load(open(f, 'rb'))
+   
         results.append(dict(
             name=os.path.splitext(ntpath.basename(f))[0],
-            type=r['type'], # TODO: decode session type, seems to be borked atm
-            entries=len(r['leaderBoardLines']),
-            wetSession=r['isWetSession'],
+            type=r['sessionType'], # TODO: decode session type, seems to be borked atm
+            entries=len(r['sessionResult']['leaderBoardLines']),
+            wetSession=r['sessionResult']['isWetSession'],
+	        track=r['trackName'],
         ))
 
     path = request.path
