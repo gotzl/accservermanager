@@ -1,5 +1,6 @@
 from django import forms
 
+from accservermanager.settings import CAR_GROUPS
 from cfgs.confEdit import createLabel
 from cfgs.confSelect import getCfgsField
 
@@ -22,6 +23,7 @@ class InstanceForm(forms.Form):
 
     maxConnections = forms.IntegerField(max_value=1000, min_value=0, required=False)
 
+    carGroup = forms.ChoiceField(widget=forms.Select, choices=CAR_GROUPS)
     trackMedalsRequirement = forms.IntegerField(max_value=3, min_value=0, required=False)
     safetyRatingRequirement = forms.IntegerField(max_value=99, min_value=-1, required=False)
     racecraftRatingRequirement= forms.IntegerField(max_value=99, min_value=-1, required=False)

@@ -214,6 +214,14 @@ CAR_MODEL_TYPES = (
     (61, 'Porsche 718 Cayman GT4'),
 )
 
+CAR_GROUPS = (
+    ("FreeForAll","FreeForAll"),
+    ("GT3", "GT3"),
+    ("GT4",  "GT4"),
+    ("Cup", "Cup"),
+    ("ST","ST")
+)
+
 SESSION_TYPES = (
     ("P",'Practice'),
     ("Q",'Qualify'),
