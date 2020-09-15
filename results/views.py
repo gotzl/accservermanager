@@ -90,6 +90,7 @@ def resultSelect(request, instance):
     """ Show available results """
     results_path = os.path.join(DATA_DIR, 'instances', instance, 'results')
     files = sorted(glob.glob('%s/*.json'%(results_path)), reverse=True)
+    files = filter(lambda x: not x.endswith('entrylist.json') , files) 
 
     results = []
     for f in files:
