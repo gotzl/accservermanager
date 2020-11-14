@@ -1,8 +1,9 @@
-FROM python:3.7.4-alpine3.10
+FROM debian:10.5-slim
 
-RUN apk add --no-cache shadow wine-dev freetype ncurses-libs && \
-    ln -s /usr/bin/wine64 /usr/bin/wine && \
-    rm -rf /var/cache/apk/*
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y wine-development python3-pip && \
+    apt-get clean  && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /accservermanager /data
 
