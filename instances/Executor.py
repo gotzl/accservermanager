@@ -42,7 +42,7 @@ class Executor(Thread):
             preexec_fn = lambda: resource.setrlimit(resource.RLIMIT_DATA, (2**30, 2**31))
         else:
             # if 'resource' is not available, assume windows which needs to full path to the exec
-            exec = os.path.join(self.instanceDir, settings.ACCEXEC)
+            exec = os.path.join(self.instanceDir, *settings.ACCEXEC)
 
         # fire up the server, store stderr to the log/ dir
         _tm = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
