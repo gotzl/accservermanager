@@ -155,25 +155,28 @@ SESSION_TEMPLATE = {
 
 # list of available tracks
 TRACKS = [
-    ('misano', 'Misano'),
-    ('paul_ricard', 'Paul Ricard'),
-    ('nurburgring', 'Nurburgring GP'),
-    ('hungaroring', 'Hungaroring'),
-    ('zolder', 'Zolder'),
-    ('monza', 'Monza'),
-    ('brands_hatch', 'Brands Hatch'),
     ('barcelona', 'Catalunya (Barcelona)'),
+    ('brands_hatch', 'Brands Hatch'),
+    ('hungaroring', 'Hungaroring'),
+    ('misano', 'Misano'),
+    ('monza', 'Monza'),
+    ('nurburgring', 'Nurburgring GP'),
+    ('paul_ricard', 'Paul Ricard'),
     ('silverstone', 'Silverstone'),
     ('spa', 'Spa-Francorchamps'),
+    ('zolder', 'Zolder'),
     ('zandvoort', 'Zandvoort'),
 ]
-TRACKS.extend([('%s_2019'%t[0], '%s 2019'%t[1]) for t in TRACKS])
-TRACKS.extend([('%s_2020'%t[0], '%s 2020'%t[1]) for t in TRACKS])
+TRACKS_TEMP = []
+for y in ['2019', '2020']:
+    TRACKS_TEMP.extend([(f"{t[0]}_{y}", f"{t[1]} {y}") for t in TRACKS])
+
+TRACKS.extend(TRACKS_TEMP)
 TRACKS.extend([
     ('kyalami_2019', 'Kyalami'),
+    ('laguna_seca_2019', 'Laguna Seca'),
     ('mount_panorama_2019', 'Mount Panaorama'),
     ('suzuka_2019', 'Suzuka'),
-    ('laguna_seca_2019', 'Laguna Seca'),
     ('imola_2020', 'Imola'),
 ])
 
