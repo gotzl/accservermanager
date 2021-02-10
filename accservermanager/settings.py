@@ -178,6 +178,9 @@ TRACKS.extend([
     ('mount_panorama_2019', 'Mount Panaorama'),
     ('suzuka_2019', 'Suzuka'),
     ('imola_2020', 'Imola'),
+    ('oulton_park_2019', 'Oulton_park'),
+    ('donington_2019', 'Donington'),
+    ('snetterton_2019', 'Snetterton'),
 ])
 
 
