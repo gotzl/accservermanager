@@ -1,5 +1,4 @@
 from django import forms
-from django.forms.models import inlineformset_factory
 
 from accservermanager.settings import CAR_GROUPS
 from cfgs.confEdit import createLabel
@@ -85,15 +84,16 @@ class InstanceForm(forms.Form):
         max_length=100,
         widget=forms.TextInput(attrs={"onkeyup": "nospaces(this)"}))
 
-    # There is an issue with the 'required' error, so set this field
-    # to not-required. This is ok, since it is always pre-filled.
-    event = getCfgsField(label='Event', required=False)
-
     def __init__(self, data):
         super().__init__(data)
         self.settings = SettingsForm(data)
         self.configuration = ConfigurationForm(data)
         self.assistRules = AssistRulesForm(data)
+
+        # There is an issue with the 'required' error, so set this field
+        # to not-required. This is ok, since it is always pre-filled.
+        # This field has to be instantiated here in order to pick-up new configs.
+        self.fields['event'] = getCfgsField(label='Event', required=False)
 
     def is_valid(self):
         return self.settings.is_valid() and self.configuration.is_valid() and self.assistRules.is_valid()
