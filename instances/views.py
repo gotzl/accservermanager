@@ -29,6 +29,7 @@ resources = [
     ('configuration',  "configuration.json", "Download"),
     ('event',  "event.json", "Download"),
     ('settings',  "settings.json", "Download"),
+    ('assistRules',  "assistRules.json", "Download"),
 ]
 
 @login_required
@@ -70,20 +71,26 @@ def serverlog(request, name):
 
 @login_required
 def download_configuration_file(request, name):
-    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'configuration.json')
-    return download(cfg, content_type='text/json')
+    f = os.path.join(settings.INSTANCES, name, 'cfg', 'configuration.json')
+    return download(f, content_type='text/json')
 
 
 @login_required
 def download_event_file(request, name):
-    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'event.json')
-    return download(cfg, content_type='text/json')
+    f = os.path.join(settings.INSTANCES, name, 'cfg', 'event.json')
+    return download(f, content_type='text/json')
 
 
 @login_required
 def download_settings_file(request, name):
-    cfg = os.path.join(settings.INSTANCES, name, 'cfg', 'settings.json')
-    return download(cfg, content_type='text/json')
+    f = os.path.join(settings.INSTANCES, name, 'cfg', 'settings.json')
+    return download(f, content_type='text/json')
+
+
+@login_required
+def download_assistRules_file(request, name):
+    f = os.path.join(settings.INSTANCES, name, 'cfg', 'assistRules.json')
+    return download(f, content_type='text/json')
 
 
 # https://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail
@@ -186,13 +193,8 @@ def write_config(name, inst_dir, form):
     ### use the values of the default *.json as basis
     cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', name), 'r', encoding='utf-16'))
 
-    conf_keys = ['udpPort','tcpPort', 'maxConnections', 'lanDiscovery', 'registerToLobby']
-    if name == 'settings.json':
-        keys = filter(lambda x:x not in (conf_keys+['csrfmiddlewaretoken', 'cfg', 'instanceName']),
-                      form.cleaned_data.keys())
-    else: keys = conf_keys
-
-    for key in keys:
+    for key in form.cleaned_data.keys():
+        if key == 'csrfmiddlewaretoken': continue
         value = form.cleaned_data[key]
         if isinstance(value, bool): value = int(value)
         if value is not None: cfg[key] = value
@@ -222,14 +224,14 @@ def create(request):
         messages.error(request, "Instance with similar name already exists")
         return render_from(request, form)
 
-    if not settings.ALLOW_SAME_PORTS and form['udpPort'].value() == form['tcpPort'].value():
-        messages.error(request,'UDP and TCP port have to be different')
+    if not settings.ALLOW_SAME_PORTS and form.configuration['udpPort'].value() == form.configuration['tcpPort'].value():
+        messages.error(request, 'UDP and TCP port have to be different')
         return render_from(request, form)
 
     # check if a running instance already uses the same ports
     if len(list(filter(lambda x: x.is_alive() and
-                                  (form['udpPort'].value() in [x.udpPort, x.tcpPort] or
-                                   form['tcpPort'].value() in [x.udpPort, x.tcpPort]),
+                                  (form.configuration['udpPort'].value() in [x.udpPort, x.tcpPort] or
+                                   form.configuration['tcpPort'].value() in [x.udpPort, x.tcpPort]),
                         executors.values()))) > 0:
         messages.error(request, "The ports are already in use")
         return render_from(request, form)
@@ -244,18 +246,17 @@ def create(request):
     os.makedirs(os.path.join(inst_dir, 'cfg'))
     os.makedirs(os.path.join(inst_dir, 'log'))
     for f in settings.SERVER_FILES:
-        shutil.copy(os.path.join(settings.ACCSERVER,f), os.path.join(inst_dir,f))
+        shutil.copy(os.path.join(settings.ACCSERVER, f), os.path.join(inst_dir, f))
 
     # the target configuration
-    cfg = os.path.join(settings.CONFIGS, form['cfg'].value() + '.json')
+    cfg = os.path.join(settings.CONFIGS, form['event'].value() + '.json')
     # link the requested config into the instance environment
     os.symlink(cfg, os.path.join(inst_dir, 'cfg', 'event.json'))
 
-    # write the configuration.json
-    write_config('configuration.json', inst_dir, form)
-
-    # write the settings.json
-    write_config('settings.json', inst_dir, form)
+    # write the json files
+    write_config('configuration.json', inst_dir, form.configuration)
+    write_config('settings.json', inst_dir, form.settings)
+    write_config('assistRules.json', inst_dir, form.assistRules)
 
     # start the instance
     start(request, name)
@@ -281,6 +282,8 @@ def index(request):
         settings.ACCSERVER, 'cfg', 'configuration.json'), 'r', encoding='utf-16'))
     cfg.update(json.load(open(os.path.join(
         settings.ACCSERVER, 'cfg', 'settings.json'), 'r', encoding='utf-16')))
+    cfg.update(json.load(open(os.path.join(
+        settings.ACCSERVER, 'cfg', 'assistRules.json'), 'r', encoding='utf-16')))
 
     # some static defaults
     cfg['instanceName'] = random_word()

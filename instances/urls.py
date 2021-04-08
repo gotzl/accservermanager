@@ -13,6 +13,7 @@ urlpatterns = [
     path('<name>/stdout', views.stdout, name='stdout'),
     path('<name>/serverlog', views.serverlog, name='serverlog'),
     path('<name>/configuration', views.download_configuration_file, name='configuration'),
+    path('<name>/assistRules', views.download_configuration_file, name='assistRules'),
     path('<name>/event', views.download_event_file, name='event'),
     path('<name>/settings', views.download_settings_file, name='settings'),
 ]
