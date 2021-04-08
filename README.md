@@ -50,6 +50,7 @@ After login, you can add more users with djangos admin pages (...:8000/admin).
 
 If you want to allow connections to the server from anywhere, use `-e ALLOWED_HOSTS='["*"]'`. This should only be used behind a proxy!
 
+Note: The build-in django webserver only serves static files in debug mode. Therefore, either set `-e DEBUG=True` or collect static files with `python3 manage.py collectstatic` and let s.t. else serve these files.
 
 ## Persistence
 All relevant data will be placed insided the 'local_settings.DATA_DIR' folder. In case of docker the folder is persisted outside of the container using a docker volume.
