@@ -2,6 +2,7 @@ import glob
 import itertools
 import ntpath
 
+from django.http import HttpResponse, Http404
 from django.shortcuts import render
 
 import os, json
@@ -64,19 +65,24 @@ class Results(tables.Table):
     entries = Column()
     wetSession = Column()
     view = TemplateColumn(template_name='results/table/results_view_column.html')
+    download = TemplateColumn(template_name='results/table/results_download_column.html')
     # delete = TemplateColumn(template_name='results/table/results_delete_column.html')
 
 
-def results(request, *args, **kwargs):
+def parse_url(args, kwargs):
     """ Read the select results file and display the selected portion of the json object """
     instance = kwargs['instance']
     result = args[0]
     results_path = os.path.join(DATA_DIR, 'instances', instance, 'results')
-    results = json.load(open(os.path.join(results_path, result+'.json'), 'rb'))
+    return os.path.join(results_path, result+'.json')
 
+
+def results(request, *args, **kwargs):
+    """ Read the select results file and display the selected portion of the json object """
+    results = json.load(open(parse_url(args, kwargs), 'rb'))
     path = request.path
     if path[0] == '/': path = path[1:]
-    if path[-1] == '/':path = path[:-1]
+    if path[-1] == '/': path = path[:-1]
     path = path.split('/')
 
     context = {
@@ -84,6 +90,17 @@ def results(request, *args, **kwargs):
         'table': LeaderBoard(results['sessionResult']['leaderBoardLines'])
     }
     return render(request, 'results/results.html', context)
+
+
+def download(request, *args, **kwargs):
+    _f = parse_url(args, kwargs)
+    print(_f, os.path.basename(_f))
+    if _f is not None and os.path.isfile(_f):
+        with open(_f, 'r') as fh:
+            response = HttpResponse(fh.read(), content_type="text/plain")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(_f)
+            return response
+    raise Http404
 
 
 def resultSelect(request, instance):
