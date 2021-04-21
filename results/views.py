@@ -66,6 +66,7 @@ class Results(tables.Table):
     wetSession = Column()
     view = TemplateColumn(template_name='results/table/results_view_column.html')
     download = TemplateColumn(template_name='results/table/results_download_column.html')
+    simresults = TemplateColumn(template_name='results/table/results_simresults_column.html')
     # delete = TemplateColumn(template_name='results/table/results_delete_column.html')
 
 
