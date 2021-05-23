@@ -152,6 +152,19 @@ SESSION_TEMPLATE = {
     "sessionDurationMinutes": 10
 }
 
+EVENT_RULES_TEMPLATE = {
+    "qualifyStandingType": 1,
+    "pitWindowLengthSec": -1,
+    "driverStintTimeSec": -1,
+    "mandatoryPitstopCount": 0,
+    "maxTotalDrivingTime": -1,
+    "maxDriversCount": 1,"isRefuellingAllowedInRace": True,
+    "isRefuellingTimeFixed": False,
+    "isMandatoryPitstopRefuellingRequired": False,
+    "isMandatoryPitstopTyreChangeRequired": False,
+    "isMandatoryPitstopSwapDriverRequired": False,
+    "tyreSetCount": 50
+}
 
 # list of available tracks
 TRACKS = [

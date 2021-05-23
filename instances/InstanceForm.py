@@ -76,6 +76,24 @@ class AssistRulesForm(BaseForm):
     disableAutoLights = forms.BooleanField(required=False)
 
 
+class EventRulesForm(BaseForm):
+    """
+    Form around eventRules.json
+    """
+    qualifyStandingType = forms.IntegerField(min_value=0, required=False)
+    pitWindowLengthSec = forms.IntegerField(required=False)
+    driverStintTimeSec = forms.IntegerField(required=False)
+    mandatoryPitstopCount = forms.IntegerField(min_value=0, required=False)
+    maxTotalDrivingTime = forms.IntegerField(required=False)
+    maxDriversCount = forms.IntegerField(min_value=0, required=False)
+    isRefuellingAllowedInRace = forms.BooleanField(required=False)
+    isRefuellingTimeFixed = forms.BooleanField(required=False)
+    isMandatoryPitstopRefuellingRequired = forms.BooleanField(required=False)
+    isMandatoryPitstopTyreChangeRequired = forms.BooleanField(required=False)
+    isMandatoryPitstopSwapDriverRequired = forms.BooleanField(required=False)
+    tyreSetCount = forms.IntegerField(min_value=0, required=False)
+
+
 class InstanceForm(forms.Form):
     """
     Form used to fire up a new server instance
@@ -89,6 +107,7 @@ class InstanceForm(forms.Form):
         self.settings = SettingsForm(data)
         self.configuration = ConfigurationForm(data)
         self.assistRules = AssistRulesForm(data)
+        self.eventRules = EventRulesForm(data)
 
         # There is an issue with the 'required' error, so set this field
         # to not-required. This is ok, since it is always pre-filled.
@@ -96,4 +115,4 @@ class InstanceForm(forms.Form):
         self.fields['event'] = getCfgsField(label='Event', required=False)
 
     def is_valid(self):
-        return self.settings.is_valid() and self.configuration.is_valid() and self.assistRules.is_valid()
+        return self.settings.is_valid() and self.configuration.is_valid() and self.assistRules.is_valid() and self.eventRules.is_valid()

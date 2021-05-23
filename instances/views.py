@@ -30,6 +30,7 @@ resources = [
     ('event',  "event.json", "Download"),
     ('settings',  "settings.json", "Download"),
     ('assistRules',  "assistRules.json", "Download"),
+    ('eventRules',  "eventRules.json", "Download"),
 ]
 
 @login_required
@@ -91,6 +92,13 @@ def download_settings_file(request, name):
 def download_assistRules_file(request, name):
     f = os.path.join(settings.INSTANCES, name, 'cfg', 'assistRules.json')
     return download(f, content_type='text/json')
+
+
+@login_required
+def download_eventRules_file(request, name):
+    f = os.path.join(settings.INSTANCES, name, 'cfg', 'eventRules.json')
+    return download(f, content_type='text/json')
+
 
 
 # https://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail
@@ -191,7 +199,9 @@ def render_from(request, form):
 
 def write_config(name, inst_dir, form):
     ### use the values of the default *.json as basis
-    cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', name), 'r', encoding='utf-16'))
+    cfg = {}
+    if os.path.isfile(os.path.join(settings.ACCSERVER, 'cfg', name)):
+        cfg = json.load(open(os.path.join(settings.ACCSERVER, 'cfg', name), 'r', encoding='utf-16'))
 
     for key in form.cleaned_data.keys():
         if key == 'csrfmiddlewaretoken': continue
@@ -257,6 +267,7 @@ def create(request):
     write_config('configuration.json', inst_dir, form.configuration)
     write_config('settings.json', inst_dir, form.settings)
     write_config('assistRules.json', inst_dir, form.assistRules)
+    write_config('eventRules.json', inst_dir, form.eventRules)
 
     # start the instance
     start(request, name)
@@ -284,6 +295,11 @@ def index(request):
         settings.ACCSERVER, 'cfg', 'settings.json'), 'r', encoding='utf-16')))
     cfg.update(json.load(open(os.path.join(
         settings.ACCSERVER, 'cfg', 'assistRules.json'), 'r', encoding='utf-16')))
+    if os.path.isfile(os.path.join(settings.ACCSERVER, 'cfg', 'eventRules.json')):
+        cfg.update(json.load(open(os.path.join(
+            settings.ACCSERVER, 'cfg', 'eventRules.json'), 'r', encoding='utf-16')))
+    else:
+        cfg.update(settings.EVENT_RULES_TEMPLATE)
 
     # some static defaults
     cfg['instanceName'] = random_word()
