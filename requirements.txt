@@ -1,6 +1,6 @@
 certifi==2019.6.16
 chardet==3.0.4
-Django==2.2.20
+Django==2.2.21
 django-bootstrap-breadcrumbs==0.9.1
 django-material==1.5.8
 django-tables2==2.1.0
