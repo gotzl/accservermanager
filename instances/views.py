@@ -252,16 +252,20 @@ def create(request):
         messages.error(request, "The instance directory exists already")
         return render_from(request, form)
 
-    # create the directory for the instance, copy necessary files
+    # create the directory for the instance
     os.makedirs(os.path.join(inst_dir, 'cfg'))
     os.makedirs(os.path.join(inst_dir, 'log'))
-    for f in settings.SERVER_FILES:
-        shutil.copy(os.path.join(settings.ACCSERVER, f), os.path.join(inst_dir, f))
-
-    # the target configuration
+    # link the server exe into the instance environment
+    os.symlink(os.path.join(settings.ACCSERVER, settings.SERVER_FILES[0]),
+               os.path.join(inst_dir, settings.SERVER_FILES[0]))
+    # the target configuration json
     cfg = os.path.join(settings.CONFIGS, form['event'].value() + '.json')
     # link the requested config into the instance environment
     os.symlink(cfg, os.path.join(inst_dir, 'cfg', 'event.json'))
+    # link (possible) cars directory into the instance environment
+    if os.path.isdir(os.path.join(settings.ACCSERVER, 'cfg', 'cars')):
+        os.symlink(os.path.join(settings.ACCSERVER, 'cfg', 'cars'),
+                   os.path.join(inst_dir, 'cfg', 'cars'))
 
     # write the json files
     write_config('configuration.json', inst_dir, form.configuration)

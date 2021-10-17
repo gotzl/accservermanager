@@ -138,7 +138,12 @@ DATABASES = {
 }
 
 # list of acc server files that are copied to the instance, make sure they are found
-SERVER_FILES = ['accServer.exe','cfg/configuration.json','cfg/settings.json']
+SERVER_FILES = [
+    'accServer.exe',
+    'cfg/configuration.json',
+    'cfg/settings.json',
+    'cfg/assistRules.json',
+]
 for f in SERVER_FILES:
     if not os.path.isfile(os.path.join(ACCSERVER, f)):
         raise Exception('Cannot find required server file: %s.'%f)
@@ -158,7 +163,8 @@ EVENT_RULES_TEMPLATE = {
     "driverStintTimeSec": -1,
     "mandatoryPitstopCount": 0,
     "maxTotalDrivingTime": -1,
-    "maxDriversCount": 1,"isRefuellingAllowedInRace": True,
+    "maxDriversCount": 1,
+    "isRefuellingAllowedInRace": True,
     "isRefuellingTimeFixed": False,
     "isMandatoryPitstopRefuellingRequired": False,
     "isMandatoryPitstopTyreChangeRequired": False,
