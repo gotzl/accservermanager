@@ -52,6 +52,8 @@ If you want to allow connections to the server from anywhere, use `-e ALLOWED_HO
 
 Note: The build-in django webserver only serves static files in debug mode. Therefore, either set `DEBUG=True`, or use `python manage.py runserver --insecure` (this is what's done in the docker image) or collect static files with `python3 manage.py collectstatic` and let s.t. else serve these files.
 
+To make docker work with the last release of accServer.exe `ignorePrematureDisconnects` must be setted to `0`
+
 ## Persistence
 All relevant data will be placed insided the 'local_settings.DATA_DIR' folder. In case of docker the folder is persisted outside of the container using a docker volume.
 This means you can delete and rebuild your container without needing to restore your settings manually.
