@@ -48,6 +48,7 @@ class SettingsForm(BaseForm):
     dumpEntryList = forms.BooleanField(required=False)
     dumpLeaderboards = forms.BooleanField(required=False)
     randomizeTrackWhenEmpty = forms.BooleanField(required=False)
+    ignorePrematureDisconnects = forms.BooleanField(required=False)
 
 
 class ConfigurationForm(BaseForm):
