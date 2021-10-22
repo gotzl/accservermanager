@@ -56,6 +56,7 @@
     "racecraftRatingRequirement": "Defines the Safety Rating (RC) that a user must have to join this server (values -1, 0, \u2026. 99)",
     "rain": "If weather randomness is off, defines the static rain level. With dynamic weather, it defines the expected rain level, dependent on weatherRandomness.  Values (0.0, 0.1, \u2026. 1.0)",
     "randomizeTrackWhenEmpty": "If set to 1, the server will change to a random track when the last drivers leaves (which causes a reset to FP1). The \u201ctrack\u201d property will only define the default state for the first session.",
+    "ignorePrematureDisconnects": "Removes a (very good) where users can randomly lose the connection. There is no sane reason to turn this off ",
     "registerToLobby": "When 0, this server won\u2019t register to the backend. Is useful for LAN sessions. If 0, the server is declare<a href=\"https://www.assettocorsa.net/forum/index.php?threads/the-server-admin-handbook-thread.58245/\">d \u201cPrivate Multiplayer\u201d.</a>",
     "safetyRatingRequirement": "Defines the Safety Rating (SA) that a user must have to join this server (values -1, 0, \u2026. 99)",
     "serverName": "The server name displayed in the ACC UI pages",
