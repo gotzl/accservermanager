@@ -1,4 +1,4 @@
-import os, shutil, json, time, string, glob
+import os, shutil, json, time, string, glob, platform
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
@@ -126,7 +126,7 @@ def log(_f, n):
 
 def download(_f, content_type="text/plain"):
     if _f is not None and os.path.isfile(_f):
-        with open(_f, 'r', encoding='utf-16') as fh:
+        with open(_f, 'r', encoding='utf-16' if content_type=='text/json' else None) as fh:
             response = HttpResponse(fh.read(), content_type=content_type)
             response['Content-Disposition'] = 'inline; filename=' + os.path.basename(_f)
             return response
@@ -311,6 +311,8 @@ def index(request):
     cfg['dumpLeaderboards'] = 1
     cfg['registerToLobby'] = 1
     cfg['dumpLeaderboards'] = 1
+    # this setting seems to work only in windows
+    cfg['ignorePrematureDisconnects'] = platform.system() == "Windows"
 
     # overwrite nonsense trackMedalsRequirement default value
     if cfg['trackMedalsRequirement'] == -1:

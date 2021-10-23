@@ -54,6 +54,8 @@ Note: The build-in django webserver only serves static files in debug mode. Ther
 
 To make docker work with the last release of accServer.exe `ignorePrematureDisconnects` must be setted to `0`
 
+Car skins: The folder `PATH_TO_ACC/server/cars` will be symlinked into the instance environment (if it exists).
+
 ## Persistence
 All relevant data will be placed insided the 'local_settings.DATA_DIR' folder. In case of docker the folder is persisted outside of the container using a docker volume.
 This means you can delete and rebuild your container without needing to restore your settings manually.
