@@ -9,6 +9,7 @@ urlpatterns = [
     path('<name>/start', views.start, name='start'),
     path('<name>/stop', views.stop, name='stop'),
     path('<name>/delete', views.delete, name='delete'),
+    path('<name>/edit', views.edit, name='edit'),
     path('<name>/stderr', views.stderr, name='stderr'),
     path('<name>/stdout', views.stdout, name='stdout'),
     path('<name>/serverlog', views.serverlog, name='serverlog'),

@@ -21,44 +21,8 @@
         {% endfor %}
     {% endif %}
 
-    <div class="card">
-        {% load material_form %}
-        <h5 style="font-weight:bold">Instance config</h5>
-        <form name="instance_form" action="start" method="POST"
-              onsubmit="return (document.forms['instance_form']['cfg'].value.length>0)">{% csrf_token %}
-            {% form form=form %}{% endform %}
-            <ul class="collapsible" data-collapsible="accordion">
-                <li class="active">
-                    <div class="collapsible-header" style="font-weight:bold">Settings</div>
-                    <div class="collapsible-body">
-                        {% form form=form.settings %}{% endform %}
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header" style="font-weight:bold">Configuration</div>
-                    <div class="collapsible-body">
-                        {% form form=form.configuration %}{% endform %}
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header" style="font-weight:bold">AssistRules</div>
-                    <div class="collapsible-body">
-                        {% form form=form.assistRules %}{% endform %}
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header" style="font-weight:bold">EventRules</div>
-                    <div class="collapsible-body">
-                        {% form form=form.eventRules %}{% endform %}
-                    </div>
-                </li>
-            </ul>
-            </ul>
+    {% include "instances/instance_form.html" %}
 
-            <button class="btn green" type="submit">Start</button>
-        </form>
-
-    </div>
 </div>
 
 <div class="container">
@@ -135,6 +99,17 @@
         $.post("/instances/"+name+"/delete", function(json) {
             $('tr#row'+el.id.replace('delete','')).remove();
         });
+    }
+    function edit(el, name) {
+        //el.disabled = true;
+        $.post("/instances/"+name+"/edit", function(html) {
+            $('div#config_card').replaceWith(html);
+            $('button#create_instance').text('Save Changes')
+            $('.collapsible').collapsible();
+            $('form[name=instance_form]').attr('action', 'edit_instance')
+            
+        })
+        
     }
 </script>
 {% endblock %}
