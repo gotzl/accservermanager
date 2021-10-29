@@ -90,6 +90,8 @@
                     <button id="restart{{forloop.counter0}}" class="btn green" onclick="start(this, '{{name}}')">Start</button>
                 </td><td>
                     <button id="delete{{forloop.counter0}}" class="btn red" onclick="del(this, '{{name}}')">Delete</button>
+                </td><td>
+                    <button id="edit{{forloop.counter0}}" class="btn blue" onclick="edit(this, '{{name}}')">Edit</button>
                 </td>
                 {% endif %}
             </tr>
