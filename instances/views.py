@@ -299,7 +299,7 @@ def random_word():
     return s
 
 
-def index(request):
+def index(request, name=None):
     # read defaults from files
     cfg = json.load(open(os.path.join(
         settings.ACCSERVER, 'cfg', 'configuration.json'), 'r', encoding='utf-16'))
@@ -351,4 +351,5 @@ def edit(request, name):
 
 @login_required
 def edit_instance(request, name):
+    #TODO: basic methodology - validate config, stop running instance, unlink/delete exiting config dirs, call create method, restart server
     pass
