@@ -348,3 +348,7 @@ def edit(request, name):
 
     cfg['instanceName'] = name
     return render_settings(request, InstanceForm(cfg))
+
+@login_required
+def edit_instance(request, name):
+    pass
