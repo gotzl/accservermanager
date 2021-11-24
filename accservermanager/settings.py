@@ -185,22 +185,15 @@ TRACKS = [
     ('spa', 'Spa-Francorchamps'),
     ('zolder', 'Zolder'),
     ('zandvoort', 'Zandvoort'),
+    ('kyalami', 'Kyalami'),
+    ('laguna_seca', 'Laguna Seca'),
+    ('mount_panorama', 'Mount Panaorama'),
+    ('suzuka', 'Suzuka'),
+    ('imola', 'Imola'),
+    ('oulton_park', 'Oulton_park'),
+    ('donington', 'Donington'),
+    ('snetterton', 'Snetterton'),
 ]
-TRACKS_TEMP = []
-for y in ['2019', '2020']:
-    TRACKS_TEMP.extend([(f"{t[0]}_{y}", f"{t[1]} {y}") for t in TRACKS])
-
-TRACKS.extend(TRACKS_TEMP)
-TRACKS.extend([
-    ('kyalami_2019', 'Kyalami'),
-    ('laguna_seca_2019', 'Laguna Seca'),
-    ('mount_panorama_2019', 'Mount Panaorama'),
-    ('suzuka_2019', 'Suzuka'),
-    ('imola_2020', 'Imola'),
-    ('oulton_park_2019', 'Oulton_park'),
-    ('donington_2019', 'Donington'),
-    ('snetterton_2019', 'Snetterton'),
-])
 
 
 CAR_MODEL_TYPES = (
@@ -230,6 +223,7 @@ CAR_MODEL_TYPES = (
     (23, 'Porsche 911 II GT3 R (2019)'),
     (24, 'Ferrari 488 GT3 Evo 2020'),
     (25, 'Mercedes-AMG GT3 2020'),
+    (30, 'BMW M4 GT3'),
 
     (50, 'Alpine A110 GT4'),
     (51, 'Aston Martin Vantage GT4'),
@@ -245,11 +239,10 @@ CAR_MODEL_TYPES = (
 )
 
 CAR_GROUPS = (
-    ("FreeForAll","FreeForAll"),
+    ("FreeForAll", "FreeForAll"),
     ("GT3", "GT3"),
-    ("GT4",  "GT4"),
-    ("Cup", "Cup"),
-    ("ST","ST")
+    ("GT4", "GT4"),
+    ("GTC", "GTC"),
 )
 
 SESSION_TYPES = (
