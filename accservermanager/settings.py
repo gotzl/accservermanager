@@ -223,7 +223,12 @@ CAR_MODEL_TYPES = (
     (23, 'Porsche 911 II GT3 R (2019)'),
     (24, 'Ferrari 488 GT3 Evo 2020'),
     (25, 'Mercedes-AMG GT3 2020'),
+    (26, 'Ferrari 488 Challenge Evo'),
+    (27, 'BMW M2 CS Racing'),
+    (28, 'Porsche 911 GT3 Cup (Type 992)'),
+    (29, 'Lamborghini Huracán Super Trofeo EVO2'),
     (30, 'BMW M4 GT3'),
+    (31, 'Audi R8 LMS GT3 evo II'),
 
     (50, 'Alpine A110 GT4'),
     (51, 'Aston Martin Vantage GT4'),
@@ -243,6 +248,7 @@ CAR_GROUPS = (
     ("GT3", "GT3"),
     ("GT4", "GT4"),
     ("GTC", "GTC"),
+    ("TCX", "TCX"),
 )
 
 SESSION_TYPES = (
