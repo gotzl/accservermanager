@@ -206,7 +206,10 @@ def write_config(name, inst_dir, form):
     for key in form.cleaned_data.keys():
         if key == 'csrfmiddlewaretoken': continue
         value = form.cleaned_data[key]
-        if isinstance(value, bool): value = int(value)
+        # eventRules needs to be true/false not 0/1
+        if name != 'eventRules.json':
+            if isinstance(value, bool): value = int(value)
+
         if value is not None: cfg[key] = value
 
     # write the file into the instances' directory
