@@ -8,8 +8,8 @@ Usage: First, use pdftohtml with the pdf, then
 import re, sys, json
 
 
-if __name__== "__main__":
-    if len(sys.argv)!=2:
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
         print('Usage: python extractMessages.py ../path/to/ServerAdminHandbooks.html')
         exit(1)
 

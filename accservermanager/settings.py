@@ -193,6 +193,9 @@ TRACKS = [
     ('oulton_park', 'Oulton_park'),
     ('donington', 'Donington'),
     ('snetterton', 'Snetterton'),
+    ('cota', 'Circuit of The Americas'),
+    ('indianapolis', 'Indianapolis Motor Speedway'),
+    ('watkins_glen', 'Watkins Glen'),
 ]
 
 
