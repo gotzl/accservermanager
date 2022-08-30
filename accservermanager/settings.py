@@ -193,7 +193,10 @@ TRACKS = [
     ('oulton_park', 'Oulton_park'),
     ('donington', 'Donington'),
     ('snetterton', 'Snetterton'),
-    ('cota', 'Circuit of the Americas'),
+    # American Track Pack
+    ('cota', 'Circuit of the Americas (DLC)'),
+    ('indianapolis', 'Indianapolis Motor Speedway (DLC)'),
+    ('watkins_glen', 'Watkins Glen International (DLC)'),
 ]
 
 
