@@ -121,6 +121,9 @@ SECRET_KEY = os.environ['SECRET_KEY'] \
 ALLOWED_HOSTS = json.loads(os.environ['ALLOWED_HOSTS']) \
     if 'ALLOWED_HOSTS' in os.environ else []
 
+CSRF_TRUSTED_ORIGINS = json.loads(os.environ['CSRF_TRUSTED_ORIGINS']) \
+    if 'CSRF_TRUSTED_ORIGINS' in os.environ else []
+
 ALLOW_SAME_PORTS = True if os.getenv('ALLOW_SAME_PORTS','False').lower() == 'true' else False
 
 try:
