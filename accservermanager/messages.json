@@ -56,7 +56,7 @@
     "publicIP": "Explicitly defines the public IP address this server is listening to. Useful if the backend is connected via a different gateway (for example the AWS Accelerator IP). If the publicIP is used, the server has to respond to an additional handshake, or it will immediately shutdown on backend connect.",
     "qualifyStandingType": "1 = fastest lap, 2 = average lap (running Endurance mode for multiple Q sessions) . Use 1, averaging Qualy is not yet officially supported.",
     "raceNumber": "The preferred race number if set, -1 if the driver may decide by picking his car. Values 1 - 998",
-    "racecraftRatingRequirement": "Defines the Safety Rating (RC) that a user must have to join this server (values -1, 0, \u2026. 99)",
+    "racecraftRatingRequirement": "Defines the Racecraft Rating (RC) that a user must have to join this server (values -1, 0, \u2026. 99)",
     "rain": "If weather randomness is off, defines the static rain level. With dynamic weather, it defines the expected rain level, dependent on weatherRandomness.  Values (0.0, 0.1, \u2026. 1.0) ",
     "randomizeTrackWhenEmpty": "If set to 1, the server will change to a random track when the last drivers leaves (which causes a reset to FP1). The \"track\"  property will only define the default state for the first session.",
     "registerToLobby": "When 0, this server won\u2019t register to the backend. Is useful for LAN sessions. If 0, the server is declared \"Private Multiplayer\". See serverList.json to learn how to bypass the backend\u2019s server list and discover servers not listed.",
