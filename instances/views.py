@@ -196,6 +196,14 @@ def render_from(request, form):
     }
     return HttpResponse(template.render(context, request))
 
+#TODO: change name to better suit this
+def render_settings(request, form):
+    template = loader.get_template('instances/instance_form.html')
+    context = {
+        'form': form,
+        'executors': executors
+    }
+    return HttpResponse(template.render(context, request))
 
 def write_config(name, inst_dir, form):
     ### use the values of the default *.json as basis
@@ -294,7 +302,7 @@ def random_word():
     return s
 
 
-def index(request):
+def index(request, name=None):
     # read defaults from files
     cfg = json.load(open(os.path.join(
         settings.ACCSERVER, 'cfg', 'configuration.json'), 'r', encoding='utf-16'))
@@ -328,3 +336,23 @@ def index(request):
 
     return render_from(request, InstanceForm(cfg))
 
+@login_required
+def edit(request, name):
+
+    cfg = json.load(open(os.path.join(
+        settings.DATA_DIR, 'instances', name, 'cfg', 'configuration.json'), 'r', encoding='utf-16' 
+    ))
+    cfg.update(json.load(open(os.path.join(
+        settings.DATA_DIR, 'instances', name, 'cfg', 'settings.json'), 'r', encoding='utf-16')))
+    cfg.update(json.load(open(os.path.join(
+        settings.DATA_DIR, 'instances', name, 'cfg', 'assistRules.json'), 'r', encoding='utf-16')))
+    cfg.update(json.load(open(os.path.join(
+        settings.DATA_DIR, 'instances', name, 'cfg', 'eventRules.json'), 'r', encoding='utf-16')))
+
+    cfg['instanceName'] = name
+    return render_settings(request, InstanceForm(cfg))
+
+@login_required
+def edit_instance(request, name):
+    #TODO: basic methodology - validate config, stop running instance, unlink/delete exiting config dirs, call create method, restart server
+    pass
