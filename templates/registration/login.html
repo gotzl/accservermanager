@@ -9,19 +9,17 @@
     </style>
 
 
-    {% load material_form %}
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
     <div class="container">
         <div class="card">
             <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
                 {% if 'username' in form.fields %}
-                {% form %}
-                {% part form.username prefix %}<i class="material-icons prefix">account_box</i>{% endpart %}
-                {% part form.password prefix %}<i class="material-icons prefix">lock</i>{% endpart %}
-                {% endform %}
+                {% bootstrap_form form %}
                 {% else %}
-                {% form %}{% endform %}
+                {% bootstrap_form form %}
                 {% endif %}
-
                 <div class="action right-align">
                     <button type="submit" class="btn btn-primary">Login</button>
                 </div>

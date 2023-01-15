@@ -12,7 +12,7 @@ def fieldForKey(key, value):
     if key == 'track':
         return forms.ChoiceField(
             widget=forms.Select,
-            choices=TRACKS,
+            choices=sorted(TRACKS),
         )
     if key == 'sessionType':
         return forms.ChoiceField(
@@ -55,10 +55,11 @@ def createForm(obj, path):
         # if the element is a object itself, let the form display a link to further drilldown into this object
         if isinstance(value, dict) or \
                 (isinstance(value, list) and len(value)>0 and isinstance(value[0], dict)):
-            form.fields[key] = forms.CharField(widget=forms.TextInput,
-                                               disabled=True,
-                                               label=mark_safe('<a href="/%s">%s</a>'%('/'.join(path+[key]),key)))
-
+            form.fields[key] = forms.CharField(
+                disabled=True,
+                widget=forms.TextInput(
+                    attrs={'placeholder': '', 'disabled': True, 'hidden': True}),
+                label=mark_safe('<a href="/%s">%s</a>'%('/'.join(path+[key]),key)))
         else:
             form.fields[key] = fieldForKey(key, value)
             form.fields[key].label = createLabel(key)

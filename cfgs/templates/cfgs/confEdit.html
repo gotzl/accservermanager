@@ -48,8 +48,12 @@
 {% endfor %}
 {% endblock %}
 
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 <div id="cfg-wrapper" class="container">
-    <div class="card" style="height:100%">
+    <div class="card" style="height:100%; border:none">
         <div id="cfg-inner-wrapper">
 
             <header id="cfgs">
@@ -57,21 +61,19 @@
             </header>
 
             {% if form is not None %}
-            {% load material_form %}
             <div id="cfg">
                 <!--<div>-->
                     <!--<h6 style="font-weight:bold">{{request.path}}</h6>-->
                     <form action="" method="post" style="padding-right:20px">
 
                         {% csrf_token %}
-                        {% form form=form %}{% endform %}
+                        {% bootstrap_form form %}
                     </form>
                 <!--</div>-->
             </div>
             {% endif%}
 
             {% if forms is not None %}
-            {% load material_form %}
             <div id="cfg">
                 {% for frm in forms %}
                 <div id="form{{forloop.counter0}}" class="card" style="display:none">
@@ -80,16 +82,16 @@
 
                         {% csrf_token %}
                         <!--{{ frm }}-->
-                        {% form form=frm %}{% endform %}
+                        {% bootstrap_form frm %}
                         <input type="hidden" name="_id" value="{{forloop.counter0}}">
                     </form>
                 </div>
                 {% endfor %}
 
-                <input id="prevbutton" type="button" value="Previous" class="btn blue" disabled/>
-                <input id="nextbutton" type="button" value="Next" class="btn blue" disabled/>
-                <input id="removebutton" type="button" class="btn red" value="Remove" disabled/>
-                <input id="addbutton" type="button" value="Add" class="btn green" disabled/>
+                <input id="prevbutton" type="button" value="Previous" class="btn btn-primary" disabled/>
+                <input id="nextbutton" type="button" value="Next" class="btn btn-primary" disabled/>
+                <input id="removebutton" type="button" class="btn btn-danger" value="Remove" disabled/>
+                <input id="addbutton" type="button" value="Add" class="btn btn-success" disabled/>
 
             </div>
 

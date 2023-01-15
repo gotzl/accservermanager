@@ -11,14 +11,17 @@
 </style>
 
 
-{% load material_form %}
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 <div class="container">
     <div class="card">
         <h6 style="font-weight:bold">Create new config</h6>
         <form action="/cfgs/create" method="post">
             {% csrf_token %}
-            {% form form=form %}{% endform %}
-            <input type="submit" value="Create" class="btn green">
+            {% bootstrap_form form %}
+            <input type="submit" value="Create" class="btn btn-success">
         </form>
     </div>
 </div>
@@ -43,19 +46,19 @@
                 <td>
                     <form style="margin: 0" action="/cfgs/clone" method="post">{% csrf_token %}
                         <input hidden name="cfg" value="{{cfg}}">
-                        <a href="/cfgs/{{cfg}}" class="btn blue">Edit</a>
+                        <a href="/cfgs/{{cfg}}" class="btn btn-primary">Edit</a>
                     </form>
                 </td>
                 <td>
                     <form style="margin: 0" action="/cfgs/clone" method="post">{% csrf_token %}
                         <input hidden name="cfg" value="{{cfg}}">
-                        <input type="submit" value="Clone" class="btn green">
+                        <input type="submit" value="Clone" class="btn btn-success">
                     </form>
                 </td>
                 <td>
                     <form style="margin: 0" action="/cfgs/delete" method="post">{% csrf_token %}
                         <input hidden name="cfg" value="{{cfg}}">
-                        <input type="submit" value="Delete" class="btn red">
+                        <input type="submit" value="Delete" class="btn btn-danger">
                     </form>
                 </td>
             </tr>

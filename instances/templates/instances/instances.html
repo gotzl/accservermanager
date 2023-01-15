@@ -7,6 +7,10 @@
     }
 </style>
 
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 <div class="container">
     {% if messages %}
         {% for message in messages %}
@@ -22,40 +26,64 @@
     {% endif %}
 
     <div class="card">
-        {% load material_form %}
         <h5 style="font-weight:bold">Instance config</h5>
         <form name="instance_form" action="start" method="POST"
               onsubmit="return (document.forms['instance_form']['cfg'].value.length>0)">{% csrf_token %}
-            {% form form=form %}{% endform %}
-            <ul class="collapsible" data-collapsible="accordion">
-                <li class="active">
-                    <div class="collapsible-header" style="font-weight:bold">Settings</div>
-                    <div class="collapsible-body">
-                        {% form form=form.settings %}{% endform %}
+            {% bootstrap_form form %}
+            <div class="accordion" id="instance-config">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="settings-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#settings" aria-expanded="true" aria-controls="settings">
+                            Settings
+                        </button>
+                    </h2>
+                    <div id="settings" class="accordion-collapse collapse show" aria-labelledby="settings-header" data-bs-parent="#instance-config">
+                        <div class="accordion-body">
+                            {% bootstrap_form form.settings %}
+                        </div>
                     </div>
-                </li>
-                <li>
-                    <div class="collapsible-header" style="font-weight:bold">Configuration</div>
-                    <div class="collapsible-body">
-                        {% form form=form.configuration %}{% endform %}
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header" style="font-weight:bold">AssistRules</div>
-                    <div class="collapsible-body">
-                        {% form form=form.assistRules %}{% endform %}
-                    </div>
-                </li>
-                <li>
-                    <div class="collapsible-header" style="font-weight:bold">EventRules</div>
-                    <div class="collapsible-body">
-                        {% form form=form.eventRules %}{% endform %}
-                    </div>
-                </li>
-            </ul>
-            </ul>
+                </div>
 
-            <button class="btn green" type="submit">Start</button>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="config-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#config" aria-expanded="false" aria-controls="config">
+                            Configuration
+                        </button>
+                    </h2>
+                    <div id="config" class="accordion-collapse collapse" aria-labelledby="config-header" data-bs-parent="#instance-config">
+                        <div class="accordion-body">
+                            {% bootstrap_form form.configuration %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="assist-rules-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assist-rules" aria-expanded="false" aria-controls="assist-rules">
+                            AssistRules
+                        </button>
+                    </h2>
+                    <div id="assist-rules" class="accordion-collapse collapse" aria-labelledby="assist-rules-header" data-bs-parent="#instance-config">
+                        <div class="accordion-body">
+                            {% bootstrap_form form.assistRules %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="event-rules-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#event-rules" aria-expanded="false" aria-controls="event-rules">
+                            EventRules
+                        </button>
+                    </h2>
+                    <div id="event-rules" class="accordion-collapse collapse" aria-labelledby="event-rules-header" data-bs-parent="#instance-config">
+                        <div class="accordion-body">
+                            {% bootstrap_form form.eventRules %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-success" type="submit">Start</button>
         </form>
 
     </div>
@@ -68,7 +96,7 @@
             <tr><td>Instance Name</td><td>Server Name</td><td>Config</td><td>UDP</td><td>TCP</td><td>PID</td><td></td></tr>
             {% for name,executor in executors.items %}
             <tr id="row{{forloop.counter0}}">
-                <td><a href="/instances/{{name}}" class="btn blue">{{name}}</a></td>
+                <td><a href="/instances/{{name}}" class="btn btn-primary">{{name}}</a></td>
                 <td style="">{{executor.serverName}}</td>
                 <td style="">{{executor.config}}</td>
                 <td style="">{{executor.udpPort}}</td>
@@ -83,13 +111,13 @@
                 </td>
                 {% if executor.is_alive %}
                 <td>
-                    <button id="stop{{forloop.counter0}}" class="btn red" onclick="stop(this, '{{name}}')">Stop</button>
+                    <button id="stop{{forloop.counter0}}" class="btn btn-danger" onclick="stop(this, '{{name}}')">Stop</button>
                 </td><td></td>
                 {% else %}
                 <td>
-                    <button id="restart{{forloop.counter0}}" class="btn green" onclick="start(this, '{{name}}')">Start</button>
+                    <button id="restart{{forloop.counter0}}" class="btn btn-success" onclick="start(this, '{{name}}')">Start</button>
                 </td><td>
-                    <button id="delete{{forloop.counter0}}" class="btn red" onclick="del(this, '{{name}}')">Delete</button>
+                    <button id="delete{{forloop.counter0}}" class="btn btn-danger" onclick="del(this, '{{name}}')">Delete</button>
                 </td>
                 {% endif %}
             </tr>

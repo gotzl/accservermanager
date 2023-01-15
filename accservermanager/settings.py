@@ -18,8 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Application definition
 
 INSTALLED_APPS = [
-    'material',
-    'material.frontend',
+    'django_bootstrap5',
     'django_bootstrap_breadcrumbs',
     'django_tables2',
     'django.contrib.admin',

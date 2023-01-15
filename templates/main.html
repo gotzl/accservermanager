@@ -3,10 +3,19 @@
 
     {% if user.is_authenticated %}
     <header>
-        <nav>
-            <a href="/cfgs">Configs</a>
-            <a href="/instances">Instances</a>
-            <a href="{% url 'logout' %}">Logout</a>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-link" style="font-size:20px; font-weight: bold;" href="/cfgs">Configs</a>
+                        <a class="nav-link" style="font-size:20px; font-weight: bold;" href="/instances">Instances</a>
+                        <a class="nav-link" style="font-size:20px; font-weight: bold;" href="{% url 'logout' %}">Logout</a>
+                    </div>
+                </div>
+            </div>
         </nav>
     </header>
 
