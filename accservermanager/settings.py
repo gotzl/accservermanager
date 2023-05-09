@@ -199,6 +199,7 @@ TRACKS = [
     ('cota', 'Circuit of the Americas (DLC)'),
     ('indianapolis', 'Indianapolis Motor Speedway (DLC)'),
     ('watkins_glen', 'Watkins Glen International (DLC)'),
+    ('valencia', 'Circuit de la Comunitat Valenciana Ricardo Tormo (DLC)'),
 ]
 
 
@@ -235,6 +236,9 @@ CAR_MODEL_TYPES = (
     (29, 'Lamborghini Huracán Super Trofeo EVO2'),
     (30, 'BMW M4 GT3'),
     (31, 'Audi R8 LMS GT3 evo II'),
+    (32, 'Ferrari 296 GT3'),
+    (33, 'Lamborghini Huracan Evo2'),
+    (34, 'Porsche 992 GT3 R'),
 
     (50, 'Alpine A110 GT4'),
     (51, 'Aston Martin Vantage GT4'),

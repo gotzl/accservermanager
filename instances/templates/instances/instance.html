@@ -15,6 +15,10 @@
 {% endfor %}
 {% endblock %}
 
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 <div class="container">
     <div class="card" style="padding: 10px 16px 20px 16px;">
         {% render_breadcrumbs %}
@@ -37,8 +41,8 @@
         {% endfor %}
 
     </div>
-    <div class="card"  style="padding: 10px 16px 20px 16px;">
-        <a href="results"><input value="Results" class="btn green"></a>
+    <div style="padding: 10px 16px 20px 16px;">
+        <a href="results"><input type="button" value="Results" class="btn btn-success"/></a>
     </div>
 </div>
 

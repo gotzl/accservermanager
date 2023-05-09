@@ -15,6 +15,10 @@
 {% endfor %}
 {% endblock %}
 
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 <div class="container">
     <div class="card">
         {% render_breadcrumbs %}
