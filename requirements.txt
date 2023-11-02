@@ -1,6 +1,6 @@
 certifi==2023.7.22
 chardet==5.0.0
-Django==4.1.10
+Django==4.1.13
 django4-bootstrap-breadcrumbs==0.10.0
 django-bootstrap5==22.2
 django-tables2==2.5.1
