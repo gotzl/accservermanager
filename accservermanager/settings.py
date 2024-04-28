@@ -200,6 +200,8 @@ TRACKS = [
     ('indianapolis', 'Indianapolis Motor Speedway (DLC)'),
     ('watkins_glen', 'Watkins Glen International (DLC)'),
     ('valencia', 'Circuit de la Comunitat Valenciana Ricardo Tormo (DLC)'),
+
+    ('nurburgring_24h', 'Nurburgring Nordschleife 24h (DLC)'),
 ]
 
 
@@ -239,6 +241,7 @@ CAR_MODEL_TYPES = (
     (32, 'Ferrari 296 GT3'),
     (33, 'Lamborghini Huracan Evo2'),
     (34, 'Porsche 992 GT3 R'),
+    (35, 'McLaren 720S GT3 Evo 2023'),
 
     (50, 'Alpine A110 GT4'),
     (51, 'Aston Martin Vantage GT4'),
@@ -251,10 +254,18 @@ CAR_MODEL_TYPES = (
     (59, 'McLaren 570S GT4'),
     (60, 'Mercedes AMG GT4'),
     (61, 'Porsche 718 Cayman GT4'),
+
+    (80, 'Audi R8 LMS GT2'),
+    (82, 'KTM XBOW GT2'),
+    (83, 'Maserati MC20 GT2'),
+    (84, 'Mercedes AMG GT2'),
+    (85, 'Porsche 911 GT2 RS CS Evo'),
+    (86, 'Porsche 935'),
 )
 
 CAR_GROUPS = (
     ("FreeForAll", "FreeForAll"),
+    ("GT2", "GT2"),
     ("GT3", "GT3"),
     ("GT4", "GT4"),
     ("GTC", "GTC"),
