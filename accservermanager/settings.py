@@ -181,7 +181,7 @@ TRACKS = [
     ('hungaroring', 'Hungaroring'),
     ('misano', 'Misano'),
     ('monza', 'Monza'),
-    ('nurburgring', 'Nurburgring GP'),
+    ('nurburgring', 'Nürburgring GP'),
     ('paul_ricard', 'Paul Ricard'),
     ('silverstone', 'Silverstone'),
     ('spa', 'Spa-Francorchamps'),
@@ -189,19 +189,18 @@ TRACKS = [
     ('zandvoort', 'Zandvoort'),
     ('kyalami', 'Kyalami'),
     ('laguna_seca', 'Laguna Seca'),
-    ('mount_panorama', 'Mount Panaorama'),
+    ('mount_panorama', 'Mount Panaorama (Bathurst)'),
     ('suzuka', 'Suzuka'),
     ('imola', 'Imola'),
-    ('oulton_park', 'Oulton_park'),
+    ('oulton_park', 'Oulton Park'),
     ('donington', 'Donington'),
     ('snetterton', 'Snetterton'),
-    # American Track Pack
-    ('cota', 'Circuit of the Americas (DLC)'),
-    ('indianapolis', 'Indianapolis Motor Speedway (DLC)'),
-    ('watkins_glen', 'Watkins Glen International (DLC)'),
-    ('valencia', 'Circuit de la Comunitat Valenciana Ricardo Tormo (DLC)'),
-
-    ('nurburgring_24h', 'Nurburgring Nordschleife 24h (DLC)'),
+    ('cota', 'Circuit of the Americas (COTA)'),
+    ('indianapolis', 'Indianapolis Motor Speedway'),
+    ('watkins_glen', 'Watkins Glen International'),
+    ('valencia', 'Circuit de la Comunitat Valenciana Ricardo Tormo'),
+    ('red_bull_ring', 'Red Bull Ring (Spielberg)'),
+    ('nurburgring_24h', 'Nürburgring Nordschleife 24h'),
 ]
 
 
@@ -242,6 +241,7 @@ CAR_MODEL_TYPES = (
     (33, 'Lamborghini Huracan Evo2'),
     (34, 'Porsche 992 GT3 R'),
     (35, 'McLaren 720S GT3 Evo 2023'),
+    (36, 'Ford Mustang GT3 2024'),
 
     (50, 'Alpine A110 GT4'),
     (51, 'Aston Martin Vantage GT4'),
